@@ -1,0 +1,20 @@
+{
+  "name": "FATH — фитнес-игра",
+  "short_name": "FATH",
+  "start_url": "./index.html",
+  "display": "standalone",
+  "background_color": "#1a0c28",
+  "theme_color": "#1a0c28",
+  "icons": [
+    {
+      "src": "icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png"
+    },
+    {
+      "src": "icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    }
+  ]
+}
