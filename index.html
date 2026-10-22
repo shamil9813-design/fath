@@ -1,12 +1,12 @@
-<!-- FATH build v5-pet1v1 2026-10-22 -->
+<!-- FATH build v9-news-premiere 2026-10-22 -->
 <!DOCTYPE html>
 <html lang="ru">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
 <meta name="theme-color" content="#0d0d14">
-<title>FATH — фитнес-игра</title>
 <link rel="manifest" href="manifest.json">
+<title>FATH — фитнес-игра</title>
 <style>
 @import url('https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap');
 .pixel-ui{font-family:'Press Start 2P','Courier New',monospace;}
@@ -85,6 +85,15 @@
 .bosphor-ui .hlogo{text-shadow:0 0 12px rgba(74,200,255,.85)}
 .bosphor-ui .btn.prim{box-shadow:0 0 16px rgba(74,200,255,.45)}
 
+
+/* PREMIERE — вечер премьеры: золото и фиолет */
+.premiere-ui .card{border:1px solid rgba(255,213,74,.4);box-shadow:0 0 18px rgba(255,200,80,.14),inset 0 0 24px rgba(255,190,60,.05);background-image:linear-gradient(180deg,rgba(255,213,74,.07),transparent 55%)}
+.premiere-ui .btn.prim{box-shadow:0 0 18px rgba(255,205,90,.45);animation:prGl 3s ease-in-out infinite}
+@keyframes prGl{0%,100%{box-shadow:0 0 12px rgba(255,205,90,.35)}50%{box-shadow:0 0 26px rgba(255,205,90,.65)}}
+.premiere-ui .hlogo{text-shadow:0 0 14px rgba(255,210,110,.85)}
+.premiere-ui header{background:linear-gradient(180deg,rgba(38,12,64,.78),rgba(16,6,32,.72));border-bottom:1px solid rgba(255,213,74,.25)}
+.premiere-ui .pill{border:1px solid rgba(255,213,74,.3)}
+
 :root{
   --bg:#0d0d14;--panel:rgba(30,30,48,.72);--panel2:rgba(44,44,70,.6);
   --fg:#f2f2fa;--muted:#9a9ab8;--border:rgba(255,255,255,.09);
@@ -109,11 +118,11 @@ header{padding:10px 14px 6px;display:flex;gap:8px;align-items:center;flex-wrap:w
 #xpwrap{flex:1 1 100%;height:6px;border-radius:4px;background:rgba(128,128,160,.18);overflow:hidden}
 #xpbar{height:100%;background:var(--grad);width:0%;transition:width .4s}
 main{flex:1;overflow-y:auto;padding:12px 12px 18px;scrollbar-width:thin}
-nav{display:flex;gap:6px;overflow-x:auto;padding:8px 10px calc(8px + env(safe-area-inset-bottom));
+nav{display:flex;gap:6px;overflow-x:auto;padding:10px 10px calc(10px + env(safe-area-inset-bottom));
   background:var(--tnbg,rgba(0,0,0,.3));backdrop-filter:blur(14px);border-top:1px solid var(--tborder,var(--border))}
 nav::-webkit-scrollbar{display:none}
 .navbtn{flex:0 0 auto;border:none;background:transparent;color:var(--muted);font-family:inherit;
-  font-size:14px;padding:9px 14px;border-radius:16px;cursor:pointer;white-space:nowrap}
+  font-size:15.5px;padding:12px 16px;border-radius:16px;cursor:pointer;white-space:nowrap}
 .navbtn.on{background:var(--tgrad,var(--grad));color:var(--tfg,#fff);font-weight:700;box-shadow:var(--tbtnshadow,none)}
 .card{background:var(--tpanel,var(--panel));border:1px solid var(--tborder,var(--border));border-radius:18px;
   padding:14px;margin-bottom:12px;backdrop-filter:blur(10px);box-shadow:var(--tcardshadow,0 4px 18px rgba(0,0,0,.18));color:var(--tfg,var(--fg))}
@@ -274,8 +283,9 @@ neonpulse:{n:"Неоновый пульс",r:"legendary",bg:"#0a0a2a",fg:"#e8e8f
 ,timestop:{n:"⏱ Стоп-кадр",r:"promo",bg:"linear-gradient(180deg,#0c1220 0%,#141c30 55%,#1c2a44 100%)",fg:"#e6eeff",acc:"#8cb8ff"}
 ,topkapi:{n:"🕌 Топкапы",r:"promo",bg:"linear-gradient(180deg,#0e0a08 0%,#2a1c10 40%,#4a3418 75%,#6b4a20 100%)",fg:"#fff3d6",acc:"#ffd98a"}
 ,harem:{n:"🌙 Султанский гарем",r:"promo",bg:"linear-gradient(180deg,#1e0a12 0%,#3a1024 45%,#5a1830 80%,#7a2040 100%)",fg:"#ffe6ea",acc:"#ff8fb0"}
-,bosphor:{n:"🌊 Босфор",r:"promo",bg:"linear-gradient(180deg,#020614 0%,#04122e 45%,#0a2452 80%,#123a6e 100%)",fg:"#d8f0ff",acc:"#4ac8ff"}
-};var PROMO_BGS={ny:1,mart:1,leto:1,osen:1,neon:1,pixel:1,blackhole:1,bloodmoon:1,quake:1,drunk:1,deep:1,magma:1,frost:1,candy:1,ufo:1,flash:1,toxiclab:1,rockon:1,timestop:1,topkapi:1,harem:1,bosphor:1};
+,bosphor:{n:"🌊 Босфор",r:"promo",bg:"linear-gradient(180deg,#020614 0%,#04122e 45%,#0a2452 80%,#123a6e 100%)",fg:"#d8f0ff",acc:"#4ac8ff"},
+premiere:{n:"🎆 Премьера",r:"promo",bg:"linear-gradient(180deg,#16062e 0%,#2e0a56 45%,#42128a 78%,#0e0320 100%)",fg:"#ffe9b8",acc:"#ffd54a"}
+};var PROMO_BGS={ny:1,mart:1,leto:1,osen:1,neon:1,pixel:1,blackhole:1,bloodmoon:1,quake:1,drunk:1,deep:1,magma:1,frost:1,candy:1,ufo:1,flash:1,toxiclab:1,rockon:1,timestop:1,topkapi:1,harem:1,bosphor:1,premiere:1};
 var NEWBGS={sakura:{n:70,s:0.7,r0:2,r1:5,c:"#ffb7d5"},listopad:{n:60,s:0.8,r0:2,r1:6,c:"#ff9a3d"},ocean:{n:35,s:0.6,r0:2,r1:7,c:"#48c0e8"},dust:{n:45,s:0.9,r0:1.5,r1:4,c:"#d9b38c"},aurora:{n:40,s:0.4,r0:2,r1:6,c:"#7dffb0"},meteor:{n:25,s:1.2,r0:1,r1:3,c:"#ffffff"},toxic:{n:50,s:0.5,r0:3,r1:9,c:"#7dff4a"},storm:{n:80,s:1.0,r0:1,r1:2.5,c:"#9fb4d9"},embers:{n:45,s:0.6,r0:1.5,r1:4,c:"#ff6a2a"},honey:{n:30,s:0.4,r0:2,r1:6,c:"#ffc93d"},crystal:{n:55,s:0.8,r0:1,r1:3,c:"#9fe8ff"},eclipse:{n:35,s:0.5,r0:2,r1:5,c:"#b06cff"},void:{n:30,s:0.5,r0:1,r1:4,c:"#3b3bd9"},warp:{n:40,s:1.4,r0:0.8,r1:2,c:"#ffffff"},phoenix:{n:50,s:0.9,r0:1.5,r1:5,c:"#ff4d2a"}};
 var BOXTYPES={wood:{n:"Деревянный",price:30,icon:"📦",leg:0.01,tk:[5,15]},
 silver:{n:"Серебряный",price:60,icon:"🎁",leg:0.05,tk:[10,25]},
@@ -2675,6 +2685,22 @@ else if(key==="flash"){seed(150);ps.forEach(function(p){p.vy=R(6,11);p.vx=R(-1.6
   }
   
   
+    if(key==="premiere"){
+    var g=ctx.createLinearGradient(0,0,0,H);g.addColorStop(0,"rgba(26,8,48,1)");g.addColorStop(0.55,"rgba(52,14,92,0.92)");g.addColorStop(1,"rgba(10,4,22,0.9)");
+    ctx.fillStyle=g;ctx.fillRect(0,0,W,H);
+    if(!ps._stars){ps._stars=[];for(i=0;i<80;i++)ps._stars.push({x:R(0,W),y:R(0,H*0.55),r:R(0.4,1.5),ph:R(0,6.28)});}
+    for(i=0;i<ps._stars.length;i++){var st=ps._stars[i];var tw=0.35+0.6*Math.abs(Math.sin(st.ph+t/900));ctx.globalAlpha=tw;ctx.fillStyle="#ffe9a8";ctx.beginPath();ctx.arc(st.x,st.y,st.r,0,7);ctx.fill();}
+    if(!ps._fw)ps._fw=[];
+    if(ps._fw.length<5&&Math.random()<0.06)ps._fw.push({x:R(W*0.15,W*0.85),y:H+8,ty:R(H*0.12,H*0.42),v:R(4,7)});
+    for(i=ps._fw.length-1;i>=0;i--){var f=ps._fw[i];
+      if(!f.ex){ctx.globalAlpha=1;ctx.fillStyle="#ffd54a";ctx.beginPath();ctx.arc(f.x,f.y,2.2,0,7);ctx.fill();f.y-=f.v*dpr;
+        if(f.y<=f.ty){f.ex=1;f.sp=[];for(var q=0;q<40;q++){var an=R(0,6.28),s2=R(0.8,4.2);
+          f.sp.push({x:f.x,y:f.y,vx:Math.cos(an)*s2,vy:Math.sin(an)*s2,r:R(1,2.4),life:R(45,85),c:(Math.random()<0.55?"#ffd54a":(Math.random()<0.5?"#ff9a3d":"#fff3c4"))});}}}
+      else{var alive=false;for(var q2=0;q2<f.sp.length;q2++){var s3=f.sp[q2];if(s3.life<=0)continue;alive=true;
+        s3.x+=s3.vx*dpr;s3.y+=s3.vy*dpr;s3.vy+=0.05*dpr;s3.vx*=0.985;s3.vy*=0.985;s3.life-=dpr;
+        ctx.globalAlpha=Math.max(0,Math.min(1,s3.life/85));ctx.fillStyle=s3.c;ctx.beginPath();ctx.arc(s3.x,s3.y,s3.r,0,7);ctx.fill();}
+        if(!alive)ps._fw.splice(i,1);}}
+    ctx.globalAlpha=1;}
     if(NEWBGS[key]){var nc=NEWBGS[key];for(i=0;i<ps.length;i++){var p=ps[i];p.x+=p.vx*dpr;p.y+=p.vy*dpr;p.ph+=0.05*dpr;if(p.x<-p.r)p.x=W+p.r;if(p.x>W+p.r)p.x=-p.r;if(p.y<-p.r)p.y=H+p.r;if(p.y>H+p.r)p.y=-p.r;ctx.globalAlpha=0.35+0.35*Math.sin(p.ph);ctx.fillStyle=nc.c;ctx.beginPath();ctx.arc(p.x,p.y,p.r,0,7);ctx.fill();}ctx.globalAlpha=1;}
     PA=requestAnimationFrame(frame);}
   PA=requestAnimationFrame(frame);
@@ -2725,8 +2751,8 @@ function applyBg(){
   var cv=document.getElementById("bgc");
   if(STATE.bg&&BACKGROUNDS[STATE.bg]){var b=BACKGROUNDS[STATE.bg];
     document.body.style.background=b.bg;startParticles(STATE.bg);applyUiTheme();
-    ["topkapi-ui","harem-ui","bosphor-ui","neon-ui","pixel-ui","quake-ui","drunk-ui","deep-ui","magma-ui","frost-ui","candy-ui","ufo-ui","flash-ui","toxiclab-ui","rockon-ui","timestop-ui"].forEach(function(c){document.body.classList.toggle(c,STATE.bg===c.slice(0,-3));});}
-  else{document.body.style.background="";stopParticles();cv.style.display="none";["topkapi-ui","harem-ui","bosphor-ui","neon-ui","pixel-ui","quake-ui","drunk-ui","deep-ui","magma-ui","frost-ui","candy-ui","ufo-ui","flash-ui","toxiclab-ui","rockon-ui","timestop-ui"].forEach(function(c){document.body.classList.remove(c);});}
+    ["topkapi-ui","harem-ui","bosphor-ui","neon-ui","pixel-ui","quake-ui","drunk-ui","deep-ui","magma-ui","frost-ui","candy-ui","ufo-ui","flash-ui","toxiclab-ui","rockon-ui","timestop-ui","premiere-ui"].forEach(function(c){document.body.classList.toggle(c,STATE.bg===c.slice(0,-3));});}
+  else{document.body.style.background="";stopParticles();cv.style.display="none";["topkapi-ui","harem-ui","bosphor-ui","neon-ui","pixel-ui","quake-ui","drunk-ui","deep-ui","magma-ui","frost-ui","candy-ui","ufo-ui","flash-ui","toxiclab-ui","rockon-ui","timestop-ui","premiere-ui"].forEach(function(c){document.body.classList.remove(c);});}
 }
 // ===== РУЛЕТКА =====
 function wheelSegs(){return STATE.wex.slice(0,12).map(function(e){return e.n+" "+e.s+"×"+e.r;});}
@@ -2783,6 +2809,15 @@ function skipSpinTask(){
 </script>
 
 <script>
+// ===== НОВОСТИ =====
+function newsCard(){
+  return '<div class="card" style="cursor:pointer" onclick="openNews()"><div class="row" style="justify-content:space-between;align-items:center"><h3 style="margin:0">📰 FATH-Вестник</h3><span class="tag">выпуск #1</span></div><p class="sub" style="margin:6px 0 0">Свежие новости игры — тапни, чтобы прочитать</p></div>';
+}
+function openNews(){
+  var opened=STATE.promos.indexOf("premiere")>=0;
+  var btn=opened?'<span class="tag">Фон уже открыт 🎉</span>':'<button class="btn prim" onclick="unlockPromoBg(\'premiere\')">🎁 Открыть фон «Премьера»</button>';
+  openModal('<div class="card"><h3>📰 FATH-Вестник — выпуск #1</h3><p class="sub">Премьерный номер нашей газеты. Читай, что вышло!</p><h3>Что нового</h3><ul><li>Питомцы качаются вместе с тобой: опыт 1-в-1</li><li>Игра ставится на телефон как приложение и работает без интернета</li><li>Вкладки внизу стали крупнее — удобнее тапать</li><li>Вышел эксклюзивный фон «Премьера» 🎆</li></ul><h3>Промокод в честь премьеры</h3><p>Код: <b>PREMIERA</b> — открывает фон «Премьера». Вводи в Настройках или жми кнопку ниже.</p><div class="row">'+btn+'</div><p class="small">Следующий номер выйдет со следующим обновлением.</p></div>');
+}
 function tabHome(m){
   var p=STATE.pets[STATE.activepet];
   var b=BOSSES[STATE.bossIdx];
@@ -2793,6 +2828,7 @@ function tabHome(m){
   '<div class="stat"><b>'+STATE.tok+'</b><span>жетоны</span></div>'+
   '<div class="stat"><b>'+STATE.streak+'</b><span>стрик</span></div>'+
   '<div class="stat"><b>'+totalRepsToday()+'</b><span>повт. сегодня</span></div></div></div>';
+  h+=newsCard();
   h+='<div class="card"><h3>Задание дня</h3>';
   if(t){h+='<p><b>'+esc(t.n)+'</b> — '+t.s+'×'+t.r+' <span class="pill-r '+RAR[t.rar].cls+'">'+RAR[t.rar].n+'</span></p>'+
   '<div class="row" style="margin-top:10px"><button class="btn good" onclick="completeSpinTask()">✅ Выполнено</button>'+
@@ -3724,6 +3760,7 @@ function applyPromo(){
   else if(vU==="BOSPHOR"){S("promo");unlockPromoBg("bosphor");}
   
   
+  else if(vU==="PREMIERA"){S("promo");unlockPromoBg("premiere");}
   else toast("Неверный промокод");
 }
 function enterDev(){
@@ -4235,9 +4272,5 @@ function tabHarem(m){
   m.innerHTML=h;
 }
 </script>
-<script>
-if('serviceWorker' in navigator){
-  navigator.serviceWorker.register('sw.js').catch(function(e){console.warn('SW not registered',e);});
-}
-</script>
+<script>if("serviceWorker" in navigator){navigator.serviceWorker.register("sw.js").catch(function(){});}</script>
 </body></html>
