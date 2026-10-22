@@ -1,11 +1,9 @@
 {
   "name": "FATH — фитнес-игра",
   "short_name": "FATH",
-  "description": "RPG-фитнес: повторения = опыт, боссы, питомцы, гарем и легендарные ящики",
+  "description": "Фитнес-RPG: качайся сам, прокачивай героя и питомца, бей боссов",
   "start_url": "./index.html",
-  "scope": "./",
   "display": "standalone",
-  "orientation": "portrait",
   "background_color": "#0d0d14",
   "theme_color": "#0d0d14",
   "icons": [
