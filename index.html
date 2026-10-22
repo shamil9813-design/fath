@@ -1,4 +1,4 @@
-<!-- FATH build v9-news-premiere 2026-10-22 -->
+<!-- FATH build v10-premiere-lite 2026-10-22 -->
 <!DOCTYPE html>
 <html lang="ru">
 <head>
@@ -84,15 +84,6 @@
 @keyframes bsBob{0%,100%{transform:translateY(0)}50%{transform:translateY(-2.5px)}}
 .bosphor-ui .hlogo{text-shadow:0 0 12px rgba(74,200,255,.85)}
 .bosphor-ui .btn.prim{box-shadow:0 0 16px rgba(74,200,255,.45)}
-
-
-/* PREMIERE — вечер премьеры: золото и фиолет */
-.premiere-ui .card{border:1px solid rgba(255,213,74,.4);box-shadow:0 0 18px rgba(255,200,80,.14),inset 0 0 24px rgba(255,190,60,.05);background-image:linear-gradient(180deg,rgba(255,213,74,.07),transparent 55%)}
-.premiere-ui .btn.prim{box-shadow:0 0 18px rgba(255,205,90,.45);animation:prGl 3s ease-in-out infinite}
-@keyframes prGl{0%,100%{box-shadow:0 0 12px rgba(255,205,90,.35)}50%{box-shadow:0 0 26px rgba(255,205,90,.65)}}
-.premiere-ui .hlogo{text-shadow:0 0 14px rgba(255,210,110,.85)}
-.premiere-ui header{background:linear-gradient(180deg,rgba(38,12,64,.78),rgba(16,6,32,.72));border-bottom:1px solid rgba(255,213,74,.25)}
-.premiere-ui .pill{border:1px solid rgba(255,213,74,.3)}
 
 :root{
   --bg:#0d0d14;--panel:rgba(30,30,48,.72);--panel2:rgba(44,44,70,.6);
@@ -283,9 +274,8 @@ neonpulse:{n:"Неоновый пульс",r:"legendary",bg:"#0a0a2a",fg:"#e8e8f
 ,timestop:{n:"⏱ Стоп-кадр",r:"promo",bg:"linear-gradient(180deg,#0c1220 0%,#141c30 55%,#1c2a44 100%)",fg:"#e6eeff",acc:"#8cb8ff"}
 ,topkapi:{n:"🕌 Топкапы",r:"promo",bg:"linear-gradient(180deg,#0e0a08 0%,#2a1c10 40%,#4a3418 75%,#6b4a20 100%)",fg:"#fff3d6",acc:"#ffd98a"}
 ,harem:{n:"🌙 Султанский гарем",r:"promo",bg:"linear-gradient(180deg,#1e0a12 0%,#3a1024 45%,#5a1830 80%,#7a2040 100%)",fg:"#ffe6ea",acc:"#ff8fb0"}
-,bosphor:{n:"🌊 Босфор",r:"promo",bg:"linear-gradient(180deg,#020614 0%,#04122e 45%,#0a2452 80%,#123a6e 100%)",fg:"#d8f0ff",acc:"#4ac8ff"},
-premiere:{n:"🎆 Премьера",r:"promo",bg:"linear-gradient(180deg,#16062e 0%,#2e0a56 45%,#42128a 78%,#0e0320 100%)",fg:"#ffe9b8",acc:"#ffd54a"}
-};var PROMO_BGS={ny:1,mart:1,leto:1,osen:1,neon:1,pixel:1,blackhole:1,bloodmoon:1,quake:1,drunk:1,deep:1,magma:1,frost:1,candy:1,ufo:1,flash:1,toxiclab:1,rockon:1,timestop:1,topkapi:1,harem:1,bosphor:1,premiere:1};
+,bosphor:{n:"🌊 Босфор",r:"promo",bg:"linear-gradient(180deg,#020614 0%,#04122e 45%,#0a2452 80%,#123a6e 100%)",fg:"#d8f0ff",acc:"#4ac8ff"}
+,premiere:{n:"🎆 Премьера",bg:"linear-gradient(180deg,#0a0417 0%,#170b33 35%,#2b1055 70%,#451e7a 100%)",fg:"#f7ecd2",acc:"#ffd166"}};var PROMO_BGS={ny:1,mart:1,leto:1,osen:1,neon:1,pixel:1,blackhole:1,bloodmoon:1,quake:1,drunk:1,deep:1,magma:1,frost:1,candy:1,ufo:1,flash:1,toxiclab:1,rockon:1,timestop:1,topkapi:1,harem:1,bosphor:1,premiere:1};
 var NEWBGS={sakura:{n:70,s:0.7,r0:2,r1:5,c:"#ffb7d5"},listopad:{n:60,s:0.8,r0:2,r1:6,c:"#ff9a3d"},ocean:{n:35,s:0.6,r0:2,r1:7,c:"#48c0e8"},dust:{n:45,s:0.9,r0:1.5,r1:4,c:"#d9b38c"},aurora:{n:40,s:0.4,r0:2,r1:6,c:"#7dffb0"},meteor:{n:25,s:1.2,r0:1,r1:3,c:"#ffffff"},toxic:{n:50,s:0.5,r0:3,r1:9,c:"#7dff4a"},storm:{n:80,s:1.0,r0:1,r1:2.5,c:"#9fb4d9"},embers:{n:45,s:0.6,r0:1.5,r1:4,c:"#ff6a2a"},honey:{n:30,s:0.4,r0:2,r1:6,c:"#ffc93d"},crystal:{n:55,s:0.8,r0:1,r1:3,c:"#9fe8ff"},eclipse:{n:35,s:0.5,r0:2,r1:5,c:"#b06cff"},void:{n:30,s:0.5,r0:1,r1:4,c:"#3b3bd9"},warp:{n:40,s:1.4,r0:0.8,r1:2,c:"#ffffff"},phoenix:{n:50,s:0.9,r0:1.5,r1:5,c:"#ff4d2a"}};
 var BOXTYPES={wood:{n:"Деревянный",price:30,icon:"📦",leg:0.01,tk:[5,15]},
 silver:{n:"Серебряный",price:60,icon:"🎁",leg:0.05,tk:[10,25]},
@@ -2114,7 +2104,7 @@ else if(key==="flash"){seed(150);ps.forEach(function(p){p.vy=R(6,11);p.vx=R(-1.6
   else if(key==="toxiclab"){seed(26);ps.forEach(function(p){p.vy=R(0.15,0.5);p.x=R(0,W);p.y=R(H*0.5,H);p.r=R(18,44);});ps._fl=[];for(i=0;i<6;i++)ps._fl.push({x:R(W*0.06,W*0.94),y:R(H*0.12,H*0.6),ph:R(0,6.28),v:R(0.05,0.2)});ps._dr=[];for(i=0;i<4;i++)ps._dr.push({x:R(W*0.08,W*0.92),y:R(-160,-20),v:R(1.2,2.4)});ps._hl=[];}
   else if(key==="rockon"){seed(16);ps.forEach(function(p){p.vy=R(0.2,0.8);p.r=R(1,2.6);});ps._cr=[];for(i=0;i<16;i++)ps._cr.push({x:W*(i+0.5)/16,ph:R(0,6.28),hh:R(22,34),arm:R(0,1)});}
   else if(key==="timestop"){seed(46);ps.forEach(function(p){p.x=R(0,W);p.y=R(0,H*0.88);p.r=R(2.5,5.5);p.ph=R(0,6.28);p.tilt=R(-0.35,0.2);p.fall=0;});ps._ft=R(1200,3800);ps._clk=R(0,6.28);}
-  
+  else if(key==="premiere"){seed(20);ps.forEach(function(p){p.x=R(0,W);p.y=R(0,H);p.r=R(0.8,2.2);p.ph=R(0,6.28);p.vx=R(-0.12,0.12);});ps._rk=[];ps._sp=[];ps._nx=R(600,1500);ps._lt=0;}
   else if(NEWBGS[key]){var c2=NEWBGS[key];seed(c2.n);ps.forEach(function(p){p.vx=R(-c2.s,c2.s);p.vy=R(-c2.s,c2.s);p.r=R(c2.r0,c2.r1);});}
   var last=0;
   function frame(t){
@@ -2686,21 +2676,29 @@ else if(key==="flash"){seed(150);ps.forEach(function(p){p.vy=R(6,11);p.vx=R(-1.6
   
   
     if(key==="premiere"){
-    var g=ctx.createLinearGradient(0,0,0,H);g.addColorStop(0,"rgba(26,8,48,1)");g.addColorStop(0.55,"rgba(52,14,92,0.92)");g.addColorStop(1,"rgba(10,4,22,0.9)");
-    ctx.fillStyle=g;ctx.fillRect(0,0,W,H);
-    if(!ps._stars){ps._stars=[];for(i=0;i<80;i++)ps._stars.push({x:R(0,W),y:R(0,H*0.55),r:R(0.4,1.5),ph:R(0,6.28)});}
-    for(i=0;i<ps._stars.length;i++){var st=ps._stars[i];var tw=0.35+0.6*Math.abs(Math.sin(st.ph+t/900));ctx.globalAlpha=tw;ctx.fillStyle="#ffe9a8";ctx.beginPath();ctx.arc(st.x,st.y,st.r,0,7);ctx.fill();}
-    if(!ps._fw)ps._fw=[];
-    if(ps._fw.length<5&&Math.random()<0.06)ps._fw.push({x:R(W*0.15,W*0.85),y:H+8,ty:R(H*0.12,H*0.42),v:R(4,7)});
-    for(i=ps._fw.length-1;i>=0;i--){var f=ps._fw[i];
-      if(!f.ex){ctx.globalAlpha=1;ctx.fillStyle="#ffd54a";ctx.beginPath();ctx.arc(f.x,f.y,2.2,0,7);ctx.fill();f.y-=f.v*dpr;
-        if(f.y<=f.ty){f.ex=1;f.sp=[];for(var q=0;q<40;q++){var an=R(0,6.28),s2=R(0.8,4.2);
-          f.sp.push({x:f.x,y:f.y,vx:Math.cos(an)*s2,vy:Math.sin(an)*s2,r:R(1,2.4),life:R(45,85),c:(Math.random()<0.55?"#ffd54a":(Math.random()<0.5?"#ff9a3d":"#fff3c4"))});}}}
-      else{var alive=false;for(var q2=0;q2<f.sp.length;q2++){var s3=f.sp[q2];if(s3.life<=0)continue;alive=true;
-        s3.x+=s3.vx*dpr;s3.y+=s3.vy*dpr;s3.vy+=0.05*dpr;s3.vx*=0.985;s3.vy*=0.985;s3.life-=dpr;
-        ctx.globalAlpha=Math.max(0,Math.min(1,s3.life/85));ctx.fillStyle=s3.c;ctx.beginPath();ctx.arc(s3.x,s3.y,s3.r,0,7);ctx.fill();}
-        if(!alive)ps._fw.splice(i,1);}}
-    ctx.globalAlpha=1;}
+      if(!ps._lt)ps._lt=0;
+      if(t-ps._lt<33){PA=requestAnimationFrame(frame);return;}
+      var pd=Math.min(t-ps._lt,200)/16.6;ps._lt=t;
+      for(i=0;i<ps.length;i++){var q0=ps[i];q0.y-=0.08*pd;q0.x+=q0.vx*pd;
+        if(q0.y<-2){q0.y=H+2;q0.x=R(0,W);}
+        ctx.globalAlpha=0.22+0.22*Math.sin(q0.ph*2+t/600);ctx.fillStyle="#ffd97a";
+        ctx.beginPath();ctx.arc(q0.x,q0.y,q0.r,0,7);ctx.fill();}
+      ctx.globalAlpha=1;
+      ps._nx-=pd*16.6;
+      if(ps._nx<=0&&ps._rk.length<2){ps._rk.push({x:R(W*0.12,W*0.88),y:H+6,ty:R(H*0.15,H*0.35),vy:-R(H*0.010,H*0.016),c:Math.random()<0.5?"#ffd166":"#f8f0ff"});ps._nx=1500+Math.random()*1000;}
+      for(i=ps._rk.length-1;i>=0;i--){var rk=ps._rk[i];rk.y+=rk.vy*pd;
+        if(rk.y<=rk.ty){
+          var add=Math.min(30,64-ps._sp.length);
+          for(var q2=0;q2<add;q2++){var an=R(0,6.28),sv=R(0.8,2.4);
+            ps._sp.push({x:rk.x,y:rk.y,vx:Math.cos(an)*sv,vy:Math.sin(an)*sv,li:1,c:rk.c});}
+          ps._rk.splice(i,1);}
+        else{ctx.globalAlpha=0.9;ctx.fillStyle=rk.c;ctx.beginPath();ctx.arc(rk.x,rk.y,2.4,0,7);ctx.fill();}}
+      ctx.globalAlpha=1;
+      for(i=ps._sp.length-1;i>=0;i--){var s2=ps._sp[i];s2.x+=s2.vx*pd;s2.y+=s2.vy*pd;s2.vy+=0.015*pd;s2.vx*=0.99;s2.li-=0.012*pd;
+        if(s2.li<=0){ps._sp.splice(i,1);continue;}
+        ctx.globalAlpha=Math.max(0,Math.min(1,s2.li));ctx.fillStyle=s2.c;ctx.beginPath();ctx.arc(s2.x,s2.y,1.8,0,7);ctx.fill();}
+      ctx.globalAlpha=1;
+      PA=requestAnimationFrame(frame);return;}
     if(NEWBGS[key]){var nc=NEWBGS[key];for(i=0;i<ps.length;i++){var p=ps[i];p.x+=p.vx*dpr;p.y+=p.vy*dpr;p.ph+=0.05*dpr;if(p.x<-p.r)p.x=W+p.r;if(p.x>W+p.r)p.x=-p.r;if(p.y<-p.r)p.y=H+p.r;if(p.y>H+p.r)p.y=-p.r;ctx.globalAlpha=0.35+0.35*Math.sin(p.ph);ctx.fillStyle=nc.c;ctx.beginPath();ctx.arc(p.x,p.y,p.r,0,7);ctx.fill();}ctx.globalAlpha=1;}
     PA=requestAnimationFrame(frame);}
   PA=requestAnimationFrame(frame);
@@ -2726,7 +2724,8 @@ quake:{panel:"rgba(58,38,22,.85)",panel2:"rgba(78,52,30,.9)",border:"rgba(255,14
   ,timestop:{panel:"rgba(20,30,52,.85)",panel2:"rgba(28,40,66,.9)",border:"rgba(140,184,255,.3)",acc1:"#8cb8ff",acc2:"#c8dcff",grad:"linear-gradient(135deg,#8cb8ff,#c8dcff)",hbg:"rgba(12,18,32,.8)",nbg:"rgba(12,18,32,.86)",fg:"#e6eeff",muted:"#90a8cc",btnshadow:"0 4px 12px rgba(40,70,130,.35)",cardshadow:"0 5px 18px rgba(10,20,44,.5)",chipon:"#8cb8ff"},
   topkapi:{panel:"rgba(46,32,14,.82)",panel2:"rgba(64,46,22,.9)",border:"rgba(255,217,138,.3)",acc1:"#ffd98a",acc2:"#fff3d6",grad:"linear-gradient(135deg,#ffd98a,#fff3d6)",hbg:"rgba(24,16,8,.78)",nbg:"rgba(24,16,8,.84)",fg:"#fff3d6",muted:"#d9b98a",btnshadow:"0 0 18px rgba(255,205,115,.45)",cardshadow:"0 6px 22px rgba(20,12,4,.5)",chipon:"#ffd98a"},
   harem:{panel:"rgba(58,14,32,.82)",panel2:"rgba(78,20,44,.9)",border:"rgba(255,143,176,.3)",acc1:"#ff8fb0",acc2:"#ffd166",grad:"linear-gradient(135deg,#ff8fb0,#ffd166)",hbg:"rgba(36,8,20,.78)",nbg:"rgba(36,8,20,.84)",fg:"#ffe6ea",muted:"#d99bb0",btnshadow:"0 0 18px rgba(255,133,170,.45)",cardshadow:"0 6px 22px rgba(40,4,20,.5)",chipon:"#ff8fb0"},
-  bosphor:{panel:"rgba(6,20,46,.82)",panel2:"rgba(10,30,64,.9)",border:"rgba(74,200,255,.28)",acc1:"#4ac8ff",acc2:"#cfe6ff",grad:"linear-gradient(135deg,#4ac8ff,#cfe6ff)",hbg:"rgba(3,10,26,.8)",nbg:"rgba(3,10,26,.86)",fg:"#d8f0ff",muted:"#8cb0d9",btnshadow:"0 0 18px rgba(74,200,255,.45)",cardshadow:"0 6px 22px rgba(0,8,28,.55)",chipon:"#4ac8ff"}
+  bosphor:{panel:"rgba(6,20,46,.82)",panel2:"rgba(10,30,64,.9)",border:"rgba(74,200,255,.28)",acc1:"#4ac8ff",acc2:"#cfe6ff",grad:"linear-gradient(135deg,#4ac8ff,#cfe6ff)",hbg:"rgba(3,10,26,.8)",nbg:"rgba(3,10,26,.86)",fg:"#d8f0ff",muted:"#8cb0d9",btnshadow:"0 0 18px rgba(74,200,255,.45)",cardshadow:"0 6px 22px rgba(0,8,28,.55)",chipon:"#4ac8ff"},
+  premiere:{panel:"rgba(38,18,66,.85)",panel2:"rgba(52,26,88,.9)",border:"rgba(255,209,102,.32)",acc1:"#ffd166",acc2:"#f7ecd2",grad:"linear-gradient(135deg,#ffd166,#ff9d3d)",hbg:"rgba(255,209,102,.14)",nbg:"rgba(255,209,102,.2)",fg:"#f7ecd2",muted:"#c9a86a",btnshadow:"0 0 18px rgba(255,209,102,.45)",cardshadow:"0 6px 22px rgba(20,4,40,.55)",chipon:"#ffd166"}
   }
 };
 function hexA(hex,a){hex=(hex||"#888888").replace("#","");if(hex.length===3)hex=hex.split("").map(function(c){return c+c;}).join("");var r=parseInt(hex.substr(0,2),16),g=parseInt(hex.substr(2,2),16),b=parseInt(hex.substr(4,2),16);return "rgba("+r+","+g+","+b+","+a+")";}
@@ -2751,8 +2750,8 @@ function applyBg(){
   var cv=document.getElementById("bgc");
   if(STATE.bg&&BACKGROUNDS[STATE.bg]){var b=BACKGROUNDS[STATE.bg];
     document.body.style.background=b.bg;startParticles(STATE.bg);applyUiTheme();
-    ["topkapi-ui","harem-ui","bosphor-ui","neon-ui","pixel-ui","quake-ui","drunk-ui","deep-ui","magma-ui","frost-ui","candy-ui","ufo-ui","flash-ui","toxiclab-ui","rockon-ui","timestop-ui","premiere-ui"].forEach(function(c){document.body.classList.toggle(c,STATE.bg===c.slice(0,-3));});}
-  else{document.body.style.background="";stopParticles();cv.style.display="none";["topkapi-ui","harem-ui","bosphor-ui","neon-ui","pixel-ui","quake-ui","drunk-ui","deep-ui","magma-ui","frost-ui","candy-ui","ufo-ui","flash-ui","toxiclab-ui","rockon-ui","timestop-ui","premiere-ui"].forEach(function(c){document.body.classList.remove(c);});}
+    ["topkapi-ui","harem-ui","bosphor-ui","premiere-ui","neon-ui","pixel-ui","quake-ui","drunk-ui","deep-ui","magma-ui","frost-ui","candy-ui","ufo-ui","flash-ui","toxiclab-ui","rockon-ui","timestop-ui"].forEach(function(c){document.body.classList.toggle(c,STATE.bg===c.slice(0,-3));});}
+  else{document.body.style.background="";stopParticles();cv.style.display="none";["topkapi-ui","harem-ui","bosphor-ui","premiere-ui","neon-ui","pixel-ui","quake-ui","drunk-ui","deep-ui","magma-ui","frost-ui","candy-ui","ufo-ui","flash-ui","toxiclab-ui","rockon-ui","timestop-ui"].forEach(function(c){document.body.classList.remove(c);});}
 }
 // ===== РУЛЕТКА =====
 function wheelSegs(){return STATE.wex.slice(0,12).map(function(e){return e.n+" "+e.s+"×"+e.r;});}
@@ -2809,14 +2808,16 @@ function skipSpinTask(){
 </script>
 
 <script>
-// ===== НОВОСТИ =====
-function newsCard(){
-  return '<div class="card" style="cursor:pointer" onclick="openNews()"><div class="row" style="justify-content:space-between;align-items:center"><h3 style="margin:0">📰 FATH-Вестник</h3><span class="tag">выпуск #1</span></div><p class="sub" style="margin:6px 0 0">Свежие новости игры — тапни, чтобы прочитать</p></div>';
-}
 function openNews(){
-  var opened=STATE.promos.indexOf("premiere")>=0;
-  var btn=opened?'<span class="tag">Фон уже открыт 🎉</span>':'<button class="btn prim" onclick="unlockPromoBg(\'premiere\')">🎁 Открыть фон «Премьера»</button>';
-  openModal('<div class="card"><h3>📰 FATH-Вестник — выпуск #1</h3><p class="sub">Премьерный номер нашей газеты. Читай, что вышло!</p><h3>Что нового</h3><ul><li>Питомцы качаются вместе с тобой: опыт 1-в-1</li><li>Игра ставится на телефон как приложение и работает без интернета</li><li>Вкладки внизу стали крупнее — удобнее тапать</li><li>Вышел эксклюзивный фон «Премьера» 🎆</li></ul><h3>Промокод в честь премьеры</h3><p>Код: <b>PREMIERA</b> — открывает фон «Премьера». Вводи в Настройках или жми кнопку ниже.</p><div class="row">'+btn+'</div><p class="small">Следующий номер выйдет со следующим обновлением.</p></div>');
+  var own=STATE.ownedbg.indexOf("premiere")>=0;
+  var h='<div class="card"><h3>📰 FATH-Вестник</h3><p class="sub">Выпуск №1 — 22 октября 2026 · первый выпуск</p></div>';
+  h+='<div class="card"><h3>🎆 Вышла игра!</h3><p>FATH открыт для всех! В честь премьеры — эксклюзивный фон «Премьера»: вечер первого показа, золотые огни и салют в небе. Бери промокод ниже — он открывает фон навсегда.</p></div>';
+  h+='<div class="card"><h3>🔧 Что нового</h3><p>• Нижние вкладки стали крупнее — тапать удобнее<br>• Новый фон «Премьера» с живым салютом<br>• Салют работает легко — телефон не нагревается<br>• Грядущие обновления будут появляться здесь</p></div>';
+  h+='<div class="card"><h3>🎁 Промокод выпуска</h3><p style="font-size:24px;letter-spacing:4px;text-align:center;margin:6px 0"><b>PREMIERA</b></p>';
+  if(own)h+='<button class="btn good" style="width:100%" onclick="closeModal();setBg(\'premiere\')">🎆 Надеть фон</button>';
+  else h+='<button class="btn prim" style="width:100%" onclick="unlockPromoBg(\'premiere\')">🎆 Открыть фон</button>';
+  h+='</div>';
+  openModal(h);
 }
 function tabHome(m){
   var p=STATE.pets[STATE.activepet];
@@ -2828,7 +2829,7 @@ function tabHome(m){
   '<div class="stat"><b>'+STATE.tok+'</b><span>жетоны</span></div>'+
   '<div class="stat"><b>'+STATE.streak+'</b><span>стрик</span></div>'+
   '<div class="stat"><b>'+totalRepsToday()+'</b><span>повт. сегодня</span></div></div></div>';
-  h+=newsCard();
+  h+='<div class="card" onclick="openNews()" style="cursor:pointer;border:1px solid rgba(255,209,102,.4);box-shadow:0 0 14px rgba(255,209,102,.25)"><div class="row" style="align-items:center"><span style="font-size:26px">📰</span><div style="flex:1"><b>FATH-Вестник · выпуск №1</b><div style="color:#c9a86a;font-size:13px">Что нового: крупные вкладки, фон «Премьера» и промокод 🎆</div></div><span style="color:#ffd166;font-size:20px">›</span></div></div>';
   h+='<div class="card"><h3>Задание дня</h3>';
   if(t){h+='<p><b>'+esc(t.n)+'</b> — '+t.s+'×'+t.r+' <span class="pill-r '+RAR[t.rar].cls+'">'+RAR[t.rar].n+'</span></p>'+
   '<div class="row" style="margin-top:10px"><button class="btn good" onclick="completeSpinTask()">✅ Выполнено</button>'+
@@ -3759,7 +3760,6 @@ function applyPromo(){
   else if(vU==="HAREM"){S("promo");unlockPromoBg("harem");}
   else if(vU==="BOSPHOR"){S("promo");unlockPromoBg("bosphor");}
   
-  
   else if(vU==="PREMIERA"){S("promo");unlockPromoBg("premiere");}
   else toast("Неверный промокод");
 }
@@ -4272,5 +4272,7 @@ function tabHarem(m){
   m.innerHTML=h;
 }
 </script>
-<script>if("serviceWorker" in navigator){navigator.serviceWorker.register("sw.js").catch(function(){});}</script>
+<script>
+if("serviceWorker" in navigator){window.addEventListener("load",function(){navigator.serviceWorker.register("sw.js");});}
+</script>
 </body></html>
