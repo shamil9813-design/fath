@@ -1,4 +1,4 @@
-<!-- FATH build v11-noc-hotfix 2026-10-23 -->
+<!-- FATH build v11-noc-hotfix2 2026-10-23 -->
 <!DOCTYPE html>
 <html lang="ru">
 <head>
@@ -3871,8 +3871,18 @@ function wipeAsk(){
 }
 function wipeGo(){
   var v=document.getElementById("wipein").value.trim();
-  if(v===wipeCode){closeModal();bakPush(JSON.stringify(STATE),SAVEVER);localStorage.removeItem("fath_save");location.reload();}
-  else toast("Неверный код — посмотри ещё раз на окно");
+  if(v===wipeCode){
+    closeModal();
+    try{bakPush(JSON.stringify(STATE),SAVEVER);}catch(e){}
+    if(window._saveT){try{clearTimeout(window._saveT);}catch(e){}window._saveT=0;}
+    STATE=DEFS();STATE._dirty=0;
+    try{STATE.day=todayStr();}catch(e){}
+    try{localStorage.removeItem("fath_save");}catch(e){}
+    window._ovlCharge=false;window._ovlActive=false;
+    try{applyBg();applyUiTheme();}catch(e){}
+    initNav();updHeader();render();
+    toast("🗑 Прогресс сброшен. Свежий старт!");
+  } else toast("Неверный код — посмотри ещё раз на окно");
 }
 // ===== ДЕВ-ПАНЕЛЬ =====
 function tabDev(m){
