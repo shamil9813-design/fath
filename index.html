@@ -1,4 +1,4 @@
-<!-- FATH build v10-premiere-lite 2026-10-22 -->
+<!-- FATH build v11-noc-hotfix 2026-10-23 -->
 <!DOCTYPE html>
 <html lang="ru">
 <head>
@@ -216,6 +216,7 @@ body.neon-ui .btn.prim{animation:neonBeat 1.4s ease-in-out infinite}
   <span class="hlogo">FATH</span>
   <span class="pill" id="hlvl">👤 1 ур</span>
   <span class="pill" id="htok">🪙 0</span>
+  <span class="pill" id="hpv" style="display:none">🎃 0</span>
   <span class="pill" id="hstk">🔥 0</span>
   <span class="pill" id="hpet">🐾 0/15</span>
   <span class="pill" id="hhp">❤️</span>
@@ -234,6 +235,7 @@ b.style.display='block';b.textContent='Ошибка: '+e.message;});</script>
 // ===== ДАННЫЕ ИЗ ОРИГИНАЛА =====
 var RAR = {common:{n:"Обычная",c:"#95a5a6",cls:"r-common"},rare:{n:"Редкая",c:"#3498db",cls:"r-rare"},
   epic:{n:"Эпическая",c:"#9b59b6",cls:"r-epic"},legendary:{n:"Легендарная",c:"#f1c40f",cls:"r-legendary"},mythic:{n:"Мифическая",c:"#00e5ff",cls:"r-mythic"}};
+function rqr(x){return RAR[x]||RAR.common;}
 var RARORDER=["common","rare","epic","legendary"];
 var STYLES=[["wheel","Колесо фортуны",0],["line","Бегущая строка",7],["slot","Слот-машина",12],
 ["rainbow","Радужная карусель",18],["orbit","Орбита",22],["spiral","Спираль",28],["strobe","Огни казино",32],
@@ -275,8 +277,8 @@ neonpulse:{n:"Неоновый пульс",r:"legendary",bg:"#0a0a2a",fg:"#e8e8f
 ,topkapi:{n:"🕌 Топкапы",r:"promo",bg:"linear-gradient(180deg,#0e0a08 0%,#2a1c10 40%,#4a3418 75%,#6b4a20 100%)",fg:"#fff3d6",acc:"#ffd98a"}
 ,harem:{n:"🌙 Султанский гарем",r:"promo",bg:"linear-gradient(180deg,#1e0a12 0%,#3a1024 45%,#5a1830 80%,#7a2040 100%)",fg:"#ffe6ea",acc:"#ff8fb0"}
 ,bosphor:{n:"🌊 Босфор",r:"promo",bg:"linear-gradient(180deg,#020614 0%,#04122e 45%,#0a2452 80%,#123a6e 100%)",fg:"#d8f0ff",acc:"#4ac8ff"}
-,premiere:{n:"🎆 Премьера",bg:"linear-gradient(180deg,#0a0417 0%,#170b33 35%,#2b1055 70%,#451e7a 100%)",fg:"#f7ecd2",acc:"#ffd166"}};var PROMO_BGS={ny:1,mart:1,leto:1,osen:1,neon:1,pixel:1,blackhole:1,bloodmoon:1,quake:1,drunk:1,deep:1,magma:1,frost:1,candy:1,ufo:1,flash:1,toxiclab:1,rockon:1,timestop:1,topkapi:1,harem:1,bosphor:1,premiere:1};
-var NEWBGS={sakura:{n:70,s:0.7,r0:2,r1:5,c:"#ffb7d5"},listopad:{n:60,s:0.8,r0:2,r1:6,c:"#ff9a3d"},ocean:{n:35,s:0.6,r0:2,r1:7,c:"#48c0e8"},dust:{n:45,s:0.9,r0:1.5,r1:4,c:"#d9b38c"},aurora:{n:40,s:0.4,r0:2,r1:6,c:"#7dffb0"},meteor:{n:25,s:1.2,r0:1,r1:3,c:"#ffffff"},toxic:{n:50,s:0.5,r0:3,r1:9,c:"#7dff4a"},storm:{n:80,s:1.0,r0:1,r1:2.5,c:"#9fb4d9"},embers:{n:45,s:0.6,r0:1.5,r1:4,c:"#ff6a2a"},honey:{n:30,s:0.4,r0:2,r1:6,c:"#ffc93d"},crystal:{n:55,s:0.8,r0:1,r1:3,c:"#9fe8ff"},eclipse:{n:35,s:0.5,r0:2,r1:5,c:"#b06cff"},void:{n:30,s:0.5,r0:1,r1:4,c:"#3b3bd9"},warp:{n:40,s:1.4,r0:0.8,r1:2,c:"#ffffff"},phoenix:{n:50,s:0.9,r0:1.5,r1:5,c:"#ff4d2a"}};
+,premiere:{n:"🎆 Премьера",bg:"linear-gradient(180deg,#0a0417 0%,#170b33 35%,#2b1055 70%,#451e7a 100%)",fg:"#f7ecd2",acc:"#ffd166"},tlenash:{n:"🌑 Пепел Тлена",r:"promo",bg:"linear-gradient(180deg,#0d0d0f 0%,#1c1410 45%,#2e1a0c 100%)",fg:"#ffe0cc",acc:"#ff7a3a"}};var PROMO_BGS={ny:1,mart:1,leto:1,osen:1,neon:1,pixel:1,blackhole:1,bloodmoon:1,quake:1,drunk:1,deep:1,magma:1,frost:1,candy:1,ufo:1,flash:1,toxiclab:1,rockon:1,timestop:1,topkapi:1,harem:1,bosphor:1,premiere:1,tlenash:1};
+var NEWBGS={sakura:{n:70,s:0.7,r0:2,r1:5,c:"#ffb7d5"},listopad:{n:60,s:0.8,r0:2,r1:6,c:"#ff9a3d"},ocean:{n:35,s:0.6,r0:2,r1:7,c:"#48c0e8"},dust:{n:45,s:0.9,r0:1.5,r1:4,c:"#d9b38c"},aurora:{n:40,s:0.4,r0:2,r1:6,c:"#7dffb0"},meteor:{n:25,s:1.2,r0:1,r1:3,c:"#ffffff"},toxic:{n:50,s:0.5,r0:3,r1:9,c:"#7dff4a"},storm:{n:80,s:1.0,r0:1,r1:2.5,c:"#9fb4d9"},embers:{n:45,s:0.6,r0:1.5,r1:4,c:"#ff6a2a"},honey:{n:30,s:0.4,r0:2,r1:6,c:"#ffc93d"},crystal:{n:55,s:0.8,r0:1,r1:3,c:"#9fe8ff"},eclipse:{n:35,s:0.5,r0:2,r1:5,c:"#b06cff"},void:{n:30,s:0.5,r0:1,r1:4,c:"#3b3bd9"},warp:{n:40,s:1.4,r0:0.8,r1:2,c:"#ffffff"},phoenix:{n:50,s:0.9,r0:1.5,r1:5,c:"#ff4d2a"},tlenash:{n:50,s:0.55,r0:1.2,r1:3.5,c:"#c98a5a"}};
 var BOXTYPES={wood:{n:"Деревянный",price:30,icon:"📦",leg:0.01,tk:[5,15]},
 silver:{n:"Серебряный",price:60,icon:"🎁",leg:0.05,tk:[10,25]},
 gold:{n:"Золотой",price:100,icon:"🏆",leg:0.15,tk:[15,40]},
@@ -338,7 +340,7 @@ var BOSSMAP={};BOSSES.forEach(function(b){BOSSMAP[b[0]]=b;});
 var PETS=[["cat","Кот","common","🐱"],["dog","Пёс","common","🐶"],["rabbit","Кролик","common","🐰"],
 ["wolf","Волк","rare","🐺"],["owl","Сова","rare","🦉"],["zombie","Зомби","rare","🧟"],["rhino","Носорог","rare","🦏"],
 ["golem","Голем","epic","🗿"],["demon","Демон","epic","😈"],["robot","Робот","epic","🤖"],["boar","Кабан","epic","🐗"],
-["phoenix","Феникс","legendary","🔥"],["dragon","Дракон","legendary","🐲"],["alien","Пришелец","legendary","👽"],["sultan","Лошадь Султана","mythic","🐴"]];
+["phoenix","Феникс","legendary","🔥"],["dragon","Дракон","legendary","🐲"],["alien","Пришелец","legendary","👽"],["sultan","Лошадь Султана","mythic","🐴"],["tlenrat","Тленокрыс","mythic","🐀"]];
 var PETMAP={};PETS.forEach(function(p){PETMAP[p[0]]=p;});
 var PETABIL={
 cat:["Девять жизней","уклонение от ответки 15% → 31% с каждой стадией"],
@@ -355,12 +357,13 @@ boar:["Таран","+20% → +40% урона, но ответка босса с�
 phoenix:["Возрождение","возрождение с 50% → 90% HP раз в бой"],
 dragon:["Дыхание","каждый 3-й удар двойной → каждый 2-й"],
 alien:["Аномалия","10% → 30% шанс тройного урона"],
-sultan:["Царская прыть","каждый 2-й удар двойной, +25% → +65% урона, уклонение 25% → 37%"]};var ARTFACTS={cat:{n:"Коготь теней",icon:"🖤"},dog:{n:"Ошейник верности",icon:"🔗"},rabbit:{n:"Лапка прыгучести",icon:"🦵"},wolf:{n:"Клык ярости",icon:"🦷"},owl:{n:"Перо мудрости",icon:"🪶"},zombie:{n:"Проклятый талисман",icon:"💀"},rhino:{n:"Рог-таран",icon:"🦏"},golem:{n:"Каменное сердце",icon:"🪨"},demon:{n:"Кровавый амулет",icon:"🩸"},robot:{n:"Ядро перезарядки",icon:"🔋"},boar:{n:"Клык тарана",icon:"🐗"},phoenix:{n:"Пепел возрождения",icon:"🔥"},dragon:{n:"Чешуя дыхания",icon:"🐲"},alien:{n:"Кристалл аномалии",icon:"💎"},sultan:{n:"Золотая подкова",icon:"🧲"}};
-var ARTBASE={cat:{dodge:15},dog:{weaken:15},rabbit:{xpb:20},wolf:{dmg:10},owl:{xpb:15},zombie:{undead:25},rhino:{weaken:25},golem:{weaken:35},demon:{vamp:2},robot:{dbl:5},boar:{dmg:20,ragel:10},phoenix:{revive:50},dragon:{dbl:3},alien:{tri:10},sultan:{dodge:25,dbl:2,dmg:25}};
+sultan:["Царская прыть","каждый 2-й удар двойной, +25% → +65% урона, уклонение 25% → 37%"],
+tlenrat:["Пожинатель праха","1 🪙 за каждое повторение · уклонение 20% → 40% по стадиям · «Жадные лапки» с 3-й стадии: шанс второй монеты 10% → 20%"]};var ARTFACTS={cat:{n:"Коготь теней",icon:"🖤"},dog:{n:"Ошейник верности",icon:"🔗"},rabbit:{n:"Лапка прыгучести",icon:"🦵"},wolf:{n:"Клык ярости",icon:"🦷"},owl:{n:"Перо мудрости",icon:"🪶"},zombie:{n:"Проклятый талисман",icon:"💀"},rhino:{n:"Рог-таран",icon:"🦏"},golem:{n:"Каменное сердце",icon:"🪨"},demon:{n:"Кровавый амулет",icon:"🩸"},robot:{n:"Ядро перезарядки",icon:"🔋"},boar:{n:"Клык тарана",icon:"🐗"},phoenix:{n:"Пепел возрождения",icon:"🔥"},dragon:{n:"Чешуя дыхания",icon:"🐲"},alien:{n:"Кристалл аномалии",icon:"💎"},sultan:{n:"Золотая подкова",icon:"🧲"},tlenrat:{n:"Хвост-серп",icon:"🌑"}};
+var ARTBASE={cat:{dodge:15},dog:{weaken:15},rabbit:{xpb:20},wolf:{dmg:10},owl:{xpb:15},zombie:{undead:25},rhino:{weaken:25},golem:{weaken:35},demon:{vamp:2},robot:{dbl:5},boar:{dmg:20,ragel:10},phoenix:{revive:50},dragon:{dbl:3},alien:{tri:10},sultan:{dodge:25,dbl:2,dmg:25},tlenrat:{dodge:20}};
 var PAB1={
-cat:{dodge:[15,19,23,27,31]},dog:{coins:[15,19,23,27,30]},rabbit:{xpb:[20,25,30,35,40]},wolf:{dmg:[10,14,18,22,26],exec:20},owl:{night:[40,50,60,70,80]},zombie:{undead:[25,30,35,40,45]},rhino:{weaken:[25,32,39,46,53]},golem:{shield:[20,35,50,65,80]},demon:{vamp:[2,3,4,5,6]},robot:{dbl:[5,4,3,3,2]},boar:{dmg:[20,25,30,35,40],ragel:10},phoenix:{revive:[50,60,70,80,90]},dragon:{dbl:[3,3,3,2,2]},alien:{tri:[10,15,20,25,30]},sultan:{dodge:[25,28,31,34,37],dmg:[25,35,45,55,65],dbl:2}};
+cat:{dodge:[15,19,23,27,31]},dog:{coins:[15,19,23,27,30]},rabbit:{xpb:[20,25,30,35,40]},wolf:{dmg:[10,14,18,22,26],exec:20},owl:{night:[40,50,60,70,80]},zombie:{undead:[25,30,35,40,45]},rhino:{weaken:[25,32,39,46,53]},golem:{shield:[20,35,50,65,80]},demon:{vamp:[2,3,4,5,6]},robot:{dbl:[5,4,3,3,2]},boar:{dmg:[20,25,30,35,40],ragel:10},phoenix:{revive:[50,60,70,80,90]},dragon:{dbl:[3,3,3,2,2]},alien:{tri:[10,15,20,25,30]},sultan:{dodge:[25,28,31,34,37],dmg:[25,35,45,55,65],dbl:2},tlenrat:{dodge:[20,25,30,35,40],repcoin:1}};
 var PAB2={
-cat:{2:{crit:10},3:{vamp:1},4:{tri:10},5:{revive:25}},dog:{2:{xpb:15},3:{crit:10},4:{vamp:2},5:{tri:10}},rabbit:{2:{dodge:5},3:{coins:15},4:{crit:15},5:{tri:10}},wolf:{2:{crit:15},3:{vamp:2},4:{dodge:10},5:{tri:10}},owl:{2:{xpb:10},3:{coins:15},4:{dodge:10},5:{tri:10}},zombie:{2:{vamp:2},3:{dmg:10},4:{tri:10},5:{revive:30}},rhino:{2:{shield:25},3:{dmg:10},4:{tri:10},5:{undead:25}},golem:{2:{weaken:10},3:{tri:10},4:{dmg:10},5:{revive:40}},demon:{2:{vamp:2},3:{crit:15},4:{tri:15},5:{undead:25}},robot:{2:{shield:20},3:{crit:10},4:{tri:10},5:{revive:50}},boar:{2:{crit:15},3:{vamp:3},4:{tri:10},5:{undead:25}},phoenix:{2:{dodge:10},3:{tri:10},4:{vamp:2},5:{undead:30}},dragon:{2:{dmg:15},3:{crit:15},4:{vamp:2},5:{tri:15}},alien:{2:{dodge:5},3:{crit:15},4:{tri:10},5:{undead:25}},sultan:{2:{vamp:2},3:{crit:15},4:{tri:10},5:{revive:30}}};
+cat:{2:{crit:10},3:{vamp:1},4:{tri:10},5:{revive:25}},dog:{2:{xpb:15},3:{crit:10},4:{vamp:2},5:{tri:10}},rabbit:{2:{dodge:5},3:{coins:15},4:{crit:15},5:{tri:10}},wolf:{2:{crit:15},3:{vamp:2},4:{dodge:10},5:{tri:10}},owl:{2:{xpb:10},3:{coins:15},4:{dodge:10},5:{tri:10}},zombie:{2:{vamp:2},3:{dmg:10},4:{tri:10},5:{revive:30}},rhino:{2:{shield:25},3:{dmg:10},4:{tri:10},5:{undead:25}},golem:{2:{weaken:10},3:{tri:10},4:{dmg:10},5:{revive:40}},demon:{2:{vamp:2},3:{crit:15},4:{tri:15},5:{undead:25}},robot:{2:{shield:20},3:{crit:10},4:{tri:10},5:{revive:50}},boar:{2:{crit:15},3:{vamp:3},4:{tri:10},5:{undead:25}},phoenix:{2:{dodge:10},3:{tri:10},4:{vamp:2},5:{undead:30}},dragon:{2:{dmg:15},3:{crit:15},4:{vamp:2},5:{tri:15}},alien:{2:{dodge:5},3:{crit:15},4:{tri:10},5:{undead:25}},sultan:{2:{vamp:2},3:{crit:15},4:{tri:10},5:{revive:30}},tlenrat:{2:{vamp:2},3:{greedy:10},4:{tri:10},5:{revive:30}}};
 function petAbil(p){
   if(p&&(p.stun>0||p.hp<=0))return {};var r={};var st=p.st||1;
   var b=PAB1[p.sp]||{};for(var k in b){var v=b[k];r[k]=Array.isArray(v)?v[Math.min(st,v.length)-1]:v;}
@@ -377,6 +380,7 @@ function petAbil(p){
   if(r.vamp)r.vamp=Math.min(10,r.vamp);
   if(r.xpb)r.xpb=Math.min(100,r.xpb);
   if(r.crit)r.crit=Math.min(60,r.crit);
+  if(r.greedy)r.greedy=Math.min(20,r.greedy);
   return r;}
 function wornArtOf(p){if(!p||!p.id)return null;
   if(STATE.petart&&STATE.petart[p.id]!==undefined)return STATE.petart[p.id]||null;
@@ -393,6 +397,8 @@ function abilTxt(sp,ab){
   if(ab.tri)parts.push(ab.tri+"% шанс тройного урона");
   if(ab.revive)parts.push("возрождение с "+ab.revive+"% HP раз в бой");
   if(ab.crit)parts.push(ab.crit+"% шанс критического удара (двойной урон)");
+  if(ab.repcoin)parts.push("1 🪙 за каждое повторение");
+  if(ab.greedy)parts.push("«Жадные лапки»: шанс второй монеты "+ab.greedy+"%");
   if(ab.coins)parts.push(ab.coins+"% шанс доп. монеты за тренировку");
   if(ab.night)parts.push("+"+ab.night+"% ОП после 21:00");
   if(ab.shield)parts.push("щит "+ab.shield+" HP, восполняется каждый день");
@@ -427,6 +433,53 @@ var PROGS=[
 ["push100","Стодневка отжиманий","Отжимания до 100 за день","pushups"],
 ["pull50","Программа подтягиваний","Подтягивания до 50","pullups"],
 ["abs200","Пресс-машина","Пресс до 200 за день","situps"]];
+// ===== НОЧЬ ТЫКВ (ивент) =====
+var EVEND=new Date(2026,10,2,23,59,59,999).getTime();
+function evActive(){return Date.now()<EVEND&&!STATE.evdone;}
+function evTlen(){if(!STATE.tlen)STATE.tlen={hp:1000,dmg:0,lastday:"",dead:false};return STATE.tlen;}
+function trBonus(){var b={op:0,xp:0};var tr=STATE.trophy||[];
+  if(tr.indexOf("t300")>=0)b.op+=5;
+  if(tr.indexOf("t700")>=0)b.xp+=5;
+  if(tr.indexOf("t1000")>=0){b.op+=5;b.xp+=5;}
+  return b;}
+function evCheck(){
+  if(STATE.evdone)return;
+  if(Date.now()>=EVEND){STATE.evdone=true;
+    if(STATE.pv>0){var c=STATE.pv*2;STATE.pv=0;addTok(c);toast("🧙 Ведьма раздала сдачу: +"+c+" 🪙 (1🎃=2🪙)");}
+    save();}}
+function evTrophyToast(x){
+  var m={300:"🔥 Трофей «Пепельные» — +5% ОП от тренировок",700:"🌙 Трофей «Серп» — +5% опыта",1000:"🏆 Трофей «Убийца Тлена» — +5% ОП и +5% опыта"};
+  toast(m[x]||("Трофей за "+x+" урона!"));}
+function evRep(n){
+  if(!evActive()||n<=0)return;
+  var t=evTlen();if(t.dead)return;
+  STATE.pv=(STATE.pv||0)+n;
+  var pet=STATE.pets&&STATE.pets[STATE.activepet];
+  if(pet){var A=petAbil(pet);
+    if(A.repcoin){var g=A.greedy||0;var ex=n*g/100;
+      var e2=Math.floor(ex)+(Math.random()<(ex-Math.floor(ex))?1:0);
+      if(n+e2>0)addTok(n+e2);}}
+  var dmg=n;
+  if(t.hp>200){var over=t.hp-200;var full=Math.min(dmg,over);dmg=full+(dmg-full)*0.5;}
+  dmg=Math.round(dmg);
+  if(dmg>0){t.hp=Math.max(0,t.hp-dmg);
+    [300,700,1000].forEach(function(x){if(t.dmg<x&&t.dmg+dmg>=x&&STATE.trophy.indexOf("t"+x)<0){STATE.trophy.push("t"+x);evTrophyToast(x);}});
+    t.dmg+=dmg;
+    if(t.hp<=0)evDefeat();}
+  save();}
+function evDefeat(){
+  var t=evTlen();if(t.dead)return;t.dead=true;
+  [300,700,1000].forEach(function(x){if(STATE.trophy.indexOf("t"+x)<0)STATE.trophy.push("t"+x);});
+  var _ri=STATE.pets.findIndex(function(pp){return pp.sp==="tlenrat";});
+  if(_ri<0){if(!STATE.petuid)STATE.petuid=0;STATE.petuid++;var _np={sp:"tlenrat",lvl:1,st:1,xp:0,hp:0,id:"p"+STATE.petuid};_np.hp=petStats(_np).hp;STATE.pets.push(_np);STATE.activepet=STATE.pets.length-1;toast("🐀 Тленокрыс вылез из развалин и стал твоим!");}
+  else{STATE.activepet=_ri;addTok(GIRLDUPS.mythic||1000);toast("🐀 Тленокрыс уже с тобой — активирован");}
+  if(!STATE.girls.peri){STATE.girls.peri=1;toast("🧚 Горб треснул! Кара-Пери освобождена и вступила в гарем!");}
+  if(STATE.ownedbg.indexOf("tlenash")<0){STATE.ownedbg.push("tlenash");toast("🌑 Фон «Пепел Тлена» получен — смотри Настройки");}
+  checkAch();save();render();}
+function evDayTick(){
+  if(!evActive())return;
+  var t=evTlen();if(t.dead||t.hp<=0)return;
+  if(t.lastday!==todayStrYesterday()){t.hp=Math.min(1000,t.hp+50);toast("👹 Панихида: Тлен вернул 50 HP за день без тренировок");save();}}
 </script>
 
 <script>
@@ -441,7 +494,7 @@ friends:"",ach:[],promos:[],dev:false,instant:false,
 wex:[{n:"Отжимания",ex:"pushups",s:3,r:10,rar:"common"},{n:"Подтягивания",ex:"pullups",s:3,r:5,rar:"common"},
 {n:"Пресс",ex:"situps",s:3,r:15,rar:"common"},{n:"Приседания",ex:"squats",s:3,r:20,rar:"common"}],promosUsed:{},upg:{},ovlAt:0,lastBossWin:"",comboWin:0,
 girls:{gul:1},girlxp:{},girlrest:{},girllast:{},girllove:{},glovechk:{},sofa:[],girlfav:"",
-haremEx:["pushups","pullups","situps","squats","run","plank","rope"],htasks:{},htday:""};};
+haremEx:["pushups","pullups","situps","squats","run","plank","rope"],htasks:{},htday:"",pv:0,tlen:null,trophy:[],evdone:false};};
 // ===== КУЗНИЦА =====
 var UPGS={
 multi:{n:"📦 Многодроп",d:"Шанс выбить с босса сразу 2 ящика (+3%/ранг), с 4-го ранга ещё +5% на третий",p:[300,1000,3000,8000,20000],e:function(r){return "шанс 2-го ящика "+(3*r)+"%"+(r>=4?" · 3-го 5%":"");}},
@@ -518,6 +571,9 @@ function loadSave(){
     if(!d.daycounts||typeof d.daycounts!=="object")d.daycounts={};
     if(d.prog&&d.prog.id){var _o=d.prog;d.prog={};d.prog[_o.id]=_o;}
     if(!d.prog||typeof d.prog!=="object"||Array.isArray(d.prog))d.prog={};
+if(d.spintask){if(!d.spintask.rar)d.spintask.rar="common";
+      if(!d.spintask.n||!d.spintask.s)d.spintask=null;}
+    (d.wex||[]).forEach(function(e){if(!e.rar)e.rar="common";});
     STATE=d;updTIERS();
   }catch(e){STATE=DEFS();}
 }
@@ -536,11 +592,12 @@ function newDayCheck(){
       p.sh=A.shield||0;});
     bossDayTick();
     haremDayTick();
+    evDayTick();
     save();}
 }
 function todayStrYesterday(){var d=new Date();d.setDate(d.getDate()+STATE.shift-1);
 return d.getFullYear()+"-"+String(d.getMonth()+1).padStart(2,"0")+"-"+String(d.getDate()).padStart(2,"0");}
-function addXp(n){STATE.xp=Math.max(0,STATE.xp+n);
+function addXp(n){var _tx=trBonus().xp;if(_tx)n=Math.round(n*(1+_tx/100));STATE.xp=Math.max(0,STATE.xp+n);
   try{var d=new Date();d.setDate(d.getDate()+STATE.shift);
   var wd=(d.getDay()+6)%7;STATE.wstats[wd]=(STATE.wstats[wd]||0)+Math.max(0,n);}catch(e){}
   while(STATE.xp>=100){STATE.xp-=100;STATE.lvl++;S("lvlup");toast("🎉 Уровень "+STATE.lvl+"!");}
@@ -1026,6 +1083,7 @@ function petStats(p){
 }
 function petAddXp(n){
   var p=STATE.pets[STATE.activepet];if(!p)return;
+  var _tb=trBonus().op;if(_tb)n=Math.round(n*(1+_tb/100));
   p.xp+=n;
   while(p.lvl<20&&p.xp>=PETXPCUM[p.lvl]-PETXPCUM[p.lvl-1]){p.xp-=(PETXPCUM[p.lvl]-PETXPCUM[p.lvl-1]);p.lvl++;
     if(p.lvl===5||p.lvl===10)toast("✨ "+PETMAP[p.sp][1]+" — эво-способность!");
@@ -1054,7 +1112,7 @@ function openBox(kind,free){
       if(dup){S("dup");var tok=DUPS[rarOf(sp)];addTok(tok);
         showBoxResult(kind,"🐾 Дубликат!",PETMAP[sp][3]+" "+PETMAP[sp][1]+" уже есть → +"+tok+" 🪙");}
       else{S("newpet");if(!STATE.petuid)STATE.petuid=0;STATE.petuid++;var np={sp:sp,lvl:1,st:1,xp:0,hp:0,id:"p"+STATE.petuid};np.hp=petStats(np).hp;STATE.pets.push(np);
-        showBoxResult(kind,"🐾 Новый питомец!",PETMAP[sp][3]+" "+PETMAP[sp][1]+" ("+RAR[rar].n+") — смотри вкладку Питомцы");}
+        showBoxResult(kind,"🐾 Новый питомец!",PETMAP[sp][3]+" "+PETMAP[sp][1]+" ("+rqr(rar).n+") — смотри вкладку Питомцы");}
       STATE.boxhist++;checkAch();save();return;
     }
   }
@@ -1066,7 +1124,7 @@ function openBox(kind,free){
       if(STATE.girls[g2.id]){S("dup");addTok(GIRLDUPS[g2.rar]);
         showBoxResult(kind,"💃 Дубликат!",g2.ic+" "+g2.n+" уже в гареме → +"+GIRLDUPS[g2.rar]+" 🪙");}
       else{S("newpet");STATE.girls[g2.id]=1;
-        showBoxResult(kind,"💃 Новая девушка!",g2.ic+" "+g2.n+" ("+RAR[rar].n+") вступила в гарем!");}
+        showBoxResult(kind,"💃 Новая девушка!",g2.ic+" "+g2.n+" ("+rqr(rar).n+") вступила в гарем!");}
       STATE.boxhist++;checkAch();save();return;
     }
   }
@@ -1083,11 +1141,11 @@ function openBox(kind,free){
   if(!styles.length)styles=BOXSTYLES.filter(function(s){return s[2]===rar;});
   if(!styles.length){
     var tok2=[30,75,180,400][RARORDER.indexOf(rar)];addTok(tok2);
-    showBoxResult(kind,"Все стили есть","Стили редкости "+RAR[rar].n+" уже получены → +"+tok2+" 🪙");
+    showBoxResult(kind,"Все стили есть","Стили редкости "+rqr(rar).n+" уже получены → +"+tok2+" 🪙");
   }else{
     var st=styles[Math.floor(Math.random()*styles.length)];
     STATE.owned.push(st[0]);
-    showBoxResult(kind,"🎨 Новый стиль!",ALLSTYLES[st[0]]+" ("+RAR[rar].n+") — смотри Магазин");
+    showBoxResult(kind,"🎨 Новый стиль!",ALLSTYLES[st[0]]+" ("+rqr(rar).n+") — смотри Магазин");
   }
   var tk1=t.tk[0]+Math.floor(Math.random()*(t.tk[1]-t.tk[0]+1));
   if(upgL("dbl")&&Math.random()<0.10*upgL("dbl")){tk1*=2;toast("✨ Двойное вскрытие: жетоны ×2!");}
@@ -1121,6 +1179,7 @@ function go(t){
 function updHeader(){
   document.getElementById("hlvl").innerHTML="👤 "+STATE.lvl+" ур";
   document.getElementById("htok").innerHTML="🪙 "+STATE.tok;
+  var pe=document.getElementById("hpv");if(pe){var _ea=typeof evActive==="function"&&evActive();pe.style.display=_ea?"":"none";if(_ea)pe.innerHTML="🎃 "+(STATE.pv||0);}
   document.getElementById("hstk").innerHTML="🔥 "+STATE.streak;
   document.getElementById("hpet").innerHTML="🐾 "+STATE.pets.length+"/"+PETS.length;
   var pa=STATE.pets&&STATE.pets[STATE.activepet];
@@ -1223,6 +1282,7 @@ var HELP={
 };
 
 function render(){
+  evCheck();
   var fns={home:tabHome,spin:tabSpin,shop:tabShopNew,
   fight:tabFightNew,prog:tabProg,goals:tabGoals,cal:tabCal,
   stats:tabStatsNew,dev:tabDev,set:tabSetNew,harem:tabHarem};
@@ -2781,7 +2841,7 @@ function doSpin(){
     openModal('<div style="text-align:center"><div style="font-size:54px">🎡</div>'+
     '<h3>Задание дня: '+esc(picked.n)+'</h3>'+
     '<p>'+picked.s+' подхода × '+picked.r+' повторений<br>'+
-    '<span class="pill-r '+RAR[rar].cls+'">'+RAR[rar].n+'</span></p>'+
+    '<span class="pill-r '+rqr(rar).cls+'">'+rqr(rar).n+'</span></p>'+
     '<p class="small">Выполни — получишь +'+RARITYXP[rar]+' ОП, +'+RARITYTK[rar]+' 🪙 и урон текущему боссу!'+(picked.ex?' Сожжёшь ~'+Math.round(KCAL[picked.ex]*userWeight()*picked.s*picked.r)+' ккал.':'')+'</p>'+
     '<button class="btn prim" onclick="closeModal()">В путь!</button></div>');
   },idx);
@@ -2791,15 +2851,15 @@ function completeSpinTask(){
   var total=t.s*t.r;
   addCount(t.ex||("spin_"+t.n),total);
   var _hb=haremBonus();var _m2=Math.random()*100<_hb.dch?2:1;
-  addXp(Math.round(RARITYXP[t.rar]*(1+_hb.xp/100))*_m2);
-  addTok(Math.round(RARITYTK[t.rar]*(1+_hb.tok/100))*_m2);
+  addXp(Math.round(RARITYXP[t.rar||"common"]*(1+_hb.xp/100))*_m2);
+  addTok(Math.round(RARITYTK[t.rar||"common"]*(1+_hb.tok/100))*_m2);
   if(_m2===2)toast("💃 Гарем: двойная награда!");
   var dmg=bossDamage(null,total);
   if(STATE.spinboost){dmg*=2;STATE.spinboost=0;}
   petAddXp(dmg);petAddXp(Math.ceil(total/5));
   if(Math.random()<0.05*(1+0.4*upgL("vein"))){STATE.boxes++;STATE.promosUsed.wheelbox=(STATE.promosUsed.wheelbox||0)+1;checkAch();toast("📦 Колесо выбило ящик!");}
   STATE.spintask=null;save();render();
-  toast("Выполнено! +"+RARITYXP[t.rar]+" ОП, урон боссу "+dmg+" HP");
+  toast("Выполнено! +"+RARITYXP[t.rar||"common"]+" ОП, урон боссу "+dmg+" HP");
 }
 function skipSpinTask(){
   STATE.spintask=null;addXp(-10);STATE.streak=0;save();render();
@@ -2809,17 +2869,18 @@ function skipSpinTask(){
 
 <script>
 function openNews(){
-  var own=STATE.ownedbg.indexOf("premiere")>=0;
-  var h='<div class="card"><h3>📰 FATH-Вестник</h3><p class="sub">Выпуск №1 — 22 октября 2026 · первый выпуск</p></div>';
-  h+='<div class="card"><h3>🎆 Вышла игра!</h3><p>FATH открыт для всех! В честь премьеры — эксклюзивный фон «Премьера»: вечер первого показа, золотые огни и салют в небе. Бери промокод ниже — он открывает фон навсегда.</p></div>';
-  h+='<div class="card"><h3>🔧 Что нового</h3><p>• Нижние вкладки стали крупнее — тапать удобнее<br>• Новый фон «Премьера» с живым салютом<br>• Салют работает легко — телефон не нагревается<br>• Грядущие обновления будут появляться здесь</p></div>';
-  h+='<div class="card"><h3>🎁 Промокод выпуска</h3><p style="font-size:24px;letter-spacing:4px;text-align:center;margin:6px 0"><b>PREMIERA</b></p>';
-  if(own)h+='<button class="btn good" style="width:100%" onclick="closeModal();setBg(\'premiere\')">🎆 Надеть фон</button>';
-  else h+='<button class="btn prim" style="width:100%" onclick="unlockPromoBg(\'premiere\')">🎆 Открыть фон</button>';
-  h+='</div>';
+  var own=STATE.ownedbg.indexOf("tlenash")>=0;
+  var tl=evActive()?evTlen():null;
+  var h='<div class="card"><h3>📰 FATH-Вестник</h3><p class="sub">Выпуск №2 — 23 октября 2026 · «Ночь Тыкв»</p></div>';
+  h+='<div class="card"><h3>🎃 Ночь Тыкв объявлена!</h3><p>В Стамбуле пробудился <b>Горбатый Тлен</b> — тень со спины страшнее, чем сам босс. У него 1000 ХП, и каждое твоё повторение бьёт и его, и обычного босса — независимо от дневного лимита. Бей до полуночи 2 ноября: победа освобождает из треснувшего горба мифика <b>Кара-Пери</b>.</p></div>';
+  if(tl){h+='<div class="card"><h3>👹 Сводка с фронта</h3><p>У Тлена осталось <b>'+tl.hp+'/1000 ХП</b>. Твой вклад: '+tl.dmg+' урона, собрано тыкв: 🎃 '+(STATE.pv||0)+'</p></div>';}
+  h+='<div class="card"><h3>🔧 Что нового</h3><p>• 🎃 Тыквы: капают за каждое повторение<br>• 🧙 Прилавок Ведьмы в Магазине: мешочек монет, фон «Тлеющие угли», легендарный ящик<br>• 🐀 Тленокрыс — мифик-питомец: монеты за повторы и уклонение<br>• 🧚 Кара-Пери: урон по боссам +40→80% и монеты +25→50%<br>• 🌟 Кёсем: починена — её «всё» теперь даёт и урон<br>• 🏆 Полка трофеев в Статистике — награды за урон по Тлену навсегда<br>• 📰 Сама газета переехала на выпуск №2</p></div>';
+  h+='<div class="card"><h3>🎁 Промокод выпуска</h3><p style="font-size:24px;letter-spacing:4px;text-align:center;margin:6px 0"><b>TLIN</b></p>';
+  if(own)h+='<button class="btn good" style="width:100%" onclick="closeModal();setBg(\'tlenash\')">🌑 Надеть фон</button>';
+  else h+='<button class="btn prim" style="width:100%" onclick="unlockPromoBg(\'tlenash\')">🌑 Открыть фон</button>';
+  h+='<p class="small" style="margin-top:8px">Промокод прошлого выпуска <b>PREMIERA</b> тоже ещё работает.</p></div>';
   openModal(h);
-}
-function tabHome(m){
+}function tabHome(m){
   var p=STATE.pets[STATE.activepet];
   var b=BOSSES[STATE.bossIdx];
   var t=STATE.spintask;
@@ -2829,9 +2890,17 @@ function tabHome(m){
   '<div class="stat"><b>'+STATE.tok+'</b><span>жетоны</span></div>'+
   '<div class="stat"><b>'+STATE.streak+'</b><span>стрик</span></div>'+
   '<div class="stat"><b>'+totalRepsToday()+'</b><span>повт. сегодня</span></div></div></div>';
-  h+='<div class="card" onclick="openNews()" style="cursor:pointer;border:1px solid rgba(255,209,102,.4);box-shadow:0 0 14px rgba(255,209,102,.25)"><div class="row" style="align-items:center"><span style="font-size:26px">📰</span><div style="flex:1"><b>FATH-Вестник · выпуск №1</b><div style="color:#c9a86a;font-size:13px">Что нового: крупные вкладки, фон «Премьера» и промокод 🎆</div></div><span style="color:#ffd166;font-size:20px">›</span></div></div>';
+  if(evActive()){var tl=evTlen();
+  var dl=Math.max(0,EVEND-Date.now());var dd=Math.floor(dl/86400000),dh=Math.floor(dl%86400000/3600000);
+  h+='<div class="card" style="border:1px solid rgba(255,122,60,.45);box-shadow:0 0 14px rgba(255,122,60,.25)"><h3>👹 Горбатый Тлен · Ночь Тыкв 🎃</h3>'+
+  '<p class="sub">Каждое повторение бьёт Тлена и обычного босса. Дедлайн: 2 ноября, полночь — осталось '+dd+' дн. '+dh+' ч</p>'+
+  '<div class="row"><div class="bar hpbar" style="flex:1"><div style="width:'+Math.round(100*tl.hp/1000)+'%"></div></div><span class="tag">'+tl.hp+'/1000 HP</span></div>'+
+  '<p class="small" style="margin-top:6px">Тыквы: 🎃 '+(STATE.pv||0)+' · твой урон по Тлену: '+tl.dmg+(tl.dead?' · <b style="color:#4caf7d">Тлен повержен!</b>':'')+'</p>'+
+  '<p class="small">Награды за урон: 300 → 🏆 «Пепельные» (+5% ОП) · 700 → 🏆 «Серп» (+5% XP) · 1000 → 🏆 «Убийца Тлена» (+5% ОП и XP) + 🐀 Тленокрыс + 🧚 Кара-Пери + 🌑 фон «Пепел Тлена»</p>'+
+  '<p class="small">Способности: «Панихида» — за день без тренировок Тлен возвращает 50 HP · «Горб» — последние 200 HP принимают лишь половину урона</p></div>';}
+  h+='<div class="card" onclick="openNews()" style="cursor:pointer;border:1px solid rgba(255,209,102,.4);box-shadow:0 0 14px rgba(255,209,102,.25)"><div class="row" style="align-items:center"><span style="font-size:26px">📰</span><div style="flex:1"><b>FATH-Вестник · выпуск №2</b><div style="color:#c9a86a;font-size:13px">🎃 Ночь Тыкв: Горбатый Тлен (1000 HP), тыквы за повторы, прилавок Ведьмы, трофеи, 🐀 Тленокрыс и 🧚 Кара-Пери</div></div><span style="color:#ffd166;font-size:20px">›</span></div></div>';
   h+='<div class="card"><h3>Задание дня</h3>';
-  if(t){h+='<p><b>'+esc(t.n)+'</b> — '+t.s+'×'+t.r+' <span class="pill-r '+RAR[t.rar].cls+'">'+RAR[t.rar].n+'</span></p>'+
+  if(t){h+='<p><b>'+esc(t.n)+'</b> — '+t.s+'×'+t.r+' <span class="pill-r '+rqr(t.rar).cls+'">'+rqr(t.rar).n+'</span></p>'+
   '<div class="row" style="margin-top:10px"><button class="btn good" onclick="completeSpinTask()">✅ Выполнено</button>'+
   '</div>';}
   else if(spinAvailable())h+='<p class="sub">Крути колесо в «Прокрутке» — получишь задание.</p>'+
@@ -2856,7 +2925,7 @@ function tabSpin(m){
   '<div class="wheelbox"><span class="wpn">▼</span><canvas id="fxcv"></canvas></div>';
   if(STATE.spintask&&!STATE.dev){
     h+='<div style="text-align:center"><p><b>'+esc(STATE.spintask.n)+'</b> '+STATE.spintask.s+'×'+STATE.spintask.r+
-    ' <span class="pill-r '+RAR[STATE.spintask.rar].cls+'">'+RAR[STATE.spintask.rar].n+'</span></p>'+
+    ' <span class="pill-r '+rqr(STATE.spintask.rar).cls+'">'+rqr(STATE.spintask.rar).n+'</span></p>'+
     '<p class="small">Выполни задание — и колесо откроется снова.</p>'+
     '<div class="row" style="justify-content:center;margin-top:10px">'+
     '<button class="btn good" onclick="completeSpinTask()">✅ Выполнено</button></div></div>';
@@ -2893,7 +2962,7 @@ function tabWex(m){
   if(!STATE.wex.length)h+='<p class="sub">Пусто — добавь хотя бы одно!</p>';
   STATE.wex.forEach(function(e,i){
     h+='<div class="list-item"><div><b>'+esc(e.n)+'</b> <span class="small">'+e.s+'×'+e.r+' = '+(e.s*e.r)+' повт.</span><br>'+
-    '<span class="pill-r '+RAR[e.rar].cls+'">'+RAR[e.rar].n+'</span> <span class="small">'+(e.ex?'🔥 ккал считаются':'⚠️ ккал не считаются')+'</span></div>'+
+    '<span class="pill-r '+rqr(e.rar).cls+'">'+rqr(e.rar).n+'</span> <span class="small">'+(e.ex?'🔥 ккал считаются':'⚠️ ккал не считаются')+'</span></div>'+
     '<div class="row"><button class="btn small" onclick="editWex('+i+')">✏️</button>'+
     '<button class="btn small danger" onclick="delWex('+i+')">🗑</button></div></div>';
   });
@@ -2901,7 +2970,7 @@ function tabWex(m){
   m.innerHTML=h;
   var sel=window._wxRar||"common";
   m.querySelector('#wxrars').innerHTML=RARORDER.map(function(r){
-    return '<span class="chip'+(r===sel?' sel':'')+'" onclick="setWexRar(\''+r+'\')">'+RAR[r].n+'</span>';}).join("");
+    return '<span class="chip'+(r===sel?' sel':'')+'" onclick="setWexRar(\''+r+'\')">'+rqr(r).n+'</span>';}).join("");
 }
 function setWexRar(r){window._wxRar=r;render();}
 function addWex(){
@@ -2927,7 +2996,7 @@ function editWex(i){
   '<div class="row" style="margin-top:8px"><p class="small">Подходы</p><input id="ew_s" type="number" value="'+e.s+'">'+
   '<p class="small">Повт.</p><input id="ew_r" type="number" value="'+e.r+'"></div>'+
   '<div class="row" style="margin-top:8px">'+RARORDER.map(function(r){
-  return '<span class="chip'+(r===e.rar?' sel':'')+'" onclick="window._ewRar=\''+r+'\';this.parentNode.querySelectorAll(\'.chip\').forEach(function(c){c.classList.remove(\'sel\')});this.classList.add(\'sel\')">'+RAR[r].n+'</span>';}).join("")+'</div>'+
+  return '<span class="chip'+(r===e.rar?' sel':'')+'" onclick="window._ewRar=\''+r+'\';this.parentNode.querySelectorAll(\'.chip\').forEach(function(c){c.classList.remove(\'sel\')});this.classList.add(\'sel\')">'+rqr(r).n+'</span>';}).join("")+'</div>'+
   '<div class="row" style="margin-top:12px"><button class="btn prim" onclick="saveWex('+i+')">Сохранить</button>'+
   '<button class="btn" onclick="closeModal()">Отмена</button></div>');
   window._ewRar=e.rar;
@@ -2986,7 +3055,7 @@ function boxstylesHtml(){
     var own=STATE.owned.indexOf(st[0])>=0;
     var btn=(own?'<button class="btn small good" onclick="setStyle(\''+st[0]+'\')">Выбрать</button>':
       (STATE.dev?'<button class="btn small prim" onclick="setStyle(\''+st[0]+'\')">Выбрать (дев)</button>':''));
-    h+='<div class="list-item"><div><b>'+esc(st[1])+'</b><br><span class="pill-r '+RAR[st[2]].cls+'">'+RAR[st[2]].n+'</span></div>'+
+    h+='<div class="list-item"><div><b>'+esc(st[1])+'</b><br><span class="pill-r '+rqr(st[2]).cls+'">'+rqr(st[2]).n+'</span></div>'+
     '<div class="row">'+btn+'<button class="btn small" onclick="prevStyle(\''+st[0]+'\')">👁</button></div>'+
     '<span class="tag">'+(own?"есть":"из ящика")+'</span></div>';
   });
@@ -2995,7 +3064,7 @@ function boxstylesHtml(){
 function tabShopNew(m){
   var t=STATE.shopTab||"styles";
   var h='<div class="card"><h3>🛒 Магазин</h3><div class="row">'+
-  [['styles','Стили'],['boxstyles','Ящиковые стили'],['boxes','📦 Ящики'],['forge','⚙️ Кузница']].map(function(x){
+  [['styles','Стили'],['boxstyles','Ящиковые стили'],['boxes','📦 Ящики'],['forge','⚙️ Кузница']].concat(evActive()?[['witch','🧙 Ведьма']]:[]).map(function(x){
   return '<button class="btn small'+(t===x[0]?" prim":"")+'" onclick="setShopTab(\''+x[0]+'\')">'+x[1]+'</button>';}).join("")+'</div></div>';
   if(t==='styles'||t==='boxstyles'){
     h+='<div class="card" id="prevcard" style="position:sticky;top:64px;z-index:5"><h3>Предпросмотр</h3>'+
@@ -3005,10 +3074,30 @@ function tabShopNew(m){
   h+='<div id="shopsub"></div>';
   m.innerHTML=h;
   var sd=m.querySelector('#shopsub');
-  if(t==='boxes'){if(sd){var pv=document.getElementById('prevcard');if(pv)pv.remove();tabBoxes(sd);}}else if(t==='forge'){if(sd){var pv2=document.getElementById('prevcard');if(pv2)pv2.remove();tabForge(sd);}}
+  if(t==='boxes'){if(sd){var pv=document.getElementById('prevcard');if(pv)pv.remove();tabBoxes(sd);}}else if(t==='forge'){if(sd){var pv2=document.getElementById('prevcard');if(pv2)pv2.remove();tabForge(sd);}}else if(t==='witch'){if(sd){var pv3=document.getElementById('prevcard');if(pv3)pv3.remove();witchHtml(sd);}}
   else{if(sd)sd.innerHTML=(t==='styles'?stylesHtml():boxstylesHtml());drawPrev();}
 }
 function setShopTab(t){STATE.shopTab=t;save();render();}
+function witchHtml(el){
+  var a=evActive();
+  var h='<div class="card"><h3>🧙 Прилавок Ведьмы</h3><p class="sub">Валюта — тыквы 🎃: +1 за каждое повторение в Ночь Тыкв. После ивента остатки конвертируются в 🪙 (1🎃=2🪙).</p>';
+  if(a){
+    h+='<div class="list-item"><div><b>🪙 Мешочек монет</b><br><span class="small">+25 🪙 за 10 🎃</span></div><button class="btn small prim" onclick="buyWitch(\'bag\')">10 🎃</button></div>';
+    var emb=STATE.ownedbg.indexOf("embers")>=0;
+    h+='<div class="list-item"><div><b>🌌 Фон «Тлеющие угли»</b><br><span class="small">Эпический фон — после покупки виден в Настройках</span></div><button class="btn small'+(emb?"":" prim")+'" onclick="buyWitch(\'bg\')">'+(emb?"Куплено":"75 🎃")+'</button></div>';
+    h+='<div class="list-item"><div><b>💎 Легендарный ящик</b><br><span class="small">Обычный игровой 💎 ящик с его пулом наград</span></div><button class="btn small prim" onclick="buyWitch(\'leg\')">100 🎃</button></div>';
+    h+='<p class="small">Остаток тыкв: 🎃 '+(STATE.pv||0)+'</p>';
+  } else h+='<p class="sub">Ивент «Ночь Тыкв» завершён — прилавок закрыт до следующего Хэллоуина.</p>';
+  h+='</div>';
+  el.innerHTML=h;
+}
+function buyWitch(w){
+  if(!evActive()){toast("Ивент завершён");return;}
+  if(w==="bag"){if((STATE.pv||0)<10){toast("🎃 Нужно 10 тыкв");return;}STATE.pv-=10;addTok(25);toast("🪙 Ведьма отсчитала 25 монет");render();}
+  else if(w==="bg"){if(STATE.ownedbg.indexOf("embers")>=0){toast("Фон уже куплен");return;}if((STATE.pv||0)<75){toast("🎃 Нужно 75 тыкв");return;}STATE.pv-=75;STATE.ownedbg.push("embers");toast("🌌 Фон «Тлеющие угли» твой — смотри Настройки");save();render();}
+  else if(w==="leg"){if((STATE.pv||0)<100){toast("🎃 Нужно 100 тыкв");return;}STATE.pv-=100;save();openBox("legendary",true);render();}
+}
+
 
 function prevStyle(k){window._shopPrev=k;render();}
 function buyStyle(k){
@@ -3052,7 +3141,7 @@ function doEx(k,n,quick){
   n=Math.max(0,Math.floor(n));
   if(!n)return;
   if(n<0&&((STATE.counts[k]||0)+n<0)){toast("Нельзя уйти в минус");return;}
-  addCount(k,n);
+  addCount(k,n);evRep(n);
   var dmg=bossDamage(k,n);
   if(dmg>0)petAddXp(dmg);
   petAddXp(Math.ceil(n/5));
@@ -3137,7 +3226,7 @@ function atk(k){
   var dmg=bossDamage(k,n);
   if(dmg>0)petAddXp(dmg);
   petAddXp(Math.ceil(n/5));
-  addCount(k,n);
+  addCount(k,n);evRep(n);
   addXp(n);
   save();updHeader();render();
   toast("\u2694\ufe0f Удар: \u2212"+dmg+" HP");
@@ -3162,7 +3251,7 @@ function tabPets(m){
     var wearTxt=worn?('<br>💎 артефакт: <b>'+ARTFACTS[worn].icon+' '+ARTFACTS[worn].n+'</b> (стадия '+(STATE.artcol[worn]||0)+'/5)'):'';
     wearTxt+=(p.hp<=0||p.stun>0)?'<br><span style="color:#ff8080">Бонусы не действуют</span>':'';
     h+='<div class="card"'+((p.hp<=0||p.stun>0)?' style="opacity:.55;filter:grayscale(1)"':'')+'><div class="row">'+info[3]+
-    '<div style="flex:1"><b>'+info[1]+'</b> <span class="pill-r '+RAR[info[2]].cls+'">'+RAR[info[2]].n+'</span><br>'+
+    '<div style="flex:1"><b>'+info[1]+'</b> <span class="pill-r '+rqr(info[2]).cls+'">'+rqr(info[2]).n+'</span><br>'+
     '<span class="small">'+STAGES[p.st-1]+' · ур.'+p.lvl+'/20 · '+STAGEREP[p.st-1]+'<br>Способность: <b>'+PETABIL[p.sp][0]+'</b> — '+abilTxt(p.sp,ab)+wearTxt+'</span></div>'+
     (i===STATE.activepet?(p.hp<=0||p.stun>0?'':'<span class="chip sel">активный</span>'):'<button class="btn small" onclick="setPet('+i+')">Выбрать</button>')+(p.hp<=0||p.stun>0?'<span class="tag" style="background:#7a1f1f;color:#ff4d4d;font-weight:700">деактивен</span>':'')+'</div>'+
     '<div class="row" style="margin-top:6px"><div class="bar hpbar" style="flex:1"><div style="width:'+Math.round(100*Math.min(1,p.hp/st.hp))+'%"></div></div><span class="tag">'+p.hp+'/'+st.hp+' HP</span></div>'+
@@ -3184,7 +3273,7 @@ function petInfo(i){
   var art=wornArtOf(p);
   var T={cat:"живой щит: уклоняется от 15% ответных ударов босса — держи активным в дни боя",dog:"режет ответку босса на 15% — надёжный щит вместе с носорогом и големом",rabbit:"ускоритель ОП: +20% опыта от тренировок — качай его первым",wolf:"+10% урона по боссу — чистое нападение без защиты",owl:"+15% ОП от тренировок — второй ускоритель опыта",zombie:"страховка: 25% шанс пережить смертельный удар с 1 HP",rhino:"режет ответку босса на 25% — сильный щит",golem:"режет ответку босса на 35% — самый крепкий щит в игре",demon:"вампиризм: лечит питомца на 2 HP за удар — для долгих боёв",robot:"ритм: каждый 5-й удар двойной — планируй заходы под ритм, двойной удар даёт и двойной опыт",boar:"+20% урона, но ответка босса сильнее на 10% — бей осторожно",phoenix:"береги на тяжёлые стадии: раз в бой возрождается с 50% HP",dragon:"ритм: каждый 3-й удар двойной — стабильнее робота, двойной удар даёт и двойной опыт",alien:"10% шанс тройного урона — бонус к урону"};
   var L='<h3 style="text-align:center">'+PETMAP[p.sp][3]+' '+esc(PETMAP[p.sp][1])+'</h3>';
-  L+='<p class="small" style="text-align:center"><b>'+RAR[r].n+' · '+STAGES[p.st-1]+' · уровень '+p.lvl+'/20</b>'+(p.stun>0?' · <span style="color:#ff4d4d;font-weight:700">💤 павший, воскреснёт через '+p.stun+' дн.</span>':'')+'</p>';
+  L+='<p class="small" style="text-align:center"><b>'+rqr(r).n+' · '+STAGES[p.st-1]+' · уровень '+p.lvl+'/20</b>'+(p.stun>0?' · <span style="color:#ff4d4d;font-weight:700">💤 павший, воскреснёт через '+p.stun+' дн.</span>':'')+'</p>';
   L+='<p class="small"><b>❤️ HP: '+st.hp+'</b> — база редкости '+base+' × рост уровня +6% × стадия +15%</p>';
   L+='<p class="small"><b>✨ Способность: '+PETABIL[p.sp][0]+'</b> — '+abilTxt(p.sp,petAbil(p))+'</p>';
   L+='<p class="small"><b>💎 Артефакт:</b> '+(art?ARTFACTS[art].icon+' '+ARTFACTS[art].n+' (надет)':'пока не получен — выпадает только жертвой питомца 20+ уровня')+'</p>';
@@ -3327,7 +3416,7 @@ function doProg(id){
   var plan=progPlan(st.base,st.done);
   var reps=0;
   for(var pi=0;pi<plan.length;pi++)reps+=(typeof plan[pi]==="number")?plan[pi]:st.base;
-  addXp(Math.round(reps*xpm));addTok(1);if(coinsB&&Math.random()*100<coinsB)addTok(1);addCount(id,reps);var _pg=PROGS.filter(function(q){return q[0]===id;})[0];if(_pg)calBurn(_pg[3],reps);
+  addXp(Math.round(reps*xpm));addTok(1);if(coinsB&&Math.random()*100<coinsB)addTok(1);addCount(id,reps);evRep(reps);var _pg=PROGS.filter(function(q){return q[0]===id;})[0];if(_pg)calBurn(_pg[3],reps);
   var dmg=bossDamage(id,reps);if(dmg>0)petAddXp(dmg);petAddXp(Math.ceil(reps/5));S("train");
   save();render();toast("💪 Тренировка "+st.done+"/24 · +"+Math.round(40*xpm)+" ОП +1 🪙 · урон боссу "+dmg+" HP");
 }
@@ -3761,6 +3850,7 @@ function applyPromo(){
   else if(vU==="BOSPHOR"){S("promo");unlockPromoBg("bosphor");}
   
   else if(vU==="PREMIERA"){S("promo");unlockPromoBg("premiere");}
+  else if(vU==="TLIN"){S("promo");unlockPromoBg("tlenash");}
   else toast("Неверный промокод");
 }
 function enterDev(){
@@ -3907,8 +3997,30 @@ function tabAbout(m){
   '<p class="small">Версия веб-сборки 5.0</p></div>';
 }
 function tabStatsNew(m){
-  tabStats(m);
-  var ad=document.createElement('div');m.appendChild(ad);tabAch(ad);
+  evCheck();
+  var t=STATE.statTab||"stats";
+  var h='<div class="card"><h3>📊 Статистика</h3><div class="row">'+
+  [['stats','📊 Статистика'],['ach','🏅 Достижения'],['trophy','🏆 Трофеи']].map(function(x){
+  return '<button class="btn small'+(t===x[0]?" prim":"")+'" onclick="setStatTab(\''+x[0]+'\')">'+x[1]+'</button>';}).join("")+'</div></div>';
+  m.innerHTML=h;
+  var wrap=document.createElement('div');m.appendChild(wrap);
+  if(t==='stats')tabStats(wrap);
+  else if(t==='ach')tabAch(wrap);
+  else tabTrophy(wrap);
+}
+function setStatTab(t){STATE.statTab=t;save();render();}
+function tabTrophy(el){
+  var TR={t300:{n:"Пепельные",ic:"🔥",d:"Ночь Тыкв: 300 урона по Горбатому Тлену",b:"+5% ОП от тренировок"},
+    t700:{n:"Серп",ic:"🌙",d:"Ночь Тыкв: 700 урона по Горбатому Тлену",b:"+5% опыта (XP)"},
+    t1000:{n:"Убийца Тлена",ic:"🏆",d:"Ночь Тыкв: 1000 урона или добивание Тлена",b:"+5% ОП и +5% опыта"}};
+  var own=STATE.trophy||[];var b=trBonus();
+  var h='<div class="card"><h3>🏆 Полка трофеев '+own.length+'/∞</h3><p class="sub">Трофеи с ивентов дают пассивные бонусы навсегда. Сейчас работает: +'+b.op+'% ОП, +'+b.xp+'% XP.</p>';
+  Object.keys(TR).forEach(function(k){var tr=TR[k];var has=own.indexOf(k)>=0;
+    h+='<div class="list-item" style="'+(has?'border:1px solid rgba(255,215,80,.4)':'opacity:.55')+'"><div><b>'+(has?tr.ic:'◻')+' '+tr.n+'</b><br><span class="small">'+tr.d+' · <b>'+tr.b+'</b></span></div><div>'+(has?'✅':'—')+'</div></div>';
+  });
+  h+='<div class="list-item" style="opacity:.45"><div><b>◻ Слот будущего трофея</b><br><span class="small">Следующие ивенты будут оставлять свои трофеи на этой полке</span></div><div>—</div></div>';
+  h+='</div>';
+  el.innerHTML=h;
 }
 function tabSetNew(m){
   tabSet(m);
@@ -4047,7 +4159,8 @@ var GIRLS=[
 {id:"nurbanu",n:"Нурбану",ic:"🌙",rar:"epic",price:2600,d:"опыт и лечение питомцев",b:{xp:[35,45,55,65,80],heal:[20,30,40,50,65]}},
 {id:"fahriye",n:"Фахрие-султан",ic:"👑",rar:"legendary",price:4500,d:"монеты и опыт",b:{tok:[40,50,60,72,90],xp:[40,50,60,72,90]}},
 {id:"hurrem",n:"Хюррем",ic:"💃",rar:"legendary",price:5000,d:"монеты с тренировок",b:{tok:[60,70,80,95,110]}},
-{id:"kosem",n:"Кёсем",ic:"🌟",rar:"mythic",price:12000,d:"всё: монеты, опыт, урон",b:{all:[30,36,42,50,60]}}];
+{id:"kosem",n:"Кёсем",ic:"🌟",rar:"mythic",price:12000,d:"всё: монеты, опыт, урон",b:{all:[30,36,42,50,60]}},
+{id:"peri",n:"Кара-Пери",ic:"🧚",rar:"mythic",price:0,d:"урон по боссам и монеты",b:{bdmg:[40,50,60,70,80],tok:[25,30,38,44,50]}}];
 var GIRLMAP={};GIRLS.forEach(function(g){GIRLMAP[g.id]=g;});
 var GIRLRAR={common:0.30,rare:0.25,epic:0.18,legendary:0.08};
 var GIRLDUPS={common:100,rare:250,epic:600,legendary:1200,mythic:2500};
@@ -4074,7 +4187,8 @@ function haremBonus(){var out={tok:0,xp:0,dch:0,heal:0,ign:0,dmg:0};
     if(b.dch)out.dch+=b.dch[ti]*ml;
     if(b.heal)out.heal+=b.heal[ti]*ml;
     if(b.ign)out.ign+=b.ign[ti]*ml;
-    if(b.all){out.tok+=b.all[ti]*ml;out.xp+=b.all[ti]*ml;}});
+    if(b.all){out.tok+=b.all[ti]*ml;out.xp+=b.all[ti]*ml;out.dmg+=b.all[ti]*ml;}
+    if(b.bdmg)out.dmg+=b.bdmg[ti]*ml;});
   return out;}
 function genHaremTasks(){
   STATE.htday=todayStr();STATE.htasks={};
@@ -4125,6 +4239,7 @@ function haremToggleEx(k){
   save();render();}
 function buyGirl(gid){var g=GIRLMAP[gid];
   if(STATE.girls[gid])return;
+  if(gid==="peri"){toast("🧚 Кара-Пери освобождается при победе над Горбатым Тленом!");return;}
   if(STATE.tok<g.price){toast("🪙 Не хватает жетонов: нужно "+g.price);return;}
   addTok(-g.price);STATE.girls[gid]=1;S("newpet");
   if(STATE.htday!==todayStr())genHaremTasks();
@@ -4153,6 +4268,7 @@ function girlBonusText(g,eff){
   if(b.heal)parts.push("лечение "+m(b.heal[ti])+" HP/день");
   if(b.ign)parts.push("игнор урона "+m(b.ign[ti])+"%");
   if(b.all)parts.push("всё +"+m(b.all[ti])+"%");
+  if(b.bdmg)parts.push("урон по боссам +"+m(b.bdmg[ti])+"%");
   return parts.join(" · ");}
 function haremInfoModal(){
   var kinds=["wood","silver","gold","legendary"];
@@ -4161,7 +4277,7 @@ function haremInfoModal(){
   function fmt(v){if(v<=0)return "—";if(v<0.1)return "&lt;0,1";return v.toFixed(1).replace(".",",");}
   var rows="";
   GIRLS.forEach(function(g){
-    rows+="<tr><td style=\"text-align:left;white-space:nowrap\">"+g.ic+" "+g.n+" <span style=\"color:"+RAR[g.rar].c+";font-size:11px\">"+RAR[g.rar].n+"</span></td>";
+    rows+="<tr><td style=\"text-align:left;white-space:nowrap\">"+g.ic+" "+g.n+" <span style=\"color:"+rqr(g.rar).c+";font-size:11px\">"+rqr(g.rar).n+"</span></td>";
     kinds.forEach(function(k){
       var p;
       if(g.rar==="mythic"){var tot=0;["common","rare","epic","legendary"].forEach(function(r){tot+=cntbox[k][r]/12*GIRLRAR[r];});p=(1-EGGCH[k])*(1-tot)*KOSEMCH[k]*100;}
@@ -4180,8 +4296,9 @@ function haremInfoModal(){
     if(g.b.heal)ps.push("лечение питомцев "+arr(g.b.heal)+" HP/день");
     if(g.b.ign)ps.push("питомцы игнорируют урон босса "+arr(g.b.ign)+"%");
     if(g.b.all)ps.push("всё сразу: монеты, опыт и урон +"+arr(g.b.all)+"%");
-    abl+="<div style=\"margin-top:8px;padding:8px 10px;border-left:3px solid "+RAR[g.rar].c+";background:rgba(255,255,255,.03)\">"+
-      "<b>"+g.ic+" "+g.n+"</b> <span style=\"color:"+RAR[g.rar].c+";font-size:11px\">"+RAR[g.rar].n+"</span> <span style=\"color:#9aa;font-size:11px\">"+(g.id==="gul"?"· есть с самого начала":"· найм: "+g.price+" 🪙")+"</span>"+
+    if(g.b.bdmg)ps.push("урон по боссам +"+arr(g.b.bdmg)+"%");
+    abl+="<div style=\"margin-top:8px;padding:8px 10px;border-left:3px solid "+rqr(g.rar).c+";background:rgba(255,255,255,.03)\">"+
+      "<b>"+g.ic+" "+g.n+"</b> <span style=\"color:"+rqr(g.rar).c+";font-size:11px\">"+rqr(g.rar).n+"</span> <span style=\"color:#9aa;font-size:11px\">"+(g.id==="gul"?"· есть с самого начала":(g.id==="peri"?"· освобождается при победе над Горбатым Тленом (Ночь Тыкв)":"· найм: "+g.price+" 🪙"))+"</span>"+
       "<p class=\"small\" style=\"margin-top:4px\">"+g.d+": "+ps.join(" · ")+"</p>"+
       "<p class=\"small\" style=\"margin-top:2px;color:#9aa\">Дубликат из ящика: +"+GIRLDUPS[g.rar]+" 🪙</p></div>";
   });
@@ -4257,14 +4374,14 @@ function tabHarem(m){
   GIRLS.forEach(function(g){
     var own=STATE.girls[g.id];var ti=hTitleIdx(g.id);
     h+='<div style="margin:10px 0;padding-bottom:8px;border-bottom:1px solid rgba(255,255,255,.08)">';
-    h+=g.ic+' <b>'+g.n+'</b> <span style="color:'+RAR[g.rar].c+'">'+RAR[g.rar].n+'</span>';
+    h+=g.ic+' <b>'+g.n+'</b> <span style="color:'+rqr(g.rar).c+'">'+rqr(g.rar).n+'</span>';
     if(own){
       h+='<br><span style="color:'+HTITLEC[ti]+'">'+HTITLES[ti]+'</span> · <span style="color:#9aa">'+girlBonusText(g,false)+'</span>';
       h+='<br><span style="color:#9aa;font-size:12px">Опыт: '+(STATE.girlxp[g.id]||0)+' · ❤️ '+loveOf(g.id)+'/20 (+'+(loveOf(g.id)*loveStep())+'%)'+
       ((STATE.girlrest[g.id]||0)>0?' · 😴 отдых ещё '+STATE.girlrest[g.id]+' дн.':'')+'</span>';
     } else {
       h+='<br><span style="color:#9aa">Бонус: '+girlBonusText(g,false)+'</span>';
-      h+='<br><span style="color:#9aa">Цена найма: '+g.price+' 🪙</span> <button class="btn prim" style="margin-top:4px" onclick="buyGirl(\''+g.id+'\')">Найм</button>';
+      h+='<br><span style="color:#9aa">'+(g.id==="peri"?'Освобождается при победе над Горбатым Тленом (Ночь Тыкв)':'Цена найма: '+g.price+' 🪙')+'</span>'+(g.id==="peri"?'':' <button class="btn prim" style="margin-top:4px" onclick="buyGirl(\''+g.id+'\')">Найм</button>');
     }
     h+='</div>';
   });
