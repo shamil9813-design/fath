@@ -19,6 +19,13 @@
 .pixel-ui::before{content:"";position:fixed;top:0;left:0;right:0;bottom:0;pointer-events:none;z-index:9998;background:radial-gradient(ellipse at center,transparent 55%,rgba(0,0,10,.55) 100%);}
 
 
+/* NEWS GLOW — газета светится, пока выпуск не прочитан */
+@keyframes newsGlow{0%,100%{box-shadow:0 0 10px rgba(255,209,102,.35),inset 0 0 8px rgba(255,209,102,.08);filter:brightness(1)}50%{box-shadow:0 0 26px rgba(255,209,102,.9),0 0 44px rgba(255,160,60,.45),inset 0 0 14px rgba(255,209,102,.16);filter:brightness(1.22)}}
+.news-new{animation:newsGlow 1.6s ease-in-out infinite;border-color:#ffd166 !important}
+.news-new .ff{position:absolute;width:5px;height:5px;border-radius:50%;background:#ffe9a8;box-shadow:0 0 8px 2px rgba(255,209,102,.85);pointer-events:none;opacity:0;animation:ffFloat 4.2s ease-in-out infinite}
+.news-new .sp{position:absolute;color:#fff3c4;text-shadow:0 0 6px rgba(255,209,102,.9);font-size:11px;pointer-events:none;opacity:0;animation:spTw 2.6s ease-in-out infinite}
+@keyframes ffFloat{0%{opacity:0;transform:translate(0,0)}12%{opacity:.95}45%{opacity:.35;transform:translate(14px,-16px)}85%{opacity:.9;transform:translate(26px,-30px)}100%{opacity:0;transform:translate(30px,-38px)}}
+@keyframes spTw{0%,100%{opacity:0;transform:scale(.4) rotate(0)}50%{opacity:1;transform:scale(1.25) rotate(95deg)}}
 /* QUAKE */
 .quake-ui #app{animation:qShake .6s infinite}
 .quake-ui .card,.quake-ui header{animation:qJit .5s infinite}
@@ -364,14 +371,202 @@ var PAB1={
 cat:{dodge:[15,19,23,27,31]},dog:{coins:[15,19,23,27,30]},rabbit:{xpb:[20,25,30,35,40]},wolf:{dmg:[10,14,18,22,26],exec:20},owl:{night:[40,50,60,70,80]},zombie:{undead:[25,30,35,40,45]},rhino:{weaken:[25,32,39,46,53]},golem:{shield:[20,35,50,65,80]},demon:{vamp:[2,3,4,5,6]},robot:{dbl:[5,4,3,3,2]},boar:{dmg:[20,25,30,35,40],ragel:10},phoenix:{revive:[50,60,70,80,90]},dragon:{dbl:[3,3,3,2,2]},alien:{tri:[10,15,20,25,30]},sultan:{dodge:[25,28,31,34,37],dmg:[25,35,45,55,65],dbl:2},tlenrat:{dodge:[20,25,30,35,40],repcoin:1}};
 var PAB2={
 cat:{2:{crit:10},3:{vamp:1},4:{tri:10},5:{revive:25}},dog:{2:{xpb:15},3:{crit:10},4:{vamp:2},5:{tri:10}},rabbit:{2:{dodge:5},3:{coins:15},4:{crit:15},5:{tri:10}},wolf:{2:{crit:15},3:{vamp:2},4:{dodge:10},5:{tri:10}},owl:{2:{xpb:10},3:{coins:15},4:{dodge:10},5:{tri:10}},zombie:{2:{vamp:2},3:{dmg:10},4:{tri:10},5:{revive:30}},rhino:{2:{shield:25},3:{dmg:10},4:{tri:10},5:{undead:25}},golem:{2:{weaken:10},3:{tri:10},4:{dmg:10},5:{revive:40}},demon:{2:{vamp:2},3:{crit:15},4:{tri:15},5:{undead:25}},robot:{2:{shield:20},3:{crit:10},4:{tri:10},5:{revive:50}},boar:{2:{crit:15},3:{vamp:3},4:{tri:10},5:{undead:25}},phoenix:{2:{dodge:10},3:{tri:10},4:{vamp:2},5:{undead:30}},dragon:{2:{dmg:15},3:{crit:15},4:{vamp:2},5:{tri:15}},alien:{2:{dodge:5},3:{crit:15},4:{tri:10},5:{undead:25}},sultan:{2:{vamp:2},3:{crit:15},4:{tri:10},5:{revive:30}},tlenrat:{2:{vamp:2},3:{greedy:10},4:{tri:10},5:{revive:30}}};
-function petAbil(p){
+
+// ===== ПИТОМЦЫ-ТЕНЕЙ: по питомцу за каждого босса, не выпадают из ящиков =====
+var BOSSPETS=[
+["mudpup","Грязезуб","common","🟤","mud"],
+["stonpup","Камнегрыз","common","🪨","stone"],
+["mosspup","Мшистый Клык","common","🌿","forest"],
+["firpup","Искроклык","common","🔥","fire"],
+["icepup","Ледогрыз","common","🧊","ice"],
+["squire","Оруженосец","common","🛡️","knight"],
+["thundup","Громозверь","rare","⚡","dragon"],
+["treas","Казначей","rare","💰","lord"],
+["colosp","Колосс","rare","🌊","colossus"],
+["tyrpup","Око Тирана","rare","👁️","tyrant"],
+["scarep","Пугало","rare","🎃","farmer"],
+["huntp","Ловчий","rare","🏹","hunter"],
+["harpup","Гарпунщик","rare","🪝","maniacs"],
+["minip","Подрывник","epic","💣","sapper"],
+["kidzu","Кидзу","epic","⚔️","samurai"],
+["sergp","Сержант","epic","🎖️","sergeant"],
+["peples","Пепельник","epic","🧟","flzomb"],
+["candl","Проклятая Свеча","epic","🕯️","spirit"],
+["vood","Вуду-Колдун","epic","🔮","shaman"],
+["klonik","Клон-Зверь","epic","🐇","illusion"],
+["vikip","Берсерк","epic","🪓","vikings"],
+["parrot","Корсар","epic","🦜","pirates"],
+["windp","Вихрь","epic","🌬️","windmaster"],
+["yakup","Гюрза","epic","🐍","yakuza"],
+["matrp","Морской Волк","epic","⚓","captain"],
+["bouquet","Терновник","epic","💐","romeo"],
+["skullp","Черепогриз","epic","💀","deadking"],
+["ghostp","Призрак","legendary","👻","ghost"],
+["dronik","Дрон-Охотник","legendary","🛸","engineer"],
+["rockf","Камнепад","legendary","🌋","earthguard"],
+["darkw","Тенекрыл","legendary","🖤","darkknight"],
+["smok","Дымный Фантом","legendary","🗡️","assassin"],
+["potion","Зельевик","legendary","⚗️","alchemist"],
+["botik","Автоматон","legendary","🦾","archibot"],
+["eagle","Орёл Империи","legendary","🦅","emperor"],
+["symbp","Симбионт","legendary","🕷️","symbiote"],
+["hammer","Молотобоец","legendary","🔨","blacksmith"],
+["soulp","Душеед","legendary","🥀","soulmaster"],
+["nazpet","Тень Назгула","mythic","🗡️","nazgul"],
+["yatagan","Ятаган","mythic","🌙","balibey"],
+["strat","Стратаг","mythic","📜","ibrahim"],
+["crescent","Полумесяц","mythic","🌒","mustafa"],
+["barrel","Пороховая Бочка","mythic","🍷","selim"]];
+var BOSSPETMAP={};BOSSPETS.forEach(function(x){PETMAP[x[0]]=x;BOSSPETMAP[x[4]]=x[0];});
+var BOSSPETN=BOSSPETS.length;
+var BPABIL={
+mudpup:["Грязная завеса","ответка босса слабее 10% → 22% с каждой стадией"],
+stonpup:["Осколочный щит","щит 10 → 34 HP, восполняется каждый день"],
+mosspup:["Живой мох","лечит питомца на 1 → 3 HP за удар"],
+firpup:["Искра родителя","+5% → +13% урона по боссу"],
+icepup:["Холодная хватка","ответка босса слабее 8% → 20%"],
+squire:["Долг оруженосца","10% → 26% шанс пережить смертельный удар"],
+thundup:["Малая гроза","каждый 6-й удар двойной → каждый 3-й"],
+treas:["Дань лорду","10% → 22% шанс доп. монеты за тренировку"],
+colosp:["Малая волна","щит 15 → 50 HP, восполняется каждый день"],
+tyrpup:["Взгляд тирана","+8% → +20% урона по боссу"],
+scarep:["Урожай сказок","+10% → +22% ОП от тренировок"],
+huntp:["Клык ловчего","+10% → +22% урона и +10% шанс крита"],
+harpup:["Гарпунный залп","8% → 20% шанс тройного урона"],
+minip:["Осколочная гроза","10% → 26% шанс тройного урона"],
+kidzu:["Иайдо","12% → 32% шанс критического удара"],
+sergp:["Дисциплина","+12% → +28% урона по боссу"],
+peples:["Пепельная нежить","20% → 40% шанс пережить смертельный удар"],
+candl:["Огонёк свечи","2 → 6 HP лечения за удар"],
+vood:["Вуду-оберег","ответка босса слабее 20% → 44%"],
+klonik:["Клон-двойник","уклонение 15% → 31% от ответки"],
+vikip:["Ярость набега","+14% → +30% урона по боссу"],
+parrot:["Пиратская доля","15% → 30% шанс доп. монеты"],
+windp:["Ветряной плащ","уклонение 18% → 34%"],
+yakup:["Укус змеи","12% → 32% шанс крита"],
+matrp:["Матросский щит","щит 20 → 60 HP, восполняется каждый день"],
+bouquet:["Букет страсти","+15% → +35% ОП от тренировок"],
+skullp:["Королевская нежить","25% → 45% шанс пережить смертельный удар"],
+ghostp:["Призрачная форма","уклонение 20% → 40%"],
+dronik:["Меддрон","щит 25 → 72 HP, восполняется каждый день"],
+rockf:["Каменный гнев","+16% → +32% урона по боссу"],
+darkw:["Клинок тьмы","+18% → +38% урона и +10% шанс крита"],
+smok:["Дымовая завеса","уклонение 22% → 38% и +15% шанс крита"],
+potion:["Реагент","3 → 7 HP лечения за удар"],
+botik:["Модульный ритм","каждый 4-й удар двойной → каждый 2-й"],
+eagle:["Имперский клич","+20% → +40% урона и +15% шанс крита"],
+symbp:["Симбиоз","3 → 7 HP лечения за удар и 20% шанс пережить смертельный удар"],
+hammer:["Удар наковальни","+20% → +40% урона по боссу"],
+soulp:["Пожиратель душ","3 → 7 HP лечения за удар и 10% тройной урон"],
+nazpet:["Моргульский клинок","уклонение 25 → 37%, +30 → 70% урона, каждый 3-й удар двойной"],
+yatagan:["Танец ятагана","20 → 44% крит и +20 → 52% урона по боссу"],
+strat:["План битвы","+25 → 57% урона по боссу и +15% шанс крита"],
+crescent:["Последний долг","40 → 80% шанс возрождения раз в бой"],
+barrel:["Султанский пир","4 → 8 HP лечения за удар и 20 → 40% шанс доп. монеты"]};
+var BPAB1={
+mudpup:{weaken:[10,13,16,19,22]},stonpup:{shield:[10,16,22,28,34]},
+mosspup:{vamp:[1,1,2,2,3]},firpup:{dmg:[5,7,9,11,13]},
+icepup:{weaken:[8,11,14,17,20]},squire:{undead:[10,14,18,22,26]},
+thundup:{dbl:[6,5,4,3,3]},treas:{coins:[10,13,16,19,22]},
+colosp:{shield:[15,24,33,42,50]},tyrpup:{dmg:[8,11,14,17,20]},
+scarep:{xpb:[10,13,16,19,22]},huntp:{dmg:[10,13,16,19,22],crit:10},
+harpup:{tri:[8,11,14,17,20]},minip:{tri:[10,14,18,22,26]},
+kidzu:{crit:[12,17,22,27,32]},sergp:{dmg:[12,16,20,24,28]},
+peples:{undead:[20,25,30,35,40]},candl:{vamp:[2,3,4,5,6]},
+vood:{weaken:[20,26,32,38,44]},klonik:{dodge:[15,19,23,27,31]},
+vikip:{dmg:[14,18,22,26,30]},parrot:{coins:[15,19,23,27,30]},
+windp:{dodge:[18,22,26,30,34]},yakup:{crit:[12,17,22,27,32]},
+matrp:{shield:[20,30,40,50,60]},bouquet:{xpb:[15,20,25,30,35]},
+skullp:{undead:[25,30,35,40,45]},ghostp:{dodge:[20,25,30,35,40]},
+dronik:{shield:[25,37,49,61,72]},rockf:{dmg:[16,20,24,28,32]},
+darkw:{dmg:[18,23,28,33,38],crit:10},smok:{dodge:[22,26,30,34,38],crit:15},
+potion:{vamp:[3,4,5,6,7]},botik:{dbl:[4,3,3,2,2]},
+eagle:{dmg:[20,25,30,35,40],crit:15},symbp:{vamp:[3,4,5,6,7],undead:20},
+hammer:{dmg:[20,25,30,35,40]},soulp:{vamp:[3,4,5,6,7],tri:10},
+nazpet:{dodge:[25,28,31,34,37],dmg:[30,40,50,60,70],dbl:3},
+yatagan:{crit:[20,26,32,38,44],dmg:[20,28,36,44,52]},
+strat:{dmg:[25,33,41,49,57],crit:15},crescent:{revive:[40,50,60,70,80]},
+barrel:{vamp:[4,5,6,7,8],coins:[20,25,30,35,40]}};
+var BPAB2={
+mudpup:{2:{vamp:1},3:{crit:5},4:{dodge:5},5:{tri:10}},
+stonpup:{2:{weaken:5},3:{crit:5},4:{dodge:5},5:{tri:10}},
+mosspup:{2:{xpb:5},3:{dodge:5},4:{tri:5},5:{undead:15}},
+firpup:{2:{crit:5},3:{dodge:5},4:{tri:5},5:{vamp:1}},
+icepup:{2:{dodge:5},3:{crit:5},4:{tri:5},5:{vamp:1}},
+squire:{2:{shield:10},3:{crit:5},4:{tri:5},5:{dodge:5}},
+thundup:{2:{dmg:10},3:{crit:10},4:{dodge:5},5:{tri:10}},
+treas:{2:{xpb:10},3:{greedy:5},4:{tri:10},5:{dodge:5}},
+colosp:{2:{weaken:5},3:{crit:5},4:{tri:10},5:{undead:20}},
+tyrpup:{2:{crit:10},3:{exec:15},4:{tri:10},5:{dodge:5}},
+scarep:{2:{coins:10},3:{dodge:5},4:{crit:10},5:{tri:10}},
+huntp:{2:{vamp:2},3:{exec:15},4:{tri:10},5:{dodge:10}},
+harpup:{2:{dmg:10},3:{crit:10},4:{dodge:5},5:{vamp:2}},
+minip:{2:{dmg:10},3:{crit:10},4:{dodge:5},5:{undead:20}},
+kidzu:{2:{dmg:10},3:{vamp:2},4:{tri:15},5:{dodge:10}},
+sergp:{2:{crit:10},3:{exec:20},4:{tri:10},5:{vamp:2}},
+peples:{2:{dmg:10},3:{crit:10},4:{tri:10},5:{revive:25}},
+candl:{2:{xpb:10},3:{dodge:5},4:{tri:10},5:{undead:20}},
+vood:{2:{crit:5},3:{dodge:5},4:{tri:10},5:{vamp:2}},
+klonik:{2:{tri:10},3:{crit:10},4:{xpb:10},5:{undead:20}},
+vikip:{2:{crit:10},3:{vamp:2},4:{tri:10},5:{undead:20}},
+parrot:{2:{dodge:5},3:{greedy:5},4:{tri:10},5:{crit:10}},
+windp:{2:{weaken:5},3:{crit:5},4:{tri:10},5:{xpb:10}},
+yakup:{2:{dmg:10},3:{vamp:2},4:{tri:10},5:{dodge:10}},
+matrp:{2:{weaken:5},3:{crit:5},4:{tri:10},5:{dodge:10}},
+bouquet:{2:{coins:10},3:{dodge:5},4:{crit:10},5:{tri:10}},
+skullp:{2:{dmg:10},3:{crit:10},4:{tri:10},5:{vamp:2}},
+ghostp:{2:{tri:10},3:{crit:10},4:{vamp:2},5:{undead:30}},
+dronik:{2:{vamp:2},3:{crit:10},4:{tri:10},5:{undead:30}},
+rockf:{2:{crit:10},3:{tri:10},4:{vamp:2},5:{exec:25}},
+darkw:{2:{dodge:10},3:{tri:10},4:{vamp:2},5:{undead:30}},
+smok:{2:{dmg:10},3:{tri:10},4:{vamp:2},5:{undead:25}},
+potion:{2:{tri:10},3:{crit:10},4:{dodge:10},5:{undead:30}},
+botik:{2:{shield:25},3:{crit:10},4:{tri:10},5:{undead:30}},
+eagle:{2:{exec:25},3:{tri:15},4:{vamp:2},5:{dodge:10}},
+symbp:{2:{crit:10},3:{tri:10},4:{dodge:10},5:{dmg:15}},
+hammer:{2:{crit:15},3:{tri:10},4:{vamp:2},5:{exec:25}},
+soulp:{2:{crit:10},3:{undead:25},4:{dodge:10},5:{dmg:15}},
+nazpet:{2:{vamp:2},3:{crit:15},4:{tri:15},5:{revive:30}},
+yatagan:{2:{dodge:10},3:{tri:15},4:{vamp:2},5:{revive:30}},
+strat:{2:{exec:25},3:{tri:15},4:{dodge:10},5:{revive:30}},
+crescent:{2:{dmg:15},3:{crit:15},4:{tri:15},5:{undead:30}},
+barrel:{2:{greedy:10},3:{tri:15},4:{dodge:10},5:{revive:30}}};
+var BART={
+mudpup:{n:"Грязевой комок",icon:"🟤"},stonpup:{n:"Осколок стража",icon:"🧱"},
+mosspup:{n:"Мшистый амулет",icon:"🌿"},firpup:{n:"Тлеющий уголь",icon:"🔥"},
+icepup:{n:"Ледяная крошка",icon:"❄️"},squire:{n:"Малый герб",icon:"🛡️"},
+thundup:{n:"Грозовой камертон",icon:"⚡"},treas:{n:"Счётная книга",icon:"📒"},
+colosp:{n:"Волна колосса",icon:"🌊"},tyrpup:{n:"Око тирана",icon:"👁️"},
+scarep:{n:"Соломенный узел",icon:"🎃"},huntp:{n:"Рваная стрела",icon:"🏹"},
+harpup:{n:"Гарпун-оберег",icon:"🪝"},minip:{n:"Осколок мины",icon:"💣"},
+kidzu:{n:"Иайдо-заточка",icon:"⚔️"},sergp:{n:"Патронный крест",icon:"🎖️"},
+peples:{n:"Пепельная капсула",icon:"🧟"},candl:{n:"Свеча духа",icon:"🕯️"},
+vood:{n:"Вуду-куколка",icon:"🔮"},klonik:{n:"Кроличья маска",icon:"🐇"},
+vikip:{n:"Обушок секиры",icon:"🪓"},parrot:{n:"Пиратский свисток",icon:"🦜"},
+windp:{n:"Перо ветра",icon:"🌬️"},yakup:{n:"Змеиная чешуйка",icon:"🐍"},
+matrp:{n:"Якорь капитана",icon:"⚓"},bouquet:{n:"Лепесток страсти",icon:"💐"},
+skullp:{n:"Королевский череп",icon:"💀"},ghostp:{n:"Призрачный плащ",icon:"👻"},
+dronik:{n:"Ядро меддрона",icon:"🛸"},rockf:{n:"Глыба недр",icon:"🌋"},
+darkw:{n:"Клинок тьмы",icon:"🖤"},smok:{n:"Дым-метка",icon:"🗡️"},
+potion:{n:"Флакон алхимика",icon:"⚗️"},botik:{n:"Ядро архибота",icon:"🦾"},
+eagle:{n:"Имперский орёл",icon:"🦅"},symbp:{n:"Хитин симбионта",icon:"🕷️"},
+hammer:{n:"Мини-наковальня",icon:"🔨"},soulp:{n:"Душевный сосуд",icon:"🥀"},
+nazpet:{n:"Кольцо Назгула",icon:"💍"},yatagan:{n:"Рукоять ятагана",icon:"🌙"},
+strat:{n:"Печать Порта",icon:"📜"},crescent:{n:"Полумесяц Мустафы",icon:"🌒"},
+barrel:{n:"Бочка Селима",icon:"🍷"}};
+for(var _bk in BPABIL)PETABIL[_bk]=BPABIL[_bk];
+for(var _b1 in BPAB1)PAB1[_b1]=BPAB1[_b1];
+for(var _b2 in BPAB2)PAB2[_b2]=BPAB2[_b2];
+for(var _ba in BART)ARTFACTS[_ba]=BART[_ba];
+
+function petAbil(p,noArt){
   if(p&&(p.stun>0||p.hp<=0))return {};var r={};var st=p.st||1;
   var b=PAB1[p.sp]||{};for(var k in b){var v=b[k];r[k]=Array.isArray(v)?v[Math.min(st,v.length)-1]:v;}
   var ex=PAB2[p.sp];
   if(ex)for(var s2=2;s2<=st;s2++){var e=ex[s2];if(e)for(var k2 in e)r[k2]=(r[k2]||0)+e[k2];}
-  var worn=(STATE.petart&&p.id&&STATE.petart[p.id]!==undefined)?STATE.petart[p.id]:null;
-  if(worn&&worn!==p.sp&&STATE.artcol&&STATE.artcol[worn]){var wst=STATE.artcol[worn];var av=ARTBASE[worn]||{};
-    for(var k3 in av){var val=Math.round(av[k3]*wst);if(k3==="dbl"||k3==="tri")r[k3]=Math.min(r[k3]||9,val);else r[k3]=(r[k3]||0)+val;}}
+  var worn=wornArtOf(p);
+  if(worn&&!noArt&&STATE.artcol&&STATE.artcol[worn]){var wst=STATE.artcol[worn];var av=artVals(worn,wst);
+    for(var k3 in av){var val=av[k3];if(k3==="dbl"||k3==="tri")r[k3]=Math.min(r[k3]===undefined?9:r[k3],val);else if(k3==="shield")r[k3]=Math.max(r[k3]||0,val);else r[k3]=(r[k3]||0)+val;}}
   if(r.dodge)r.dodge=Math.min(45,r.dodge);
   if(r.weaken)r.weaken=Math.min(60,r.weaken);
   if(r.undead)r.undead=Math.min(60,r.undead);
@@ -381,6 +576,7 @@ function petAbil(p){
   if(r.xpb)r.xpb=Math.min(100,r.xpb);
   if(r.crit)r.crit=Math.min(60,r.crit);
   if(r.greedy)r.greedy=Math.min(20,r.greedy);
+  if(r.revive)r.revive=Math.min(100,r.revive);
   return r;}
 function wornArtOf(p){if(!p||!p.id)return null;
   if(STATE.petart&&STATE.petart[p.id]!==undefined)return STATE.petart[p.id]||null;
@@ -405,6 +601,9 @@ function abilTxt(sp,ab){
   if(ab.exec)parts.push("+"+ab.exec+"% урона, когда у босса меньше половины HP");
   if(ab.ragel)parts.push("ответка босса сильнее на "+ab.ragel+"%");
   return parts.join(", ");}
+function petAbilNoArt(p){return petAbil(p,true);}
+function artLineTxt(sp,stg){var bt=abilTxt(sp,artVals(sp,stg));
+  return ARTFACTS[sp].n+' ('+stg+'/5'+(STATE.artgold&&STATE.artgold[sp]?', 🔨 пепельный +15%':'')+')'+(bt?' — '+bt:'');}
 function artVals(sp,stg){
   var v={};var b=PAB1[sp]||{};
   for(var k in b){var x=b[k];v[k]=Array.isArray(x)?x[Math.min(stg,x.length)-1]:x;}
@@ -417,8 +616,9 @@ function artVals(sp,stg){
   if(v.dmg)v.dmg=Math.min(100,v.dmg);
   if(v.vamp)v.vamp=Math.min(10,v.vamp);
   if(v.xpb)v.xpb=Math.min(100,v.xpb);
+  if(STATE.artgold&&STATE.artgold[sp])for(var kg in v)v[kg]=Math.round(v[kg]*1.15);
+  if(v.revive)v.revive=Math.min(100,v.revive);
   return v;}
-var PETXPCUM=[0,2,7,16,29,45,64,88,114,145,179,216,257,302,350,402,457,516,579,714,861];
 var STAGES=["Малыш","Горячий","Пекловый","Армагедонный","Пепельный"];
 var EX=[["pushups","Отжимания","💪"],["pullups","Подтягивания","🤸"],["situps","Пресс","🔥"],
 ["squats","Приседания","🦵"],["run","Бег (мин)","🏃"],["plank","Планка (сек)","🧘"],
@@ -473,7 +673,7 @@ function evDefeat(){
   var _ri=STATE.pets.findIndex(function(pp){return pp.sp==="tlenrat";});
   if(_ri<0){if(!STATE.petuid)STATE.petuid=0;STATE.petuid++;var _np={sp:"tlenrat",lvl:1,st:1,xp:0,hp:0,id:"p"+STATE.petuid};_np.hp=petStats(_np).hp;STATE.pets.push(_np);STATE.activepet=STATE.pets.length-1;toast("🐀 Тленокрыс вылез из развалин и стал твоим!");}
   else{STATE.activepet=_ri;addTok(GIRLDUPS.mythic||1000);toast("🐀 Тленокрыс уже с тобой — активирован");}
-  if(!STATE.girls.peri){STATE.girls.peri=1;toast("🧚 Горб треснул! Кара-Пери освобождена и вступила в гарем!");}
+  if(!STATE.girls.peri){STATE.girls.peri=1;toast("🧚 Горб треснул! Пайпер Перри освобождена и вступила в гарем!");}
   if(STATE.ownedbg.indexOf("tlenash")<0){STATE.ownedbg.push("tlenash");toast("🌑 Фон «Пепел Тлена» получен — смотри Настройки");}
   checkAch();save();render();}
 function evDayTick(){
@@ -486,7 +686,7 @@ function evDayTick(){
 var SAVEVER=5;
 var DEFS=function(){return{v:SAVEVER,lvl:1,xp:0,tok:0,day:"1970-01-01",shift:0,streak:0,counts:{},total:{},daycounts:{},
 lastspin:"",spinsdone:0,style:"wheel",owned:["wheel"],ownedbg:[],bg:"none",
-pets:[{sp:"cat",lvl:1,st:1,xp:0,hp:60,id:"p0"}],activepet:0,artifacts:0,artcol:{},petart:{},petuid:0,petTab:"pets",snd:true,uiTint:true,
+pets:[{sp:"cat",lvl:1,st:1,xp:0,hp:60,id:"p0"}],activepet:0,artifacts:0,artcol:{},petart:{},petuid:0,petTab:"pets",snd:true,uiTint:true,newsRead:0,
 bossIdx:0,unlocked:0,killed:[],bhp:0,bstage:1,bhit:0,dcount:0,phaseKind:"",
 boxes:0,boxhist:0,eggs:{},prog:null,progday:"",goals:[],gohist:[],week:[],
 wstats:[0,0,0,0,0,0,0],bmi:{h:0,w:0,wh:[]},cal:{norm:0,eaten:[]},
@@ -806,7 +1006,7 @@ function petHitSimple(n,msg){var p=STATE.pets[STATE.activepet];if(!p||p.hp<=0||n
  p.hp=Math.max(0,p.hp-c);S("reply");toast(msg);
  if(p.hp===0){
   if(A.undead&&Math.random()*100<A.undead){p.hp=1;toast("🧟 "+PETMAP[p.sp][1]+" пережил смертельный удар с 1 HP!");}
-  else if(A.revive&&!p.revUsed){p.revUsed=true;p.hp=Math.round(petStats(p).hp*A.revive/100);toast("🔥 "+PETMAP[p.sp][1]+" возродился!");}
+  else if(A.revive&&!p.revUsed){p.revUsed=true;p.hp=Math.min(petStats(p).hp,Math.round(petStats(p).hp*A.revive/100));toast("🔥 "+PETMAP[p.sp][1]+" возродился!");}
   else{p.stun=7;S("death");toast("💀 "+PETMAP[p.sp][1]+" павший! Без сознания 7 дней");}}}
 function bossThreshold(prev){var b=BOSSES[STATE.bossIdx],s=STATE.bstage,B=bosex(),max=bossMaxHp(),id=b[0];
  if(max<=0)return;
@@ -877,8 +1077,8 @@ function bossAbilityInfo(){var b=BOSSES[STATE.bossIdx],s=STATE.bstage,B=bosex();
 function bossInfoModal(){var b=BOSSES[STATE.bossIdx],s=STATE.bstage,B=bosex(),e=BEX[b[0]],it=BITEMS[b[0]],max=bossMaxHp(),hp=Math.max(0,STATE.bhp||max),id=b[0],k=b[4];
  var L='<h3 style="text-align:center">ℹ️ Инструкция: '+esc(b[1])+'</h3>';
  L+='<p class="small" style="text-align:center"><b>Стадия '+s+'/5 · HP '+hp+'/'+max+' ('+Math.round(100*hp/max)+'%)</b></p>'
-+'<p class="small"><b>🏆 Награда за победу:</b> '+Math.round(50*(STATE.bossIdx+1)*(1+(STATE.bstage-1)*0.5))+' 🪙 + '+(50*STATE.bstage)+' ОП, шанс 10% выбить 💤 ящик. Награда растёт со стадией: монеты ×(1+0.5·(стадия−1)), опыт = 50×стадия.</p>'
-+'<p class="small">После победы: '+(STATE.bossIdx<BOSSES.length-1?'следующий босс, стадия сбрасывается на 1-ю':(STATE.bstage>=5?'круг завершится и начнётся заново с 1-го босса':'стадия станет '+(STATE.bstage+1)+'-й, бои пойдут с 1-го босса'))+'.</p>';
++'<p class="small"><b>🏆 Награда за победу:</b> '+Math.round(50*(STATE.bossIdx+1)*(1+(STATE.bstage-1)*0.5))+' 🪙 + '+(50*STATE.bstage)+' ОП, шанс 10% выбить 💤 ящик. Награда растёт со стадией: монеты ×(1+0.5·(стадия−1)), опыт = 50×стадия.</p><p class="small">🐾 <b>Тень босса:</b> '+(BOSSPETMAP[b[0]]?PETMAP[BOSSPETMAP[b[0]]][1]+' ('+rqr(PETMAP[BOSSPETMAP[b[0]]][2]).n+') — гарантированно с первой победы. Повторы дают жетоны по редкости':'у Султана Сулеймана — Лошадь Султана')+'</p>'
++'<p class="small">После победы: '+(STATE.bossIdx<BOSSES.length-1?'следующий босс, стадия сохраняется':(STATE.bstage>=5?'круг завершится и начнётся заново с 1-го босса':'стадия станет '+(STATE.bstage+1)+'-й, бои пойдут с 1-го босса'))+'.</p>';
  L+='<p class="small"><b>1) Как считается твой удар.</b> 1 повторение = 1 урон, но за один заход действуют пороги: первые 50 повторений — полная сила, 51–100 — ×0.7, 101–150 — ×0.5, свыше 150 — ×0.3. Пример: 4 захода по 50 дадут 200 урона, а один заход на 200 — всего 125.<br>• <b>Главное правило:</b> бей заходами по ≤50 повторений — так выжимаешь максимум из того же объёма.</p>';
  var g=[];
  if(s>=2)g.push('🔥 каждая 10-я подача дня сгорает без урона (до сгорания осталось подач: '+(10-((STATE.burnn||0)%10))+' из 10)');
@@ -1045,7 +1245,7 @@ function applyBossDamage(dmg){
     if(A.vamp&&p.hp>0)p.hp=Math.min(petStats(p).hp,p.hp+A.vamp);
     if(p.hp===0){
       if(A.undead&&Math.random()*100<A.undead){p.hp=1;toast("🧟 "+PETMAP[p.sp][1]+" пережил смертельный удар с 1 HP!");}
-      else if(A.revive&&!p.revUsed){p.revUsed=true;p.hp=Math.round(petStats(p).hp*A.revive/100);toast("🔥 "+PETMAP[p.sp][1]+" возродился!");}
+      else if(A.revive&&!p.revUsed){p.revUsed=true;p.hp=Math.min(petStats(p).hp,Math.round(petStats(p).hp*A.revive/100));toast("🔥 "+PETMAP[p.sp][1]+" возродился!");}
       else{p.stun=7;S("death");toast("💀 "+PETMAP[p.sp][1]+" павший! Без сознания 7 дней");}}}
   bossThreshold(prevhp);
   if(STATE.bhp<=0)defeatBoss();
@@ -1056,6 +1256,13 @@ function defeatBoss(){
   var reward=50*(STATE.bossIdx+1)*(1+(STATE.bstage-1)*0.5);
   addTok(Math.round(reward));addXp(50*STATE.bstage);
   if(STATE.killed.indexOf(BOSSES[STATE.bossIdx][0])<0)STATE.killed.push(BOSSES[STATE.bossIdx][0]);
+var _bid=BOSSES[STATE.bossIdx][0];
+  if(BOSSPETMAP[_bid]){
+    var _sp=BOSSPETMAP[_bid],_ei=STATE.pets.findIndex(function(pp){return pp.sp===_sp;});
+    if(_ei<0){STATE.petuid=(STATE.petuid||0)+1;var _np={sp:_sp,lvl:1,st:1,xp:0,hp:0,id:"p"+STATE.petuid};_np.hp=petStats(_np).hp;STATE.pets.push(_np);STATE.activepet=STATE.pets.length-1;
+      toast("🐾 "+PETMAP[_sp][3]+" "+PETMAP[_sp][1]+" — тень поверженного босса ("+rqr(PETMAP[_sp][2]).n+") — твой!");}
+    else{var _tk=DUPS[rarOf(_sp)]||30;addTok(_tk);toast("🐾 "+PETMAP[_sp][1]+" уже в конюшне → +"+_tk+" 🪙");}
+  }
   if(BOSSES[STATE.bossIdx][0]==="suleiman"){var _si=STATE.pets.findIndex(function(pp){return pp.sp==="sultan";});if(_si<0){if(!STATE.petuid)STATE.petuid=0;STATE.petuid++;var _np={sp:"sultan",lvl:1,st:1,xp:0,hp:0,id:"p"+STATE.petuid};_np.hp=petStats(_np).hp;STATE.pets.push(_np);STATE.activepet=STATE.pets.length-1;toast("🐴 Лошадь Султана вступает в строй! Мифический питомец активирован");}else{STATE.activepet=_si;addTok(DUPS.mythic||1000);toast("🐴 Лошадь Султана уже в конюшне — активирован, +1000 🪙");}}
   if(STATE.bossIdx+1>STATE.unlocked)STATE.unlocked=Math.min(STATE.bossIdx+1,BOSSES.length-1);
   if(STATE.week&&typeof STATE.week==="object"&&!Array.isArray(STATE.week))STATE.week.boss=(STATE.week.boss||0)+1;
@@ -1067,9 +1274,9 @@ function defeatBoss(){
   if(window._ovkExtra&&upgL("ovk")>0){var _ov=window._ovkExtra;window._ovkExtra=0;var _cap=100*upgL("ovk");if(_ov>_cap)_ov=_cap;if(_ov>0){addTok(_ov);toast("💥 Оверкилл: +"+_ov+" 🪙");}}
   STATE.bossday=todayStr();
   STATE.pets.forEach(function(pp){pp.revUsed=false;});
-  if(STATE.bossIdx<BOSSES.length-1){STATE.bossIdx++;STATE.bstage=1;}
+  if(STATE.bossIdx<BOSSES.length-1){STATE.bossIdx++;}
   else if(STATE.bstage>=5){STATE.bstage=1;STATE.bossIdx=0;toast("🔁 Круг завершён! Начинается новый круг");}
-  else{STATE.bstage++;STATE.bossIdx=0;toast("⬆️ Новая стадия боссов: "+["Горячая","Пекловая","Армагедонская","Пепельная"][STATE.bstage-1]);}
+  else{STATE.bstage++;STATE.bossIdx=0;toast("⬆️ Новая стадия боссов: "+["","Горячая","Пекловая","Армагедонская","Пепельная"][STATE.bstage-1]);}
   STATE.bhp=bossMaxHp();resetBosex();
   toast("🏆 Босс повержен! +"+Math.round(reward)+" 🪙");checkAch();save();
 }
@@ -1079,19 +1286,33 @@ var STAGEREP=["база","+25% силы и HP","+50% силы и HP","+75% си�
 function rarOf(sp){return PETMAP[sp]?PETMAP[sp][2]:"common";}
 function petStats(p){
   var r=rarOf(p.sp);var base={common:60,rare:90,epic:130,legendary:180,mythic:260}[r];
-  var sm=1+0.15*(p.st-1);return{hp:Math.round(base*(1+0.06*(p.lvl-1))*sm),dmg:rarOf(p.sp)==="mythic"?2+0.35*(p.st-1)+0.02*p.lvl:1+0.25*(p.st-1)+0.01*p.lvl};
+  var sm=1+0.15*(p.st-1);return{hp:Math.round(base*(1+0.03*(p.lvl-1))*sm),dmg:rarOf(p.sp)==="mythic"?2+0.35*(p.st-1)+0.01*p.lvl:1+0.25*(p.st-1)+0.01*p.lvl};
 }
+function petNeedFor(p,l){
+  var full={common:1300,rare:1700,epic:2200,legendary:3000,mythic:4500}[rarOf(p.sp)]||1300;
+  return Math.max(1,Math.round(full*(1+0.12*(l-1))/190.12));}
+function petNeed(l){return petNeedFor(STATE.pets[STATE.activepet],l);}
+function petEvolve(p){
+  var ns=Math.min(5,Math.floor(p.lvl/10)+1);
+  if(ns>p.st){p.st=ns;p.hp=petStats(p).hp;toast("✨ "+PETMAP[p.sp][1]+" эволюционировал: "+STAGES[p.st-1]+"!");}
+  var as=Math.min(5,Math.floor(p.lvl/10));
+  STATE.artcol=STATE.artcol||{};
+  var was=STATE.artcol[p.sp]||0;
+  if(as>was){STATE.artcol[p.sp]=as;
+    toast(was?"💎 "+ARTFACTS[p.sp].n+" — стадия "+as+"/5!":"💎 Получен артефакт: "+ARTFACTS[p.sp].n+" ("+as+"/5)!");}
+  if(p.lvl===50){STATE.artgold=STATE.artgold||{};
+    if(!STATE.artgold[p.sp]){STATE.artgold[p.sp]=1;toast("🔨 "+ARTFACTS[p.sp].n+" перекован в пепельный: +15% ко всем цифрам!");}}}
 function petAddXp(n){
   var p=STATE.pets[STATE.activepet];if(!p)return;
   var _tb=trBonus().op;if(_tb)n=Math.round(n*(1+_tb/100));
   p.xp+=n;
-  while(p.lvl<20&&p.xp>=PETXPCUM[p.lvl]-PETXPCUM[p.lvl-1]){p.xp-=(PETXPCUM[p.lvl]-PETXPCUM[p.lvl-1]);p.lvl++;
-    if(p.lvl===5||p.lvl===10)toast("✨ "+PETMAP[p.sp][1]+" — эво-способность!");
-    if(p.lvl===20)toast("⭐ "+PETMAP[p.sp][1]+" готов к жертве!");}
+  while(p.lvl<50&&p.xp>=petNeed(p.lvl)){p.xp-=petNeed(p.lvl);p.lvl++;
+    if(p.lvl===10)toast("✨ "+PETMAP[p.sp][1]+" — эво-способность!");
+    if(p.lvl%10===0)petEvolve(p);}
   save();
 }
 function petSubXp(n){n=Math.max(0,Math.floor(n));var p=STATE.pets[STATE.activepet];if(!p||!n)return;
-  p.xp-=n;while(p.xp<0&&p.lvl>1){p.lvl--;p.xp+=(PETXPCUM[p.lvl]-PETXPCUM[p.lvl-1]);}
+  p.xp-=n;while(p.xp<0&&p.lvl>1){p.lvl--;p.xp+=petNeedFor(p,p.lvl);}
   if(p.xp<0)p.xp=0;save();
 }
 // ===== ЯЩИКИ =====
@@ -1181,7 +1402,7 @@ function updHeader(){
   document.getElementById("htok").innerHTML="🪙 "+STATE.tok;
   var pe=document.getElementById("hpv");if(pe){var _ea=typeof evActive==="function"&&evActive();pe.style.display=_ea?"":"none";if(_ea)pe.innerHTML="🎃 "+(STATE.pv||0);}
   document.getElementById("hstk").innerHTML="🔥 "+STATE.streak;
-  document.getElementById("hpet").innerHTML="🐾 "+STATE.pets.length+"/"+PETS.length;
+  document.getElementById("hpet").innerHTML="🐾 "+STATE.pets.length+"/"+(PETS.length+BOSSPETN);
   var pa=STATE.pets&&STATE.pets[STATE.activepet];
   var hh=document.getElementById("hhp");
   if(pa){var mxh=petStats(pa).hp;if(pa.hp>mxh)pa.hp=mxh;
@@ -1257,7 +1478,7 @@ var HELP={
   "ex":{t:"💪 Упражнения",d:"Пороги ярусов силы: 50/100/150 повторений, множители прогресса дальше — 100%/70%/50%/30%. Улучшение «Лом тиражей» снижает пороги, «Сглаживание» смягчает падение множителей."},
   "wheel":{t:"🎡 Прокрутка",d:function(){var r=rankOf("");var sh=Math.round(50*(1+0.4*r))/10;return "🎡 Прокрутка колеса даёт случайную награду.\n\nШанс выпадения ящика: базово 5%. С Золотой жилой (ранг "+r+"/5) — "+sh+"%.\n\nСектор колеса можно менять в Конструкторе.";}},
   "builder":{t:"🛠 Конструктор",d:"Настройте собственное колесо: добавляйте и убирайте сектора, меняйте награды. Сохранённое колесо используется в Прокрутке."},
-  "pets":{t:"🐾 Питомцы",d:"Питомцы выпадают из ящиков при вскрытии: шанс 10/13/17/20% у Деревянного/Серебряного/Золотого/Легендарного (питомец берётся из пула редкости ящика). Дубликат превращается в жетоны: 30/75/180/400 🪙. Кормления в игре нет — опыт питомец получает от тренировки по программе (+8 ОП), записанных повторений (+1 ОП за каждые 5) и урона по боссу (1 ОП за единицу урона). Максимум 20 уровень: на 5-м и 10-м открываются эво-способности, на 20-м питомец готов к Жертве — переходу на следующую стадию силы. Питомцы дают бонусы и участвуют в боях. Держать можно до 14."},
+  "pets":{t:"🐾 Питомцы",d:"Питомцы выпадают из ящиков при вскрытии: шанс 10/13/17/20% у Деревянного/Серебряного/Золотого/Легендарного (питомец берётся из пула редкости ящика). Дубликат превращается в жетоны: 30/75/180/400 🪙. Кормления в игре нет — опыт питомец получает от тренировки по программе (+8 ОП), записанных повторений (+1 ОП за каждые 5) и урона по боссу (1 ОП за единицу урона). Максимум 50 уровень, жертвоприношения больше нет: каждые 10 уровней — эволюция в следующую стадию и усиление артефакта (на 10-м появляется, на 50-м перековывается в пепельный). На 5-м и 10-м открываются эво-способности. Питомцы дают бонусы и участвуют в боях. Держать можно до 14. У каждого босса арены (44 босса) есть свой питомец-тень — гарантированная награда за первую победу. Тени не выпадают из ящиков и имеют свои артефакты. Повторные победы над боссом дают жетоны по редкости его тени."},
   "boxes":{t:"📦 Ящики",d:function(){var r=rankOf("");var sh=Math.round(50*(1+0.4*r))/10;return "📦 Ящики — главный источник наград.\n\nЦены: Деревянный 30 🪙, Серебряный 60, Золотой 100, Легендарный 200.\nШанс легендарной награды: 1/5/15/50%.\nЖетоны: 5–15/10–25/15–40/25–50.\nШанс питомца: 10/13/17/20%.\n\nЯщик может выпасть и с колеса: базово 5%, с вашей Золотой жилой (ранг "+r+") — "+sh+"%.";}},
   "mile":{t:"🏆 Вехи повторений",d:"Награды за накопленные повторения в упражнениях. Улучшение «Лом вех» снижает пороги — вехи доходятся раньше."},
   "battle":{t:"⚔️ Битва",d:function(){var r=rankOf("");var sh=Math.round(100*(1+0.4*r))/10;return "⚔️ Битва с боссом.\n\n• Удар наносит урон — сила зависит от упражнений.\n• Победа даёт награду и шанс дропа: базово 10%, с Золотой жилой (ранг "+r+"/5) — "+sh+"%.\n• Перегрузка ×2: удваивает следующий удар и ответку; кулдаун 24ч минус 4ч за ранг улучшения часов.\n• Питомец, павший в бою, восстанавливается за 7 дней и возвращается с полным HP.";}},
@@ -2869,12 +3090,14 @@ function skipSpinTask(){
 
 <script>
 function openNews(){
+  if((STATE.newsRead||0)<3){STATE.newsRead=3;save();var _nc=document.getElementById("newsCard");if(_nc)_nc.classList.remove("news-new");}
   var own=STATE.ownedbg.indexOf("tlenash")>=0;
   var tl=evActive()?evTlen():null;
-  var h='<div class="card"><h3>📰 FATH-Вестник</h3><p class="sub">Выпуск №2 — 23 октября 2026 · «Ночь Тыкв»</p></div>';
-  h+='<div class="card"><h3>🎃 Ночь Тыкв объявлена!</h3><p>В Стамбуле пробудился <b>Горбатый Тлен</b> — тень со спины страшнее, чем сам босс. У него 1000 ХП, и каждое твоё повторение бьёт и его, и обычного босса — независимо от дневного лимита. Бей до полуночи 2 ноября: победа освобождает из треснувшего горба мифика <b>Кара-Пери</b>.</p></div>';
+  var h='<div class="card"><h3>📰 FATH-Вестник</h3><p class="sub">Выпуск №3 — 27 октября 2026 · «Тени боссов»</p></div>';
+  h+='<div class="card" style="border-color:rgba(255,213,74,.5)"><h3>🆕 Обновление «Тени боссов»</h3><p>• 🐾 <b>+43 питомца</b>: тени поверженных боссов — сокрушаешь босса, его тень переходит в твою конюшню. За уже побеждённых боссов тени выдаются автоматически при первом запуске обновления<br>• 💎 <b>59 артефактов</b>: появляются на 10-м уровне питомца, крепнут с эволюцией, на 50-м перековываются в пепельные (+15%)<br>• 📈 Прокачка питомцев теперь до <b>50-го уровня</b> и 5 стадий — жертва отменена<br>• ⚔️ Артефакт в бою даёт ровно те цифры, что написаны на его карточке<br>• 📚 Конюшня и вкладка артефактов отсортированы по редкости — активный всегда сверху<br>• ℹ️ Клавиша I: подробности питомца — способность, артефакт и бонус гарема раздельно<br>• 🔥 Возрождение приведено к потолку: максимум 100% HP<br>• 🎭 Кара-Пери сменила имя — теперь она <b>Пайпер Перри</b> (способности прежние, сейв совместим)</p></div>';
+  h+='<div class="card"><h3>🎃 Ночь Тыкв объявлена!</h3><p>В Стамбуле пробудился <b>Горбатый Тлен</b> — тень со спины страшнее, чем сам босс. У него 1000 ХП, и каждое твоё повторение бьёт и его, и обычного босса — независимо от дневного лимита. Бей до полуночи 2 ноября: победа освобождает из треснувшего горба мифика <b>Пайпер Перри</b>.</p></div>';
   if(tl){h+='<div class="card"><h3>👹 Сводка с фронта</h3><p>У Тлена осталось <b>'+tl.hp+'/1000 ХП</b>. Твой вклад: '+tl.dmg+' урона, собрано тыкв: 🎃 '+(STATE.pv||0)+'</p></div>';}
-  h+='<div class="card"><h3>🔧 Что нового</h3><p>• 🎃 Тыквы: капают за каждое повторение<br>• 🧙 Прилавок Ведьмы в Магазине: мешочек монет, фон «Тлеющие угли», легендарный ящик<br>• 🐀 Тленокрыс — мифик-питомец: монеты за повторы и уклонение<br>• 🧚 Кара-Пери: урон по боссам +40→80% и монеты +25→50%<br>• 🌟 Кёсем: починена — её «всё» теперь даёт и урон<br>• 🏆 Полка трофеев в Статистике — награды за урон по Тлену навсегда<br>• 📰 Сама газета переехала на выпуск №2</p></div>';
+  h+='<div class="card"><h3>🔧 Выпуск №2 — что было</h3><p>• 🎃 Тыквы: капают за каждое повторение<br>• 🧙 Прилавок Ведьмы в Магазине: мешочек монет, фон «Тлеющие угли», легендарный ящик<br>• 🐀 Тленокрыс — мифик-питомец: монеты за повторы и уклонение<br>• 🧚 Пайпер Перри: урон по боссам +40→80% и монеты +25→50%<br>• 🌟 Кёсем: починена — её «всё» теперь даёт и урон<br>• 🏆 Полка трофеев в Статистике — награды за урон по Тлену навсегда<br>• 📰 Сама газета переехала на выпуск №2</p></div>';
   h+='<div class="card"><h3>🎁 Промокод выпуска</h3><p style="font-size:24px;letter-spacing:4px;text-align:center;margin:6px 0"><b>TLIN</b></p>';
   if(own)h+='<button class="btn good" style="width:100%" onclick="closeModal();setBg(\'tlenash\')">🌑 Надеть фон</button>';
   else h+='<button class="btn prim" style="width:100%" onclick="unlockPromoBg(\'tlenash\')">🌑 Открыть фон</button>';
@@ -2896,9 +3119,11 @@ function openNews(){
   '<p class="sub">Каждое повторение бьёт Тлена и обычного босса. Дедлайн: 2 ноября, полночь — осталось '+dd+' дн. '+dh+' ч</p>'+
   '<div class="row"><div class="bar hpbar" style="flex:1"><div style="width:'+Math.round(100*tl.hp/1000)+'%"></div></div><span class="tag">'+tl.hp+'/1000 HP</span></div>'+
   '<p class="small" style="margin-top:6px">Тыквы: 🎃 '+(STATE.pv||0)+' · твой урон по Тлену: '+tl.dmg+(tl.dead?' · <b style="color:#4caf7d">Тлен повержен!</b>':'')+'</p>'+
-  '<p class="small">Награды за урон: 300 → 🏆 «Пепельные» (+5% ОП) · 700 → 🏆 «Серп» (+5% XP) · 1000 → 🏆 «Убийца Тлена» (+5% ОП и XP) + 🐀 Тленокрыс + 🧚 Кара-Пери + 🌑 фон «Пепел Тлена»</p>'+
+  '<p class="small">Награды за урон: 300 → 🏆 «Пепельные» (+5% ОП) · 700 → 🏆 «Серп» (+5% XP) · 1000 → 🏆 «Убийца Тлена» (+5% ОП и XP) + 🐀 Тленокрыс + 🧚 Пайпер Перри + 🌑 фон «Пепел Тлена»</p>'+
   '<p class="small">Способности: «Панихида» — за день без тренировок Тлен возвращает 50 HP · «Горб» — последние 200 HP принимают лишь половину урона</p></div>';}
-  h+='<div class="card" onclick="openNews()" style="cursor:pointer;border:1px solid rgba(255,209,102,.4);box-shadow:0 0 14px rgba(255,209,102,.25)"><div class="row" style="align-items:center"><span style="font-size:26px">📰</span><div style="flex:1"><b>FATH-Вестник · выпуск №2</b><div style="color:#c9a86a;font-size:13px">🎃 Ночь Тыкв: Горбатый Тлен (1000 HP), тыквы за повторы, прилавок Ведьмы, трофеи, 🐀 Тленокрыс и 🧚 Кара-Пери</div></div><span style="color:#ffd166;font-size:20px">›</span></div></div>';
+  h+='<div class="card'+((STATE.newsRead||0)<3?' news-new':'')+'" id="newsCard" onclick="openNews()" style="cursor:pointer;position:relative;overflow:hidden;border:1px solid rgba(255,209,102,.4);box-shadow:0 0 14px rgba(255,209,102,.25)">'
+  +'<span class="ff" style="left:9%;bottom:16%"></span><span class="ff" style="left:26%;top:22%;animation-delay:.9s"></span><span class="ff" style="left:48%;bottom:24%;animation-delay:1.7s"></span><span class="ff" style="left:66%;top:30%;animation-delay:.5s"></span><span class="ff" style="left:84%;bottom:18%;animation-delay:2.3s"></span><span class="sp" style="left:17%;top:26%;animation-delay:.3s">✦</span><span class="sp" style="right:16%;bottom:30%;animation-delay:1.1s">✦</span><span class="sp" style="right:30%;top:20%;animation-delay:1.9s">✧</span>'
+  +'<div class="row" style="align-items:center;position:relative"><span style="font-size:26px">📰</span><div style="flex:1"><b>FATH-Вестник · выпуск №3</b><div style="color:#c9a86a;font-size:13px">🆕 «Тени боссов»: +43 питомца, 59 артефактов, 50 уровней · 🎃 Ночь Тыкв идёт до 2 ноября</div></div><span style="color:#ffd166;font-size:20px">›</span></div></div>';
   h+='<div class="card"><h3>Задание дня</h3>';
   if(t){h+='<p><b>'+esc(t.n)+'</b> — '+t.s+'×'+t.r+' <span class="pill-r '+rqr(t.rar).cls+'">'+rqr(t.rar).n+'</span></p>'+
   '<div class="row" style="margin-top:10px"><button class="btn good" onclick="completeSpinTask()">✅ Выполнено</button>'+
@@ -3182,9 +3407,10 @@ function fightHtml(m){
 +(STATE.bossday===todayStr()?'<p class="small" style="text-align:center;background:#7a1f1f;color:#ffd9d9;padding:8px;border-radius:8px;margin-top:8px;font-weight:700">🏆 Босс повержен сегодня — удары засчитаются только завтра</p>':'')
 +'</div>';
   if(p&&p.hp>0){
-    var st=petStats(p);
+    var st=petStats(p);var _aw=wornArtOf(p);
     h+='<div class="card"><div class="row">'+PETMAP[p.sp][3]+'<div style="flex:1"><b>'+PETMAP[p.sp][1]+'</b> '+STAGES[p.st-1]+' ур.'+p.lvl+
-    '<br><span class="small">'+STAGEREP[p.st-1]+'<br>Способность: <b>'+PETABIL[p.sp][0]+'</b> — '+abilTxt(p.sp,petAbil(p))+'</span></div>'+
+    '<br><span class="small">'+STAGEREP[p.st-1]+'<br>Способность: <b>'+PETABIL[p.sp][0]+'</b> — '+abilTxt(p.sp,petAbil(p,true))+
+    (_aw?'<br>💎 Артефакт: '+artLineTxt(_aw,(STATE.artcol&&STATE.artcol[_aw])||1):'')+'</span></div>'+
     '<div class="bar hpbar" style="flex:1"><div style="width:'+Math.round(100*p.hp/st.hp)+'%"></div></div>'+
     '<span class="tag">'+p.hp+'/'+st.hp+' HP</span>'+(p.stun>0?'<span class="tag" style="background:#7a1f1f;color:#fff">заморожен</span>':'')+'</div></div>';
   }else h+='<div class="card" style="opacity:.55;filter:grayscale(1)"><div class="row"><div style="flex:1"><b>🩹 Питомец павший</b></div><span class="tag" style="background:#7a1f1f;color:#ff4d4d;font-weight:700">деактивен</span></div><p class="sub">Бонусы не действуют. 💤 Очнётся через '+((STATE.pets[STATE.activepet]||{}).stun||7)+' дн. Вылезай на минутку или выбери другого во вкладке Питомцы.</p></div>';
@@ -3204,7 +3430,7 @@ function fightHtml(m){
     (dead?' <span class="pill-r r-legendary" style="font-weight:700">🏆 Босс повержен</span>':'')
 +(dead?'<span style="position:absolute;right:18px;top:50%;transform:translateY(-50%);font-size:54px;color:#c0392b;opacity:.55;font-weight:900;pointer-events:none;line-height:1">✕</span>':'')+'</div>'+
     (i===STATE.bossIdx?'<span class="chip sel">сейчас</span>':'<span class="tag">далее по порядку</span>')+'</div>'
-+'<div class="small" style="margin-top:2px">🏆 Награда: '+Math.round(50*(i+1)*(1+(STATE.bstage-1)*0.5))+' 🪙 + '+(50*STATE.bstage)+' ОП</div>';
++'<div class="small" style="margin-top:2px">🏆 Награда: '+Math.round(50*(i+1)*(1+(STATE.bstage-1)*0.5))+' 🪙 + '+(50*STATE.bstage)+' ОП'+(BOSSPETMAP[bb[0]]?' · 🐾 тень: '+PETMAP[BOSSPETMAP[bb[0]]][1]:'')+'</div>';
   });
   h+='</div>';
   m.innerHTML=h;
@@ -3234,32 +3460,36 @@ function atk(k){
 function pickBoss(i){if(i>STATE.unlocked&&!STATE.bossFree){toast("Босс ещё закрыт");return;}
   STATE.bossIdx=i;STATE.bstage=1;STATE.bhp=bossMaxHp();resetBosex();
   STATE.pets.forEach(function(pp){pp.revUsed=false;});save();render();}
-function devPickBoss(i){STATE.bossIdx=i;STATE.bstage=1;STATE.bhp=bossMaxHp();resetBosex();STATE.pets.forEach(function(pp){pp.revUsed=false;});save();render();}
+function devPickBoss(i){STATE.bossIdx=i;STATE.bhp=bossMaxHp();resetBosex();STATE.pets.forEach(function(pp){pp.revUsed=false;});save();render();}
 // ===== ПИТОМЦЫ =====
 function tabPets(m){
   var tab=STATE.petTab||"pets";
   var owned=Object.keys(STATE.artcol||{}).length;
-  var h='<div class="card"><h3>🐾 Питомцы <span class="chip sel">'+STATE.pets.length+'/'+PETS.length+'</span></h3>'+
+  var h='<div class="card"><h3>🐾 Питомцы <span class="chip sel">'+STATE.pets.length+'/'+(PETS.length+BOSSPETN)+'</span></h3>'+
   '<div class="row"><button class="btn small'+(tab==="pets"?" prim":"")+'" onclick="setPetTab(\'pets\')">Питомцы</button>'+
   '<button class="btn small'+(tab==="arts"?" prim":"")+'" onclick="setPetTab(\'arts\')">💎 Артефакты ('+owned+'/'+Object.keys(ARTFACTS).length+')</button></div>'+
-  '<p class="sub">Питомцы живут 5 стадий и 20 уровней. Каждая единица урона по боссу = 1 ОП активному питомцу (павший тоже копит). Жертва питомца 20+ уровня не убивает его: он получает следующую стадию и уровень сбрасывается до 1-го, а его артефакт появляется в коллекции и крепнет с каждой жертвой.</p></div>';
+  '<p class="sub">Питомцы живут 5 стадий и 50 уровней. Каждая единица урона по боссу = 1 ОП активному питомцу (павший тоже копит). Каждые 10 уровней — эволюция в следующую стадию и усиление артефакта: на 10-м появляется 💎, на 50-м перековывается в пепельный. Жертва упразднена — рост только тренировками и боями.</p></div>';
   if(tab==="arts"){h+=tabArts();m.innerHTML=h;return;}
-  STATE.pets.forEach(function(p,i){
+  var _ord=STATE.pets.map(function(_,k){return k;});
+  var _ap=STATE.activepet;
+  var RARO={common:0,rare:1,epic:2,legendary:3,mythic:4};
+  _ord.sort(function(a,b){if(a===_ap)return -1;if(b===_ap)return 1;var d=(RARO[rarOf(STATE.pets[a].sp)]||0)-(RARO[rarOf(STATE.pets[b].sp)]||0);return d!==0?d:a-b;});
+  _ord.forEach(function(i){
+    var p=STATE.pets[i];
     var st=petStats(p);var info=PETMAP[p.sp];
-    var need=PETXPCUM[p.lvl]-PETXPCUM[p.lvl-1];
-    var ab=petAbil(p);var worn=wornArtOf(p);
-    var wearTxt=worn?('<br>💎 артефакт: <b>'+ARTFACTS[worn].icon+' '+ARTFACTS[worn].n+'</b> (стадия '+(STATE.artcol[worn]||0)+'/5)'):'';
+    var need=petNeedFor(p,p.lvl);
+    var ab=petAbil(p,true);var worn=wornArtOf(p);
+    var wearTxt=worn?('<br>💎 артефакт: <b>'+ARTFACTS[worn].icon+' '+ARTFACTS[worn].n+'</b> — '+abilTxt(worn,artVals(worn,(STATE.artcol&&STATE.artcol[worn])||1))+(STATE.artgold&&STATE.artgold[worn]?' 🔨 пепельный':'')+(i===STATE.activepet?' <span style="color:#ffd166;font-weight:700">⚡ активен</span>':' <span class="small">(не активен)</span>')):'';
     wearTxt+=(p.hp<=0||p.stun>0)?'<br><span style="color:#ff8080">Бонусы не действуют</span>':'';
     h+='<div class="card"'+((p.hp<=0||p.stun>0)?' style="opacity:.55;filter:grayscale(1)"':'')+'><div class="row">'+info[3]+
     '<div style="flex:1"><b>'+info[1]+'</b> <span class="pill-r '+rqr(info[2]).cls+'">'+rqr(info[2]).n+'</span><br>'+
-    '<span class="small">'+STAGES[p.st-1]+' · ур.'+p.lvl+'/20 · '+STAGEREP[p.st-1]+'<br>Способность: <b>'+PETABIL[p.sp][0]+'</b> — '+abilTxt(p.sp,ab)+wearTxt+'</span></div>'+
+    '<span class="small">'+STAGES[p.st-1]+' · ур.'+p.lvl+'/50 · '+STAGEREP[p.st-1]+'<br>Способность: <b>'+PETABIL[p.sp][0]+'</b> — '+abilTxt(p.sp,ab)+wearTxt+'</span></div>'+
     (i===STATE.activepet?(p.hp<=0||p.stun>0?'':'<span class="chip sel">активный</span>'):'<button class="btn small" onclick="setPet('+i+')">Выбрать</button>')+(p.hp<=0||p.stun>0?'<span class="tag" style="background:#7a1f1f;color:#ff4d4d;font-weight:700">деактивен</span>':'')+'</div>'+
     '<div class="row" style="margin-top:6px"><div class="bar hpbar" style="flex:1"><div style="width:'+Math.round(100*Math.min(1,p.hp/st.hp))+'%"></div></div><span class="tag">'+p.hp+'/'+st.hp+' HP</span></div>'+
     '<div class="row" style="margin-top:6px"><div class="bar xpbar" style="flex:1"><div style="width:'+Math.round(100*Math.min(1,p.xp/need))+'%"></div></div><span class="tag">'+p.xp+'/'+need+' XP</span></div>'+
     '<div class="row" style="margin-top:6px">'+
     (p.stun>0?'<span class="tag">💤 воскрешение через '+p.stun+' дн.</span>':'')+
-    (p.lvl>=20&&p.st<5?'<button class="btn small danger" onclick="sacrificePet('+i+')">🕯 Жертва</button>':'')
-    +'<button class="btn small" onclick="petInfo('+i+')" title="Справка о питомце">ℹ️</button>'+
+    '<button class="btn small" onclick="petInfo('+i+')" title="Справка о питомце">ℹ️</button>'+
     '</div></div>';
   });
   m.innerHTML=h;
@@ -3268,36 +3498,53 @@ function petInfo(i){
   var p=STATE.pets[i];if(!p)return;
   var st=petStats(p),r=rarOf(p.sp);
   var base={common:60,rare:90,epic:130,legendary:180,mythic:260}[r];
-  var left=Math.max(0,714-(PETXPCUM[p.lvl-1]||0)-p.xp);
+  var left=0;for(var _l=p.lvl;_l<50;_l++)left+=petNeedFor(p,_l);left=Math.max(0,left-p.xp);
   var days=Math.ceil(left/100);
   var art=wornArtOf(p);
   var T={cat:"живой щит: уклоняется от 15% ответных ударов босса — держи активным в дни боя",dog:"режет ответку босса на 15% — надёжный щит вместе с носорогом и големом",rabbit:"ускоритель ОП: +20% опыта от тренировок — качай его первым",wolf:"+10% урона по боссу — чистое нападение без защиты",owl:"+15% ОП от тренировок — второй ускоритель опыта",zombie:"страховка: 25% шанс пережить смертельный удар с 1 HP",rhino:"режет ответку босса на 25% — сильный щит",golem:"режет ответку босса на 35% — самый крепкий щит в игре",demon:"вампиризм: лечит питомца на 2 HP за удар — для долгих боёв",robot:"ритм: каждый 5-й удар двойной — планируй заходы под ритм, двойной удар даёт и двойной опыт",boar:"+20% урона, но ответка босса сильнее на 10% — бей осторожно",phoenix:"береги на тяжёлые стадии: раз в бой возрождается с 50% HP",dragon:"ритм: каждый 3-й удар двойной — стабильнее робота, двойной удар даёт и двойной опыт",alien:"10% шанс тройного урона — бонус к урону"};
   var L='<h3 style="text-align:center">'+PETMAP[p.sp][3]+' '+esc(PETMAP[p.sp][1])+'</h3>';
-  L+='<p class="small" style="text-align:center"><b>'+rqr(r).n+' · '+STAGES[p.st-1]+' · уровень '+p.lvl+'/20</b>'+(p.stun>0?' · <span style="color:#ff4d4d;font-weight:700">💤 павший, воскреснёт через '+p.stun+' дн.</span>':'')+'</p>';
-  L+='<p class="small"><b>❤️ HP: '+st.hp+'</b> — база редкости '+base+' × рост уровня +6% × стадия +15%</p>';
-  L+='<p class="small"><b>✨ Способность: '+PETABIL[p.sp][0]+'</b> — '+abilTxt(p.sp,petAbil(p))+'</p>';
-  L+='<p class="small"><b>💎 Артефакт:</b> '+(art?ARTFACTS[art].icon+' '+ARTFACTS[art].n+' (надет)':'пока не получен — выпадает только жертвой питомца 20+ уровня')+'</p>';
+  L+='<p class="small" style="text-align:center"><b>'+rqr(r).n+' · '+STAGES[p.st-1]+' · уровень '+p.lvl+'/50</b>'+(p.stun>0?' · <span style="color:#ff4d4d;font-weight:700">💤 павший, воскреснёт через '+p.stun+' дн.</span>':'')+'</p>';
+  L+='<p class="small"><b>❤️ HP: '+st.hp+'</b> — база редкости '+base+' × рост уровня +3% × стадия +15%</p>';
+  L+='<p class="small"><b>✨ Способность питомца: '+PETABIL[p.sp][0]+'</b> — '+abilTxt(p.sp,petAbil(p,true))+'</p>';
+  if(art)L+='<p class="small"><b>💎 Артефакт:</b> '+ARTFACTS[art].icon+' '+artLineTxt(art,(STATE.artcol&&STATE.artcol[art])||1)+(i===STATE.activepet?' — <span style="color:#ffd166;font-weight:700">⚡ активен</span>':' — <span class="small">надет, но питомец не активен: в бою не работает</span>')+'</p>';
+  else L+='<p class="small"><b>💎 Артефакт:</b> пока не получен — появится на 10-м уровне питомца</p>';
   L+='<p class="small"><b>💪 Сила: '+st.dmg+'</b> — витринная цифра: в бою она не участвует, питомец гасит только ответку босса (базовая ответка ≈ 6 + стадия×3 + номер босса×0.8, у Назгула ×1.5)</p>';
-  L+='<p class="small"><b>📈 Опыт:</b> '+(left>0?'до 20-го уровня осталось ≈'+left+' ОП (при 100 ОП/день ≈ '+days+' дн.)':'питомец на максимуме — готов к жертве')+'</p>';
+  L+='<p class="small"><b>📈 Опыт:</b> '+(left>0?'до 50-го уровня осталось ≈'+left+' ОП (при 100 ОП/день ≈ '+days+' дн.)':'питомец на максимуме — Пепельный предел')+'</p>';
+  var sofa=(Array.isArray(STATE.sofa)?STATE.sofa:[]).filter(function(gid){return GIRLMAP[gid]&&STATE.girls[gid];});
+  var hb=haremBonus();
+  L+='<p class="small"><b>🌹 Бонус гарема:</b> '+(sofa.length?('лечение питомцев <b>+'+Math.round(hb.heal)+' HP</b> в день каждому · монеты +'+Math.round(hb.tok)+'% · опыт +'+Math.round(hb.xp)+'%'):'на диване Султана пока никого — посади девушек в гареме, и они будут каждый день лечить питомцев')+'</p>';
+  if(sofa.length)L+='<p class="small" style="color:#9fb3c8">'+sofa.map(function(gid){var g=GIRLMAP[gid];return g.ic+' '+g.n+(STATE.girlfav===gid?' (фаворитка)':'')+' — '+girlBonusText(g,true);}).join('<br>')+'</p>';
   L+='<p class="small"><b>🧠 Тактика:</b> '+(T[p.sp]||'')+'</p>';
-  L+='<p class="small">Жертва (с 20 уровня) не убивает питомца: он получает следующую стадию, уровень сбрасывается до 1-го, а его артефакт остаётся в коллекции.</p>';
+  L+='<p class="small">Каждые 10 уровней — эволюция в следующую стадию и усиление артефакта: на 10-м он появляется, на 50-м перековывается в пепельный (+15% ко всем цифрам).</p>';
+  L+='<p class="small" style="text-align:center;color:#9fb3c8">💡 Клавиша I (ш) открывает это окно из любого места игры</p>';
   L+='<div style="text-align:center"><button class="btn small" onclick="closeModal()">Понятно</button></div>';
   openModal(L);
 }
 function setPetTab(t){STATE.petTab=t;save();render();}
 function tabArts(){
   var h='';
-  PETS.forEach(function(pt){
-    var sp=pt[0];var stg=(STATE.artcol&&STATE.artcol[sp])||0;var A=ARTFACTS[sp];
+  var RO={common:0,rare:1,epic:2,legendary:3,mythic:4};
+  var act=STATE.pets[STATE.activepet],actSp=act?wornArtOf(act):null;
+  var list=[],seen={};
+  PETS.concat(BOSSPETS).forEach(function(pt){var sp=pt[0];if(!seen[sp]){seen[sp]=1;list.push(sp);}});
+  list.sort(function(a,b){
+    var aa=(a===actSp&&(STATE.artcol[a]||0))?0:1,bb=(b===actSp&&(STATE.artcol[b]||0))?0:1;
+    if(aa!==bb)return aa-bb;
+    var ra=RO[rarOf(a)]-RO[rarOf(b)];if(ra)return ra;
+    var oa=(STATE.artcol[a]||0)?0:1,ob=(STATE.artcol[b]||0)?0:1;if(oa!==ob)return oa-ob;
+    return 0;});
+  list.forEach(function(sp){
+    var stg=(STATE.artcol&&STATE.artcol[sp])||0;var A=ARTFACTS[sp];
     var wornBy=STATE.pets.filter(function(pp){return wornArtOf(pp)===sp;});
     if(!stg){
       h+='<div class="card" style="opacity:.55"><div class="row"><span style="font-size:26px">'+A.icon+'</span>'+
-      '<div style="flex:1"><b>'+A.n+'</b> — не получен<br><span class="small">Пожертвуй питомца «'+PETMAP[sp][1]+'» на 20+ уровне, чтобы получить этот артефакт. С каждой жертвой он крепнет.</span></div></div></div>';
+      '<div style="flex:1"><b>'+A.n+'</b> — не получен<br><span class="small">Появится, когда питомец «'+PETMAP[sp][1]+'» достигнет 10-го уровня. С эволюциями крепнет до 5/5, на 50-м перековывается.</span></div></div></div>';
       return;}
-    h+='<div class="card"><div class="row"><span style="font-size:26px">'+A.icon+'</span>'+
-    '<div style="flex:1"><b>'+A.n+'</b> <span class="chip sel">стадия '+stg+'/5</span><br>'+
+    var isAct=(sp===actSp);
+    h+='<div class="card"'+(isAct?' style="border-color:#ffd54a;box-shadow:0 0 10px rgba(255,213,74,.35)"':'')+'><div class="row"><span style="font-size:26px">'+A.icon+'</span>'+
+    '<div style="flex:1"><b>'+A.n+'</b> <span class="chip sel">стадия '+stg+'/5</span>'+(STATE.artgold&&STATE.artgold[sp]?' <span class="chip sel" style="background:#6b5405">🔨 пепельный</span>':'')+(isAct?' <span class="chip sel" style="background:#8a6d00">⚡ активен</span>':'')+'<br>'+
     '<span class="small">Сила: '+abilTxt(sp,artVals(sp,stg))+
-    (wornBy.length?'<br>надет на: '+wornBy.map(function(pp){return PETMAP[pp.sp][3]+' '+PETMAP[pp.sp][1];}).join(', '):'<br>не надет')+'</span></div>'+
+    (wornBy.length?'<br>надет на: '+wornBy.map(function(pp){return PETMAP[pp.sp][3]+' '+PETMAP[pp.sp][1]+(STATE.pets[STATE.activepet]===pp?' (активен)':'');}).join(', '):'<br>не надет')+'</span></div>'+
     (wornBy.length?'<button class="btn small" onclick="unwearArt(\''+sp+'\')">Снять</button>':'<button class="btn small prim" onclick="wearArtPick(\''+sp+'\')">Надеть</button>')+
     '</div></div>';
   });
@@ -3731,7 +3978,7 @@ var ACHS=[
 ["a27","Дневник","10 записей еды",function(){return (STATE.cal.eaten||[]).length>=10;},50,null,function(){return (STATE.cal.eaten||[]).length;},10],
 ["a28","Полуночник","Сделай спин после 00:00",function(){return (STATE.spinsdone||0)>=1&&new Date().getHours()<4;},150,null],
 ["a29","Все виды","Все 12 видов за день",function(){return varietyCount()>=12;},300,"gold",function(){return varietyCount();},12],
-["a30","Жертва","Принеси питомца в жертву",function(){return Object.keys(STATE.artcol||{}).length>=1;},200,"silver",function(){return Object.keys(STATE.artcol||{}).length;},1],
+["a30","Первый артефакт","Прокачай питомца до 10-го уровня",function(){return Object.keys(STATE.artcol||{}).length>=1;},200,"silver",function(){return Object.keys(STATE.artcol||{}).length;},1],
 ["a31","Финал","Победи Назгула",function(){return STATE.killed.indexOf("nazgul")>=0;},500,"legendary"],
 ["a32","Фанат","Заходи 30 дней",function(){return STATE.spinsdone>=30;},250,null,function(){return STATE.spinsdone;},30],
 ["a33","Мистик","Открой легендарный ящик 10 раз",function(){return (STATE.promosUsed.leg10||0)>=10;},400,"legendary",function(){return (STATE.promosUsed.leg10||0);},10],
@@ -3951,9 +4198,13 @@ function devXp(n){addXp(n);render();}
 function devLvl(n){STATE.lvl=Math.max(1,STATE.lvl+n);save();updHeader();render();}
 function devBox(n){STATE.boxes+=n;save();render();toast("+"+n+" ящика");}
 function devOpenBox(k){openBox(k,true);render();}
-function devEggs(){PETS.forEach(function(pt){if(!STATE.pets.some(function(pp){return pp.sp===pt[0];})){if(!STATE.petuid)STATE.petuid=0;STATE.petuid++;var np={sp:pt[0],lvl:1,st:1,xp:0,hp:0,id:"p"+STATE.petuid};np.hp=petStats(np).hp;STATE.pets.push(np);}});save();render();toast("Все питомцы выданы");}
-function devPetLvl(n){var p=STATE.pets[STATE.activepet];p.lvl=Math.max(1,Math.min(20,p.lvl+n));save();render();}
-function devPetSt(n){var p=STATE.pets[STATE.activepet];p.st=Math.max(1,Math.min(5,p.st+n));save();render();}
+function devEggs(){function _give(arr){arr.forEach(function(pt){if(!STATE.pets.some(function(pp){return pp.sp===pt[0];})){if(!STATE.petuid)STATE.petuid=0;STATE.petuid++;var np={sp:pt[0],lvl:1,st:1,xp:0,hp:0,id:"p"+STATE.petuid};np.hp=petStats(np).hp;STATE.pets.push(np);}});}
+_give(PETS);_give(BOSSPETS);save();render();toast("Все питомцы выданы, включая тени боссов");}
+function devPetLvl(n){var p=STATE.pets[STATE.activepet];var t=Math.max(1,Math.min(50,p.lvl+n));
+  while(p.lvl<t){p.lvl++;petEvolve(p);}
+  while(p.lvl>t){p.lvl--;p.st=Math.max(1,Math.floor(p.lvl/10)+1);}
+  p.hp=petStats(p).hp;save();render();}
+function devPetSt(n){var p=STATE.pets[STATE.activepet];p.st=Math.max(1,Math.min(5,p.st+n));STATE.artcol=STATE.artcol||{};if((STATE.artcol[p.sp]||0)<p.st)STATE.artcol[p.sp]=p.st;save();render();}
 function devHeal(){var p=STATE.pets[STATE.activepet];p.hp=petStats(p).hp;save();render();}
 function devKillPet(){var p=STATE.pets[STATE.activepet];p.hp=0;save();render();toast("Питомец повержен");}
 function devAddPet(){var sp=PETS[Math.floor(Math.random()*PETS.length)][0];
@@ -4148,8 +4399,19 @@ var FOODS=[
 ["Брокколи отварная",34],["Перец болгарский",27],["Грибы жареные",100],["Шампиньоны свежие",27]];
 function tabShopCheck(){}
 // ===== СТРИК И ЗАПУСК =====
+function retroBossPets(){
+  try{
+  var got=0,names=[];
+  (STATE.killed||[]).forEach(function(k){var sp=BOSSPETMAP[k];if(!sp)return;
+    var has=STATE.pets.some(function(pp){return pp.sp===sp;});if(has)return;
+    STATE.petuid=(STATE.petuid||0)+1;var np={sp:sp,lvl:1,st:1,xp:0,hp:0,id:"p"+STATE.petuid};np.hp=petStats(np).hp;STATE.pets.push(np);got++;names.push(PETMAP[sp][3]+PETMAP[sp][1]);
+  });
+  if(got){save();toast("🐾 Ретро-награда: "+got+" тень(и) поверженных боссов ждут в конюшне!");}
+  }catch(e){}
+}
 function init(){
   loadSave();
+  retroBossPets();
   newDayCheck();
   try{if(localStorage.getItem("fath_theme")==="1")document.body.classList.add("light");}catch(e){}
   applyBg();
@@ -4170,7 +4432,7 @@ var GIRLS=[
 {id:"fahriye",n:"Фахрие-султан",ic:"👑",rar:"legendary",price:4500,d:"монеты и опыт",b:{tok:[40,50,60,72,90],xp:[40,50,60,72,90]}},
 {id:"hurrem",n:"Хюррем",ic:"💃",rar:"legendary",price:5000,d:"монеты с тренировок",b:{tok:[60,70,80,95,110]}},
 {id:"kosem",n:"Кёсем",ic:"🌟",rar:"mythic",price:12000,d:"всё: монеты, опыт, урон",b:{all:[30,36,42,50,60]}},
-{id:"peri",n:"Кара-Пери",ic:"🧚",rar:"mythic",price:0,d:"урон по боссам и монеты",b:{bdmg:[40,50,60,70,80],tok:[25,30,38,44,50]}}];
+{id:"peri",n:"Пайпер Перри",ic:"🧚",rar:"mythic",price:0,d:"урон по боссам и монеты",b:{bdmg:[40,50,60,70,80],tok:[25,30,38,44,50]}}];
 var GIRLMAP={};GIRLS.forEach(function(g){GIRLMAP[g.id]=g;});
 var GIRLRAR={common:0.30,rare:0.25,epic:0.18,legendary:0.08};
 var GIRLDUPS={common:100,rare:250,epic:600,legendary:1200,mythic:2500};
@@ -4249,7 +4511,7 @@ function haremToggleEx(k){
   save();render();}
 function buyGirl(gid){var g=GIRLMAP[gid];
   if(STATE.girls[gid])return;
-  if(gid==="peri"){toast("🧚 Кара-Пери освобождается при победе над Горбатым Тленом!");return;}
+  if(gid==="peri"){toast("🧚 Пайпер Перри освобождается при победе над Горбатым Тленом!");return;}
   if(STATE.tok<g.price){toast("🪙 Не хватает жетонов: нужно "+g.price);return;}
   addTok(-g.price);STATE.girls[gid]=1;S("newpet");
   if(STATE.htday!==todayStr())genHaremTasks();
@@ -4398,6 +4660,10 @@ function tabHarem(m){
   h+='</div>';
   m.innerHTML=h;
 }
+document.addEventListener('keydown',function(e){
+  var t=e.target&&e.target.tagName;if(t==='INPUT'||t==='TEXTAREA'||t==='SELECT')return;
+  var k2=(e.key||'').toLowerCase();
+  if(k2==='i'||k2==='ш'){var p=STATE.pets[STATE.activepet];if(p)petInfo(STATE.activepet);}});
 </script>
 <script>
 if("serviceWorker" in navigator){window.addEventListener("load",function(){navigator.serviceWorker.register("sw.js");});}
