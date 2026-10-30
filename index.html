@@ -224,6 +224,7 @@ body.neon-ui .btn.prim{animation:neonBeat 1.4s ease-in-out infinite}
   <span class="pill" id="hlvl">👤 1 ур</span>
   <span class="pill" id="htok">🪙 0</span>
   <span class="pill" id="hpv" style="display:none">🎃 0</span>
+  <span class="pill" id="hfarm" style="display:none">🌱</span>
   <span class="pill" id="hstk">🔥 0</span>
   <span class="pill" id="hpet">🐾 0/15</span>
   <span class="pill" id="hhp">❤️</span>
@@ -690,7 +691,7 @@ pets:[{sp:"cat",lvl:1,st:1,xp:0,hp:60,id:"p0"}],activepet:0,artifacts:0,artcol:{
 bossIdx:0,unlocked:0,killed:[],bhp:0,bstage:1,bhit:0,dcount:0,phaseKind:"",
 boxes:0,boxhist:0,eggs:{},prog:null,progday:"",goals:[],gohist:[],week:[],
 wstats:[0,0,0,0,0,0,0],bmi:{h:0,w:0,wh:[]},cal:{norm:0,eaten:[]},
-friends:"",ach:[],promos:[],dev:false,instant:false,
+friends:"",ach:[],promos:[],dev:false,instant:false,farm:null,
 wex:[{n:"Отжимания",ex:"pushups",s:3,r:10,rar:"common"},{n:"Подтягивания",ex:"pullups",s:3,r:5,rar:"common"},
 {n:"Пресс",ex:"situps",s:3,r:15,rar:"common"},{n:"Приседания",ex:"squats",s:3,r:20,rar:"common"}],promosUsed:{},upg:{},ovlAt:0,lastBossWin:"",comboWin:0,
 girls:{gul:1},girlxp:{},girlrest:{},girllast:{},girllove:{},glovechk:{},sofa:[],girlfav:"",
@@ -793,6 +794,7 @@ function newDayCheck(){
     bossDayTick();
     haremDayTick();
     evDayTick();
+    farmDayTick();
     save();}
 }
 function todayStrYesterday(){var d=new Date();d.setDate(d.getDate()+STATE.shift-1);
@@ -1210,6 +1212,7 @@ function bossDamage(kind,reps){
   var _bx=bossExtraMod(kind,dmg);dmg=_bx.d;
   var _bi=bossItemsAttack();if(_bi.burn)return 0;if(_bi.mul)dmg=Math.round(dmg*_bi.mul);if(_bi.msg)toast(_bi.msg);
   var _hb=haremBonus();if(_hb.dmg>0)dmg=Math.round(dmg*(1+_hb.dmg/100));
+  var _fbb=farmBuff();if(_fbb>0)dmg=Math.round(dmg*(1+_fbb/100));
   var pet=STATE.pets&&STATE.pets[STATE.activepet];
   if(pet&&pet.hp>0){
     var A=petAbil(pet);
@@ -1254,9 +1257,11 @@ function applyBossDamage(dmg){
 function defeatBoss(){
   S("win");
   var reward=50*(STATE.bossIdx+1)*(1+(STATE.bstage-1)*0.5);
+  var _fc=farmCoinBuff();if(_fc>0)reward=Math.round(reward*(1+_fc/100));
   addTok(Math.round(reward));addXp(50*STATE.bstage);
   if(STATE.killed.indexOf(BOSSES[STATE.bossIdx][0])<0)STATE.killed.push(BOSSES[STATE.bossIdx][0]);
 var _bid=BOSSES[STATE.bossIdx][0];
+  if(_bid==="farmer")farmUnlock();
   if(BOSSPETMAP[_bid]){
     var _sp=BOSSPETMAP[_bid],_ei=STATE.pets.findIndex(function(pp){return pp.sp===_sp;});
     if(_ei<0){STATE.petuid=(STATE.petuid||0)+1;var _np={sp:_sp,lvl:1,st:1,xp:0,hp:0,id:"p"+STATE.petuid};_np.hp=petStats(_np).hp;STATE.pets.push(_np);STATE.activepet=STATE.pets.length-1;
@@ -1385,15 +1390,16 @@ function showBoxResult(kind,title,text){
 <script>
 var TABS=[["home","🏠 Главная"],["spin","🎡 Прокрутка"],["shop","🛒 Магазин"],
 ["fight","⚔️ Битва"],["harem","💃 Гарем"],["prog","📋 Тренировки"],["goals","🎯 Цели"],["cal","🍎 Калории"],
-["stats","📊 Статистика"],["dev","🛠 Разраб"],["set","⚙️ Настройки"]];
+["stats","📊 Статистика"],["dev","🛠 Разраб"],["farm","🌱"],["set","⚙️ Настройки"]];
 var curTab="home";
 function initNav(){
   var n=document.getElementById("nav");var h="";
-  TABS.forEach(function(t,i){if(t[0]==="dev"&&!STATE.dev)return;
+  TABS.forEach(function(t,i){if(t[0]==="dev"&&!STATE.dev)return;if(t[0]==="farm"&&!farmOn())return;
     h+='<button class="navbtn'+(t[0]===curTab?" on":"")+'" id="nb_'+t[0]+'" onclick="go(\''+t[0]+'\')">'+t[1]+'</button>';});
   n.innerHTML=h;
 }
 function go(t){
+  if(t==="farm"&&!farmOn())return;
   S("tab");curTab=t;initNav();render();
   var m=document.getElementById("main");m.scrollTop=0;
 }
@@ -1401,6 +1407,7 @@ function updHeader(){
   document.getElementById("hlvl").innerHTML="👤 "+STATE.lvl+" ур";
   document.getElementById("htok").innerHTML="🪙 "+STATE.tok;
   var pe=document.getElementById("hpv");if(pe){var _ea=typeof evActive==="function"&&evActive();pe.style.display=_ea?"":"none";if(_ea)pe.innerHTML="🎃 "+(STATE.pv||0);}
+  var hf=document.getElementById("hfarm");if(hf){hf.style.display=farmOn()?"":"none";if(farmOn())hf.innerHTML="🌱 ур."+STATE.farm.lvl;}
   document.getElementById("hstk").innerHTML="🔥 "+STATE.streak;
   document.getElementById("hpet").innerHTML="🐾 "+STATE.pets.length+"/"+(PETS.length+BOSSPETN);
   var pa=STATE.pets&&STATE.pets[STATE.activepet];
@@ -1506,7 +1513,7 @@ function render(){
   evCheck();
   var fns={home:tabHome,spin:tabSpin,shop:tabShopNew,
   fight:tabFightNew,prog:tabProg,goals:tabGoals,cal:tabCal,
-  stats:tabStatsNew,dev:tabDev,set:tabSetNew,harem:tabHarem};
+  stats:tabStatsNew,dev:tabDev,set:tabSetNew,harem:tabHarem,farm:tabFarm};
   var m=document.getElementById("main");
   stopFx();
   var f=fns[curTab];
@@ -4132,6 +4139,202 @@ function wipeGo(){
   } else toast("Неверный код — посмотри ещё раз на окно");
 }
 // ===== ДЕВ-ПАНЕЛЬ =====
+// ===== ЗАКРЫТЫЙ САД =====
+var CROPS={
+ wheat:{n:"Пшеница",i:"🌾",cost:30,days:2,ymin:2,ymax:4,xp:6,sell:22},
+ carrot:{n:"Морковь",i:"🥕",cost:55,days:3,ymin:2,ymax:5,xp:10,sell:40},
+ apple:{n:"Яблоня",i:"🍎",cost:90,days:4,ymin:2,ymax:6,xp:16,sell:60},
+ pumpkin:{n:"Тыква",i:"🎃",cost:150,days:5,ymin:2,ymax:7,xp:25,sell:110}
+};
+var CROPLIST=["wheat","carrot","apple","pumpkin"];
+var FARMUPG={
+ lake:{n:"Лейка",i:"🚿",d:"+1 полив в день за ранг",c:[350,900,2200]},
+ green:{n:"Теплица",i:"🏡",d:"-1 день роста за ранг",c:[600,1600]},
+ comp:{n:"Компост",i:"🧺",d:"+10% урожая за ранг",c:[300,750,1900]},
+ stall:{n:"Прилавок",i:"🏪",d:"+15% цена продажи",c:[450,1300]}
+};
+var FARMLVL=[0,30,90,200,420,800];
+var FARMREC=[
+ {id:"pie",n:"Яблочный пирог",i:"🥧",need:{apple:3},txt:"До конца дня: +25% урона по боссу"},
+ {id:"ale",n:"Тыквенный эль",i:"🍺",need:{pumpkin:2},txt:"До конца дня: +50% монет за босса"},
+ {id:"soup",n:"Морковный суп",i:"🍲",need:{carrot:2,wheat:1},txt:"Питомец сразу оживает с полным HP"}
+];
+function farmDateAdd(s,n){var a=s.split("-"),d=new Date(+a[0],+a[1]-1,+a[2]);d.setDate(d.getDate()+n);return d.getFullYear()+"-"+String(d.getMonth()+1).padStart(2,"0")+"-"+String(d.getDate()).padStart(2,"0");}
+function farmOn(){return !!(STATE.farm&&STATE.farm.on);}
+function farmRetro(){try{if(STATE.killed&&STATE.killed.indexOf("farmer")>=0)farmUnlock(true);}catch(e){}}
+function farmUnlock(silent){
+ if(STATE.farm&&STATE.farm.on)return;
+ STATE.farm={on:1,lvl:1,xp:0,tot:0,plots:[null,null,null,null],seed:{wheat:1,carrot:1,apple:0,pumpkin:0},store:{},upg:{lake:0,green:0,comp:0,stall:0},waterLeft:2,day:todayStr(),buffD:null,buffC:null};
+ if(!silent)toast("🌱 На панели появилась новая вкладка");
+ save();
+}
+function farmUpgL(k){return farmOn()?(STATE.farm.upg[k]||0):0;}
+function farmMaxPlots(){return 3+((STATE.farm&&STATE.farm.lvl)||1);}
+function farmLvlUp(){
+ var f=STATE.farm;
+ while(f.lvl<FARMLVL.length&&f.xp>=FARMLVL[f.lvl]){
+  f.lvl++;
+  while(f.plots.length<farmMaxPlots())f.plots.push(null);
+  toast("🌱 Участок разросся: уровень "+f.lvl+" (грядок: "+farmMaxPlots()+")");
+ }
+}
+function farmDayTick(){
+ if(!farmOn())return;
+ var f=STATE.farm,t=todayStr();
+ if(!f.day)f.day=t;
+ var guard=0;
+ while(f.day<t&&guard<40){
+  guard++;
+  var prev=f.day;
+  f.waterLeft=2+farmUpgL("lake");
+  f.plots.forEach(function(pl){
+   if(!pl||pl.ready)return;
+   var c=CROPS[pl.sp],need=Math.max(1,c.days-farmUpgL("green"));
+   pl.prog+=(pl.wd===prev?2:1);
+   pl.wd=null;
+   if(pl.prog>=need)pl.ready=1;
+  });
+  if(f.buffD&&f.buffD.day<prev)f.buffD=null;
+  if(f.buffC&&f.buffC.day<prev)f.buffC=null;
+  f.day=farmDateAdd(prev,1);
+ }
+ if(f.buffD&&f.buffD.day<t)f.buffD=null;
+ if(f.buffC&&f.buffC.day<t)f.buffC=null;
+}
+function farmBuff(){if(!farmOn())return 0;var f=STATE.farm;return (f.buffD&&f.buffD.day===todayStr())?f.buffD.v:0;}
+function farmCoinBuff(){if(!farmOn())return 0;var f=STATE.farm;return (f.buffC&&f.buffC.day===todayStr())?f.buffC.v:0;}
+function farmPlant(sp,i){
+ if(!farmOn())return;var f=STATE.farm;
+ if(!f.seed[sp]||f.plots[i])return;
+ f.seed[sp]--;f.plots[i]={sp:sp,prog:0,wd:null,ready:0};
+ save();render();
+}
+function farmWater(i){
+ if(!farmOn())return;var f=STATE.farm,pl=f.plots[i];
+ if(!pl||pl.ready||f.waterLeft<=0||pl.wd===todayStr())return;
+ f.waterLeft--;pl.wd=todayStr();toast("💧 Полито");
+ save();render();
+}
+function farmHarvest(i){
+ if(!farmOn())return;var f=STATE.farm,pl=f.plots[i];
+ if(!pl||!pl.ready)return;
+ var c=CROPS[pl.sp];
+ var y=c.ymin+Math.floor(Math.random()*(c.ymax-c.ymin+1));
+ y=Math.max(1,Math.round(y*(1+0.1*farmUpgL("comp"))));
+ f.store[pl.sp]=(f.store[pl.sp]||0)+y;
+ f.xp+=c.xp;f.tot+=y;
+ f.plots[i]=null;
+ farmLvlUp();
+ toast("🌾 "+c.i+" "+c.n+": +"+y+" шт. (всего урожая: "+f.tot+")");
+ save();render();
+}
+function farmBuySeed(sp){
+ if(!farmOn())return;var c=CROPS[sp];
+ if(STATE.tok<c.cost){toast("Не хватает 🪙: нужно "+c.cost);return;}
+ STATE.tok-=c.cost;
+ STATE.farm.seed[sp]=(STATE.farm.seed[sp]||0)+1;
+ save();render();
+}
+function farmSell(sp,n){
+ if(!farmOn())return;var f=STATE.farm;
+ var have=f.store[sp]||0;if(!have)return;
+ if(n==="all")n=have;
+ n=Math.min(n,have);
+ var price=Math.round(CROPS[sp].sell*(1+0.15*farmUpgL("stall")));
+ f.store[sp]=have-n;
+ addTok(price*n);
+ save();updHeader();render();
+}
+function farmCook(id){
+ if(!farmOn())return;var f=STATE.farm;
+ var r=FARMREC.filter(function(x){return x.id===id;})[0];if(!r)return;
+ for(var k in r.need){if((f.store[k]||0)<r.need[k]){toast("Не хватает продуктов: "+CROPS[k].i+" "+CROPS[k].n+" "+r.need[k]+" шт.");return;}}
+ for(var k in r.need)f.store[k]-=r.need[k];
+ if(id==="pie")f.buffD={v:25,day:todayStr()};
+ if(id==="ale")f.buffC={v:50,day:todayStr()};
+ if(id==="soup"){var p=STATE.pets&&STATE.pets[STATE.activepet];
+  if(p){p.stun=0;p.hp=petStats(p).hp;toast("🍲 "+PETMAP[p.sp][1]+" бодр и здоров!");}
+  else toast("🍲 Суп некому есть — питомца нет");}
+ save();updHeader();render();
+}
+function farmUpg(k){
+ if(!farmOn())return;var f=STATE.farm,u=FARMUPG[k],r=f.upg[k]||0;
+ if(r>=u.c.length){toast("Максимальный ранг");return;}
+ var cost=u.c[r];
+ if(STATE.tok<cost){toast("Не хватает 🪙: нужно "+cost);return;}
+ STATE.tok-=cost;f.upg[k]=r+1;
+ if(k==="lake")f.waterLeft=2+f.upg.lake;
+ toast("🔧 "+u.n+": ранг "+(r+1));
+ save();updHeader();render();
+}
+function tabFarm(m){
+ if(!farmOn()){m.innerHTML='<div class="card">Тропинка заросла. Пока.</div>';return;}
+ var f=STATE.farm,t=todayStr();
+ var h='<div class="card"><h3>🌱 Тихий огород</h3>';
+ h+='<p class="small">Уровень '+f.lvl+' · грядки '+f.plots.length+'/'+farmMaxPlots()+' · опыт '+f.xp+'/'+(f.lvl<FARMLVL.length?FARMLVL[f.lvl]:"макс")+' · собрано всего: '+f.tot+'</p>';
+ h+='<p class="small">💧 Поливы сегодня: '+f.waterLeft+'</p>';
+ if(f.buffD&&f.buffD.day===t)h+='<span class="tag">🥧 урон +'+f.buffD.v+'% сегодня</span> ';
+ if(f.buffC&&f.buffC.day===t)h+='<span class="tag">🍺 монеты +'+f.buffC.v+'% сегодня</span>';
+ h+='</p></div>';
+ h+='<div class="card"><h3>🌿 Грядки</h3>';
+ f.plots.forEach(function(pl,i){
+  h+='<div style="border-top:1px dashed var(--bd);padding:8px 0">';
+  if(!pl){
+   var any=false;
+   CROPLIST.forEach(function(sp){if(f.seed[sp]>0)any=true;});
+   if(!any){h+='<p class="small">Пусто. Купи семена ниже.</p>';}
+   else{
+    h+='<p class="small">Пустая грядка. Посадить:</p><div style="display:flex;gap:8px;flex-wrap:wrap">';
+    CROPLIST.forEach(function(sp){if(f.seed[sp]>0)h+='<button class="btn" onclick="farmPlant(\''+sp+'\','+i+')">'+CROPS[sp].i+' '+CROPS[sp].n+' ('+f.seed[sp]+')</button>';});
+    h+='</div>';
+   }
+  }else{
+   var c=CROPS[pl.sp],need=Math.max(1,c.days-farmUpgL("green"));
+   if(pl.ready){h+='<p>'+c.i+' <b>'+c.n+'</b> — поспело! <button class="btn prim" onclick="farmHarvest('+i+')">Собрать</button></p>';}
+   else{
+    var pr=Math.min(100,Math.round(pl.prog/need*100));
+    h+='<p>'+c.i+' <b>'+c.n+'</b> · рост '+pl.prog+'/'+need+' · прогресс '+pr+'%</p>';
+    h+='<div style="background:rgba(0,0,0,.3);height:8px;border-radius:4px;overflow:hidden;margin:4px 0"><div style="width:'+pr+'%;height:100%;background:#6fdd6f"></div></div>';
+    h+=pl.wd===t?'<p class="small">💧 Полито сегодня</p>':'<button class="btn" onclick="farmWater('+i+')">💧 Полить ('+f.waterLeft+' осталось)</button>';
+   }
+  }
+  h+='</div>';
+ });
+ h+='</div>';
+ h+='<div class="card"><h3>🛍 Семена и склад</h3><div style="display:flex;gap:8px;flex-wrap:wrap">';
+ CROPLIST.forEach(function(sp){
+  var c=CROPS[sp],have=f.store[sp]||0,pr=Math.round(c.sell*(1+0.15*farmUpgL("stall")));
+  h+='<div style="border:1px solid var(--bd);border-radius:8px;padding:8px;min-width:130px">';
+  h+='<p>'+c.i+' <b>'+c.n+'</b></p><p class="small">Семя: '+c.cost+' 🪙 · растёт '+c.days+' дн. · даёт '+c.ymin+'–'+c.ymax+' шт.</p>';
+  h+='<p class="small">Склад: '+have+' шт. · цена '+pr+' 🪙/шт.</p>';
+  h+='<button class="btn" onclick="farmBuySeed(\''+sp+'\')">Купить семя</button> ';
+  if(have>0)h+='<button class="btn" onclick="farmSell(\''+sp+'\',1)">Продать 1</button> <button class="btn" onclick="farmSell(\''+sp+'\',\'all\')">Продать всё</button>';
+  h+='</div>';
+ });
+ h+='</div></div>';
+ h+='<div class="card"><h3>🍳 Кухня</h3>';
+ FARMREC.forEach(function(r){
+  h+='<div style="border-top:1px dashed var(--bd);padding:8px 0">';
+  h+='<p>'+r.i+' <b>'+r.n+'</b> — '+r.txt+'</p>';
+  var ok=true,parts=[];
+  for(var k in r.need){var have=f.store[k]||0;if(have<r.need[k])ok=false;parts.push(CROPS[k].i+'×'+r.need[k]+' ('+have+')');}
+  h+='<p class="small">Нужно: '+parts.join(', ')+'</p>';
+  h+='<button class="btn prim" onclick="farmCook(\''+r.id+'\')"'+(ok?'':' disabled')+'>Приготовить</button>';
+  h+='</div>';
+ });
+ h+='</div>';
+ h+='<div class="card"><h3>🔧 Хозяйство</h3>';
+ for(var k in FARMUPG){
+  var u=FARMUPG[k],r=f.upg[k]||0;
+  h+='<div style="border-top:1px dashed var(--bd);padding:8px 0">';
+  h+='<p>'+u.i+' <b>'+u.n+'</b> — ранг '+r+'/'+u.c.length+' · '+u.d+'</p>';
+  if(r<u.c.length)h+='<button class="btn" onclick="farmUpg(\''+k+'\')">Улучшить ('+u.c[r]+' 🪙)</button>';
+  h+='</div>';
+ }
+ h+='</div>';
+ m.innerHTML=h;
+}
+
 function tabDev(m){
   if(!STATE.dev){m.innerHTML='<div class="card">Доступ только с кодом в Настройках.</div>';return;}
   var h='<div class="card"><h3>🛠 Панель тестировщика</h3><p class="sub">Симуляция времени, ресурсы, боссы, питомцы, сейв.</p>'+
@@ -4412,6 +4615,7 @@ function retroBossPets(){
 function init(){
   loadSave();
   retroBossPets();
+  farmRetro();
   newDayCheck();
   try{if(localStorage.getItem("fath_theme")==="1")document.body.classList.add("light");}catch(e){}
   applyBg();
