@@ -822,11 +822,15 @@ if(d.spintask){if(!d.spintask.rar)d.spintask.rar="common";
       if(!d.spintask.n||!d.spintask.s)d.spintask=null;}
     (d.wex||[]).forEach(function(e){if(!e.rar)e.rar="common";});
     STATE=d;updTIERS();
+    if(d.dev){delete d.dev;try{localStorage.setItem("fath_save",JSON.stringify(d));}catch(e){}}
+    try{if(sessionStorage.getItem("fath_dev"))STATE.dev=true;}catch(e){}
   }catch(e){STATE=DEFS();}
 }
 var _saveT=0;
 function save(){STATE._dirty=1;if(_saveT)return;_saveT=setTimeout(function(){_saveT=0;if(STATE._dirty)saveNow();},800);}
-function saveNow(){try{localStorage.setItem("fath_save",JSON.stringify(STATE));STATE._sc=(STATE._sc||0)+1;
+function saveNow(){var _devLock=false;try{_devLock=!!sessionStorage.getItem("fath_dev");}catch(e){}
+  if(_devLock){STATE._dirty=0;return;}
+  try{localStorage.setItem("fath_save",JSON.stringify(STATE));STATE._sc=(STATE._sc||0)+1;
   if(STATE._sc%30===0)bakPush(JSON.stringify(STATE),SAVEVER);}catch(e){}STATE._dirty=0;}
 window.addEventListener("beforeunload",function(){if(STATE._dirty)saveNow();});
 document.addEventListener("visibilitychange",function(){if(document.hidden&&STATE._dirty)saveNow();});
@@ -1316,7 +1320,6 @@ function exToSubmit(k,n){if(k==="plank")return Math.max(0,Math.floor(n/10));if(k
 function exUnit(k){return k==="plank"?"сек":k==="run"?"мин":k==="steps"?"шагов":"повт.";}
 function bossDamage(kind,reps){
   reps=Math.max(0,Math.floor(reps));STATE.lastTrainDay=todayStr();reps=exToSubmit(kind,reps);
-  if(STATE.bossday===todayStr()&&!STATE.dev){toast("Босс на сегодня повержен — приходи завтра!");return 0;}
   if(!(STATE.bhp>0))STATE.bhp=bossMaxHp();
   var b=BOSSES[STATE.bossIdx];
   var dmg=tierProg(reps);
@@ -3539,7 +3542,7 @@ function fightHtml(m){
   '<div class="row"><div class="bar hpbar" style="flex:1"><div style="width:'+Math.round(100*hp/bossMaxHp())+'%"></div></div>'+
   '<span class="tag">'+hp+'/'+bossMaxHp()+' HP</span></div></div>'+'<div class="card">'
 +'<p class="small" style="text-align:center">🏆 Награда за победу: <b>'+Math.round(50*(STATE.bossIdx+1)*(1+(STATE.bstage-1)*0.5))+' 🪙 + '+(50*STATE.bstage)+' ОП</b> · шанс 10% выбить 💤 ящик</p>'+ovlBtnHtml()
-+(STATE.bossday===todayStr()?'<p class="small" style="text-align:center;background:#7a1f1f;color:#ffd9d9;padding:8px;border-radius:8px;margin-top:8px;font-weight:700">🏆 Босс повержен сегодня — удары засчитаются только завтра</p>':'')
+
 +'</div>';
   if(p&&p.hp>0){
     var st=petStats(p);var _aw=wornArtOf(p);
@@ -4356,8 +4359,21 @@ function applyPromo(){
 }
 function enterDev(){
   var v=document.getElementById("devcode").value.trim();
-  if(v==="321"){STATE.dev=true;save();initNav();render();checkAch();toast("🛠 Дев-режим включён");}
+  if(v==="321"){try{sessionStorage.setItem("fath_dev","1");}catch(e){}STATE.dev=true;STATE._dirty=0;initNav();render();checkAch();toast("🛠 Дев-режим включён — песочница: изменения откатятся при выходе");}
   else toast("Неверный код");
+}
+function devExit(){
+  try{sessionStorage.removeItem("fath_dev");}catch(e){}
+  STATE._dirty=0;
+  try{
+    var raw=localStorage.getItem("fath_save");
+    if(raw){var d=JSON.parse(raw);if(d&&typeof d==="object"){var def=DEFS();for(var k in def){if(!(k in d))d[k]=def[k];}fixBoxes(d);STATE=d;updTIERS();}}
+    else{STATE=DEFS();updTIERS();}
+  }catch(e){}
+  STATE._dirty=0;STATE.dev=false;
+  try{applyBg();applyUiTheme();}catch(e){}
+  try{initNav();render();updHeader();checkAch();}catch(e){}
+  toast("✅ Дев-режим выключен — основной сейв восстановлен");
 }
 var wipeCode="";
 function wipeAsk(){
@@ -4378,7 +4394,8 @@ function wipeGo(){
     if(window._saveT){try{clearTimeout(window._saveT);}catch(e){}window._saveT=0;}
     STATE=DEFS();STATE._dirty=0;
     try{STATE.day=todayStr();}catch(e){}
-    try{localStorage.removeItem("fath_save");}catch(e){}
+    var _devSess=false;try{_devSess=!!sessionStorage.getItem("fath_dev");}catch(e){}
+    if(!_devSess)try{localStorage.removeItem("fath_save");}catch(e){}
     window._ovlCharge=false;window._ovlActive=false;
     try{applyBg();applyUiTheme();}catch(e){}
     initNav();updHeader();render();
@@ -4584,7 +4601,8 @@ function tabFarm(m){
 
 function tabDev(m){
   if(!STATE.dev){m.innerHTML='<div class="card">Доступ только с кодом в Настройках.</div>';return;}
-  var h='<div class="card"><h3>🛠 Панель тестировщика</h3><p class="sub">Симуляция времени, ресурсы, боссы, питомцы, сейв.</p>'+
+  var h='<div class="card" style="border-color:#7a1f1f;box-shadow:0 0 14px rgba(255,60,60,.25)"><h3>🚪 Выход из дев-режима</h3><p class="small">Всё, что ты сделал в дев-режиме (жетоны, ящики, питомцы, сдвиг дней, импорты, вайп), откатится — основной сейв не пострадал ни на йоту.</p><button class="btn prim" style="background:#7a1f1f" onclick="devExit()">🚪 Выйти из дев-режима</button></div>'+
+  '<div class="card"><h3>🛠 Панель тестировщика</h3><p class="sub">Симуляция времени, ресурсы, боссы, питомцы, сейв.</p>'+
   '<h4>⏱ Время</h4><div class="row">'+
   '<button class="btn small" onclick="devShift(1)">+1 день</button>'+
   '<button class="btn small" onclick="devShift(-1)">−1 день</button>'+
@@ -4697,9 +4715,11 @@ function devGirlRank(){var id=devGid();if(!id)return;var el=document.getElementB
   STATE.girlxp=STATE.girlxp||{};STATE.girlxp[id]=r===0?0:HTT[r-1];save();render();toast("👑 "+GIRLMAP[id].n+": "+HTITLES[r]);}
 function devExport(){document.getElementById("devjson").value=JSON.stringify(STATE);toast("Скопируй JSON");}
 function devBackup(){try{var bak=JSON.parse(localStorage.getItem("fath_bak")||"[]");if(!Array.isArray(bak)||!bak.length){toast("Бэкапов пока нет");return;}
-  var d=JSON.parse(bak[bak.length-1].data);if(!d||typeof d!=="object")throw 0;fixBoxes(d);STATE=d;saveNow();location.reload();}catch(e){toast("Не удалось восстановить бэкап");}}
+  var d=JSON.parse(bak[bak.length-1].data);if(!d||typeof d!=="object")throw 0;fixBoxes(d);STATE=d;saveNow();var _devSess=false;try{_devSess=!!sessionStorage.getItem("fath_dev");}catch(e){}
+  if(_devSess){STATE.dev=true;initNav();render();updHeader();toast("✅ Сейв загружен в песочницу");}else location.reload();}catch(e){toast("Не удалось восстановить бэкап");}}
 function devImport(){try{var d=JSON.parse(document.getElementById("devjson").value);
-  if(!d||d.v!==SAVEVER)throw 0;fixBoxes(d);STATE=d;saveNow();location.reload();}catch(e){toast("Некорректный JSON");}}
+  if(!d||d.v!==SAVEVER)throw 0;fixBoxes(d);STATE=d;saveNow();var _devSess=false;try{_devSess=!!sessionStorage.getItem("fath_dev");}catch(e){}
+  if(_devSess){STATE.dev=true;initNav();render();updHeader();toast("✅ Сейв загружен в песочницу");}else location.reload();}catch(e){toast("Некорректный JSON");}}
 // ===== О ПРОГЕ =====
 function tabAbout(m){
   m.innerHTML='<div class="card"><h3>ℹ️ О разработчике</h3>'+
