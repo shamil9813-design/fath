@@ -380,11 +380,39 @@ var BOSSES=[
 ["suleiman","Султан Сулейман хан хазрет лери",999,"🕌","all","Сила Османов",60,"Истинный владыка Порта: клинок янычар гасит каждый 2-й удар, проклятие султана и усиленные ответные удары."]
 ];
 var BOSSMAP={};BOSSES.forEach(function(b){BOSSMAP[b[0]]=b;});
-// ===== PNG-БОССЫ: bosses/<ключ>.png|jpg|webp|gif рядом с index.html =====
-var _bImgCache={},_bImgMiss={},_bImgPend={};
-function bossPicHtml(k,em,px){return '<span class="bp" data-bk="'+k+'" style="display:inline-flex;align-items:center;justify-content:center;width:'+px+'px;height:'+px+'px;font-size:'+Math.round(px*0.55)+'px;overflow:hidden;vertical-align:middle;border-radius:12px">'+em+'</span>';}
-function enhanceBossPics(){var els=document.querySelectorAll('.bp:not([data-done])');for(var i=0;i<els.length;i++)(function(el){var k=el.getAttribute('data-bk');if(!k)return;var c=_bImgCache[k];if(c&&c.ok){el.dataset.done='1';el.innerHTML='<img src="'+c.url+'" style="width:100%;height:100%;object-fit:contain;display:block">';return;}if(_bImgMiss[k]||_bImgPend[k])return;_bImgPend[k]=1;_bTry(k,0);})(els[i]);}
-function _bTry(k,idx){var E=['png','jpg','webp','gif'];if(idx>=E.length){delete _bImgPend[k];_bImgMiss[k]=1;return;}var url='bosses/'+k+'.'+E[idx],im=new Image();im.onload=function(){delete _bImgPend[k];_bImgCache[k]={ok:true,url:url};var els=document.querySelectorAll('.bp[data-bk="'+k+'"]');for(var j=0;j<els.length;j++){els[j].dataset.done='1';els[j].innerHTML='<img src="'+url+'" style="width:100%;height:100%;object-fit:contain;display:block">';}};im.onerror=function(){_bTry(k,idx+1);};im.src=url;}
+// ===== PNG-ЛОАДЕР БОССОВ: bosses/<ключ>[_<стадия>].png|jpg|webp|gif =====
+var BIMG={},BIMG_MISS={},BEMO={};
+BOSSES.forEach(function(x){BEMO[x[0]]=x[3];});
+(function(){var st=document.createElement("style");st.textContent=".bimgW{position:relative;display:inline-block;vertical-align:middle;background:rgba(0,0,0,.25);border:1px solid rgba(255,255,255,.22);border-radius:8px;overflow:hidden;flex-shrink:0}.bimgW>img,.bimgW>.bemo{position:absolute;top:0;left:0;width:100%;height:100%;object-fit:contain}.bimgW>.bemo{display:flex;align-items:center;justify-content:center}.bArtFight{flex:0 0 128px;align-self:stretch;min-height:132px;border-radius:12px}.bArtMini{width:46px;height:46px;border-radius:10px}.bArtList{width:24px;height:24px;border-radius:6px}.bArtDev{width:16px;height:16px;border-radius:4px}.bfight-row{display:flex;align-items:stretch;gap:10px;margin:4px 0 6px}.bfight-info{flex:1;min-width:0}.bmini-row{display:flex;align-items:center;gap:8px}";document.head.appendChild(st);})();
+var BEXTS=["png","jpg","webp","gif"];
+function bimgLoad(key,st){
+  var k=key+"_"+st;
+  if(BIMG[k]||BIMG_MISS[k])return;
+  var q=[];
+  if(st>1)BEXTS.forEach(function(e){q.push("bosses/"+key+"_"+st+"."+e);});
+  BEXTS.forEach(function(e){q.push("bosses/"+key+"."+e);});
+  var i=0;
+  (function next(){
+    if(i>=q.length){BIMG_MISS[k]=1;return;}
+    var src=q[i++],im=new Image();
+    im.onload=function(){BIMG[k]=src;fillBimg(k);};
+    im.onerror=next;
+    im.src=src;
+  })();
+}
+function fillBimg(k){
+  var src=BIMG[k];
+  if(!src)return;
+  var els=document.querySelectorAll('[data-bimg="'+k+'"]');
+  for(var i=0;i<els.length;i++){var el=els[i];var im=document.createElement("img");im.src=src;im.alt="";el.innerHTML="";el.appendChild(im);}
+}
+function bimgHtml(key,st,cls,em){
+  var k=key+"_"+st;
+  bimgLoad(key,st);
+  var img=BIMG[k];
+  var inner=img?'<img src="'+img+'" alt="">':'<span class="bemo" style="font-size:'+(em||22)+'px">'+(BEMO[key]||"")+'</span>';
+  return '<span class="bimgW '+cls+'"'+(img?'':' data-bimg="'+k+'"')+'>'+inner+'</span>';
+}
 var PETS=[["cat","Кот","common","🐱"],["dog","Пёс","common","🐶"],["rabbit","Кролик","common","🐰"],
 ["wolf","Волк","rare","🐺"],["owl","Сова","rare","🦉"],["zombie","Зомби","rare","🧟"],["rhino","Носорог","rare","🦏"],
 ["golem","Голем","epic","🗿"],["demon","Демон","epic","😈"],["robot","Робот","epic","🤖"],["boar","Кабан","epic","🐗"],
@@ -1016,7 +1044,6 @@ function toggleSnd(){STATE.snd=!STATE.snd;save();render();S("click");}
 function toast(msg){var t=document.getElementById("toast");t.textContent=msg;t.classList.add("show");S("toast");
 clearTimeout(t._h);t._h=setTimeout(function(){t.classList.remove("show");},2600);}
 function openModal(html){document.getElementById("mcont").innerHTML=html;
-enhanceBossPics();
 document.getElementById("modal").style.display="flex";}
 function closeModal(){document.getElementById("modal").style.display="none";}
 function esc(s){return String(s).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/\x22/g,"&quot;");}
@@ -1646,7 +1673,6 @@ function render(){
   if(!f){m.innerHTML='<div class="card">Вкладка не найдена</div>';return;}
   try{m.innerHTML="";f(m);injectHints();}
   catch(e){m.innerHTML='<div class="card" style="color:var(--bad)">Ошибка вкладки: '+esc(e.message)+'</div>';}
-  enhanceBossPics();
   updHeader();
 }
 // ===== КАНАС-АНИМАЦИИ ПРОКРУТКИ =====
@@ -3274,7 +3300,7 @@ function openNews(){
   '<div class="row"><div class="bar" style="flex:1"><div style="width:'+Math.round(100*p.hp/petStats(p).hp)+'%"></div></div>'+
   '<span class="tag">'+p.hp+'/'+petStats(p).hp+' HP</span></div>'+
   '<button class="btn small" style="margin-top:8px" onclick="STATE.fightTab=\'pets\';go(\'fight\')">К питомцам</button></div>';
-  h+='<div class="card"><h3>Текущий босс</h3><p style="text-align:center">'+bossPicHtml(b[0],b[3],64)+'</p><p style="text-align:center;margin-top:4px"><b>'+esc(b[1])+'</b></p>'+
+  h+='<div class="card"><h3>Текущий босс</h3><div class="bmini-row">'+bimgHtml(b[0],STATE.bstage,'bArtMini',24)+'<p style="flex:1;margin:0"><b>'+esc(b[1])+'</b></p></div>'+
   '<p class="small">'+esc(b[7])+'</p>'+
   '<div class="row" style="margin-top:6px"><div class="bar hpbar" style="flex:1"><div style="width:'+Math.round(100*Math.max(0,STATE.bhp||bossMaxHp())/bossMaxHp())+'%"></div></div>'+
   '<span class="tag">'+Math.max(0,STATE.bhp||bossMaxHp())+'/'+bossMaxHp()+' HP</span></div>'+
@@ -3542,10 +3568,13 @@ function fightHtml(m){
   var p=STATE.pets[STATE.activepet];
   var hp=Math.max(0,STATE.bhp||bossMaxHp());
   var h='<div class="card"><h3>⚔️ Битва</h3>'+
-  '<div style="text-align:center">'+bossPicHtml(b[0],b[3],88)+'</div>'+
-  '<h3 style="text-align:center">'+esc(b[1])+' <button class="btn small" onclick="bossInfoModal()" style="margin-left:6px;vertical-align:middle" title="Как воевать с этим боссом">ℹ️</button> <span class="pill-r r-epic">'+(STATE.bstage>1?['','Горячая','Пекловая','Армагедонская','Пепельная'][STATE.bstage-1]+' · ':'')+'стадия '+STATE.bstage+'/5</span></h3>'+
+  '<div class="bfight-row">'+
+  bimgHtml(b[0],STATE.bstage,'bArtFight',60)+
+  '<div class="bfight-info">'+
+  '<h3>'+esc(b[1])+' <button class="btn small" onclick="bossInfoModal()" style="margin-left:6px;vertical-align:middle" title="Как воевать с этим боссом">ℹ️</button> <span class="pill-r r-epic">'+(STATE.bstage>1?['','Горячая','Пекловая','Армагедонская','Пепельная'][STATE.bstage-1]+' · ':'')+'стадия '+STATE.bstage+'/5</span></h3>'+
   bossAbilityInfo()+
-  (STATE.bstage>1?'<p class="small" style="text-align:center">Стадии: '+['','🔥 каждая 10-я подача сгорает','🌡 весь урон −20%','💥 каждый 5-й удар вдвое слабее','🌋 ещё −10% к урону'].slice(2,STATE.bstage+1).join(' · ')+'</p>':'')+
+  (STATE.bstage>1?'<p class="small">Стадии: '+['','🔥 каждая 10-я подача сгорает','🌡 весь урон −20%','💥 каждый 5-й удар вдвое слабее','🌋 ещё −10% к урону'].slice(2,STATE.bstage+1).join(' · ')+'</p>':'')+
+  '</div></div>'+
   '<div class="row"><div class="bar hpbar" style="flex:1"><div style="width:'+Math.round(100*hp/bossMaxHp())+'%"></div></div>'+
   '<span class="tag">'+hp+'/'+bossMaxHp()+' HP</span></div></div>'+'<div class="card">'
 +'<p class="small" style="text-align:center">🏆 Награда за победу: <b>'+Math.round(50*(STATE.bossIdx+1)*(1+(STATE.bstage-1)*0.5))+' 🪙 + '+(50*STATE.bstage)+' ОП</b> · шанс 10% выбить 💤 ящик</p>'+ovlBtnHtml()
@@ -3571,7 +3600,7 @@ function fightHtml(m){
   BOSSES.forEach(function(bb,i){
     if(i>STATE.unlocked)return;
     var dead=STATE.killed.indexOf(bb[0])>=0;
-    h+='<div class="list-item"'+(dead?' style="opacity:.45;filter:grayscale(1);position:relative"':'')+'><div>'+bossPicHtml(bb[0],bb[3],28)+' <b>'+esc(bb[1])+'</b> <span class="small">'+bb[2]+' HP</span>'+
+    h+='<div class="list-item"'+(dead?' style="opacity:.45;filter:grayscale(1);position:relative"':'')+'><div>'+bimgHtml(bb[0],1,'bArtList',14)+' <b>'+esc(bb[1])+'</b> <span class="small">'+bb[2]+' HP</span>'+
     (dead?' <span class="pill-r r-legendary" style="font-weight:700">🏆 Босс повержен</span>':'')
 +(dead?'<span style="position:absolute;right:18px;top:50%;transform:translateY(-50%);font-size:54px;color:#c0392b;opacity:.55;font-weight:900;pointer-events:none;line-height:1">✕</span>':'')+'</div>'+
     (i===STATE.bossIdx?'<span class="chip sel">сейчас</span>':'<span class="tag">далее по порядку</span>')+'</div>'
@@ -4664,7 +4693,7 @@ function tabDev(m){
   '<textarea id="devjson" placeholder="JSON сейва" style="margin-top:6px;height:90px"></textarea></div>';
   m.innerHTML=h;
   m.querySelector("#devbosses").innerHTML=BOSSES.map(function(b,i){
-    return '<span class="chip'+(i===STATE.bossIdx?" sel":"")+'" onclick="devPickBoss('+i+')">'+bossPicHtml(b[0],b[3],20)+' '+b[2]+'</span>';}).join("");
+    return '<span class="chip'+(i===STATE.bossIdx?" sel":"")+'" onclick="devPickBoss('+i+')">'+bimgHtml(b[0],1,'bArtDev',9)+' <span style="font-size:9px">'+b[2]+'</span></span>';}).join("");
 }
 function devShift(n){STATE.shift=n===0?0:STATE.shift+n;newDayCheck();save();render();toast("Сдвиг: "+STATE.shift+" дн");}
 function devResetFlags(){STATE.daycounts={};STATE.spintask=null;STATE.lastspin="";save();render();toast("Флаги дня сброшены — можно крутить заново");}
