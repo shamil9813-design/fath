@@ -1,4 +1,4 @@
-const CACHE = 'fath-v18';
+const CACHE = 'fath-v19';
 const ASSETS = ['index.html', 'manifest.json', 'icon-192.png', 'icon-512.png'];
 
 self.addEventListener('install', e => {
