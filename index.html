@@ -679,7 +679,7 @@ var BOSSES=[
 var BOSSMAP={};BOSSES.forEach(function(b){BOSSMAP[b[0]]=b;});
 // ===== PNG-БОССЫ: bosses/<ключ>.png|jpg|webp|gif рядом с index.html =====
 var _bImgCache={},_bImgMiss={},_bImgPend={};
-function bossPicHtml(k,em,px){return '<span class="bp" data-bk="'+k+'" style="display:inline-flex;align-items:center;justify-content:center;width:'+px+'px;height:'+px+'px;font-size:'+Math.round(px*0.55)+'px;overflow:hidden;vertical-align:middle;border-radius:12px">'+em+'</span>';}
+function bossPicHtml(k,em,px,st){var ds=st?"flex":"inline-flex",hh=st?"100%":px+"px";return '<span class="bp" data-bk="'+k+'" style="display:'+ds+';align-items:center;justify-content:center;width:'+px+'px;height:'+hh+';min-height:'+px+'px;font-size:'+Math.round(px*0.55)+'px;overflow:hidden;vertical-align:middle;border-radius:12px">'+em+'</span>';}
 function enhanceBossPics(){var els=document.querySelectorAll('.bp:not([data-done])');for(var i=0;i<els.length;i++)(function(el){var k=el.getAttribute('data-bk');if(!k)return;var c=_bImgCache[k];if(c&&c.ok){el.dataset.done='1';el.innerHTML='<img src="'+c.url+'" style="width:100%;height:100%;object-fit:contain;display:block">';return;}if(_bImgMiss[k]||_bImgPend[k])return;_bImgPend[k]=1;_bTry(k,0);})(els[i]);}
 function _bTry(k,idx){var E=['png','jpg','webp','gif'];if(idx>=E.length){delete _bImgPend[k];_bImgMiss[k]=1;return;}var url='bosses/'+k+'.'+E[idx],im=new Image();im.onload=function(){delete _bImgPend[k];_bImgCache[k]={ok:true,url:url};var els=document.querySelectorAll('.bp[data-bk="'+k+'"]');for(var j=0;j<els.length;j++){els[j].dataset.done='1';els[j].innerHTML='<img src="'+url+'" style="width:100%;height:100%;object-fit:contain;display:block">';}};im.onerror=function(){_bTry(k,idx+1);};im.src=url;}
 var PETS=[["cat","Кот","common","🐱"],["dog","Пёс","common","🐶"],["rabbit","Кролик","common","🐰"],
@@ -1081,7 +1081,7 @@ function buyLaz(w){
 
 <script>
 var SAVEVER=6;
-var DEFS=function(){return{v:SAVEVER,lvl:1,xp:0,tok:0,day:"1970-01-01",shift:0,streak:0,counts:{},total:{},daycounts:{},
+var DEFS=function(){return{v:SAVEVER,lvl:1,xp:0,tok:0,day:"1970-01-01",shift:0,streak:0,counts:{},total:{},daycounts:{},dck:0,
 lastspin:"",spinsdone:0,style:"wheel",owned:["wheel"],ownedbg:[],bg:"none",
 pets:[{sp:"cat",lvl:1,st:1,xp:0,hp:60,id:"p0"}],activepet:0,artifacts:0,artcol:{},petart:{},petuid:0,petTab:"pets",snd:true,uiTint:true,newsRead:0,evrev:0,deb:null,lastcode:"",greedn:0,
 bossIdx:0,unlocked:0,killed:[],bhp:0,bstage:1,bhit:0,dcount:0,phaseKind:"",
@@ -1176,7 +1176,7 @@ function loadSave(){
     if(!Array.isArray(d.ownedbg))d.ownedbg=[];
     if(!d.counts||typeof d.counts!=="object")d.counts={};
     if(!d.total||typeof d.total!=="object")d.total={};
-    if(!d.daycounts||typeof d.daycounts!=="object")d.daycounts={};
+    if(!d.daycounts||typeof d.daycounts!=="object")d.daycounts={};if(!d.dck){d.daycounts={};d.dck=1;}/*разовый сброс прилипших счётчиков*/
     if(d.prog&&d.prog.id){var _o=d.prog;d.prog={};d.prog[_o.id]=_o;}
     if(!d.prog||typeof d.prog!=="object"||Array.isArray(d.prog))d.prog={};
 if(d.spintask){if(!d.spintask.rar)d.spintask.rar="common";
@@ -1263,7 +1263,7 @@ function devDebSim(noCode){
 function devDebClear(){debEnsure();STATE.deb=null;STATE.greedn=0;save();render();toast("Карка снята");}
 function newDayCheck(){
   var t=todayStr();
-  if(STATE.day!==t){STATE.day=t;STATE.daycounts=STATE.daycounts||{};
+  if(STATE.day!==t){STATE.day=t;STATE.daycounts={};/*дневные счётчики сбрасываются: вчера не смешивается с сегодня*/
     STATE.pets.forEach(function(p){if(p.stun>0){p.stun--;
       if(p.stun===0){p.hp=petStats(p).hp;toast("\ud83d\udc09 "+PETMAP[p.sp][1]+" очнулся с полным HP!");}}
       var A=(p.stun>0||p.hp<=0)?{}:petAbil(p);
@@ -3716,8 +3716,7 @@ if(lazActive()){var lz=lazT();
   '<div class="row"><div class="bar" style="flex:1"><div style="width:'+Math.round(100*p.hp/petStats(p).hp)+'%"></div></div>'+
   '<span class="tag">'+p.hp+'/'+petStats(p).hp+' HP</span></div>'+
   '<button class="btn small" style="margin-top:8px" onclick="STATE.fightTab=\'pets\';go(\'fight\')">К питомцам</button></div>';
-  h+='<div class="card"><h3>Текущий босс</h3><p style="text-align:center">'+bossPicHtml(b[0],b[3],64)+'</p><p style="text-align:center;margin-top:4px"><b>'+esc(b[1])+'</b></p>'+
-  '<p class="small">'+esc(b[7])+'</p>'+
+  h+='<div class="card"><h3>Текущий босс</h3><div class="row" style="align-items:stretch;flex-wrap:nowrap;gap:12px"><div style="flex:0 0 96px;width:96px;min-width:96px">'+bossPicHtml(b[0],b[3],96,1)+'</div><div style="flex:1;min-width:0"><p style="margin:0 0 4px"><b>'+esc(b[1])+'</b></p><p class="small" style="margin:0">'+esc(b[7])+'</p>'+
   '<div class="row" style="margin-top:6px"><div class="bar hpbar" style="flex:1"><div style="width:'+Math.round(100*Math.max(0,STATE.bhp||bossMaxHp())/bossMaxHp())+'%"></div></div>'+
   '<span class="tag">'+Math.max(0,STATE.bhp||bossMaxHp())+'/'+bossMaxHp()+' HP</span></div>'+
   '<button class="btn small prim" style="margin-top:8px" onclick="go(\'fight\')">⚔️ В бой</button></div>';
@@ -3984,10 +3983,7 @@ function fightHtml(m){
   var p=STATE.pets[STATE.activepet];
   var hp=Math.max(0,STATE.bhp||bossMaxHp());
   var h='<div class="card"><h3>⚔️ Битва</h3>'+
-  '<div style="text-align:center">'+bossPicHtml(b[0],b[3],88)+'</div>'+
-  '<h3 style="text-align:center">'+esc(b[1])+' <button class="btn small" onclick="bossInfoModal()" style="margin-left:6px;vertical-align:middle" title="Как воевать с этим боссом">ℹ️</button> <span class="pill-r r-epic">'+(STATE.bstage>1?['','Горячая','Пекловая','Армагедонская','Пепельная'][STATE.bstage-1]+' · ':'')+'стадия '+STATE.bstage+'/5</span></h3>'+
-  bossAbilityInfo()+
-  (STATE.bstage>1?'<p class="small" style="text-align:center">Стадии: '+['','🔥 каждая 10-я подача сгорает','🌡 весь урон −20%','💥 каждый 5-й удар вдвое слабее','🌋 ещё −10% к урону'].slice(2,STATE.bstage+1).join(' · ')+'</p>':'')+
+  '<div class="row" style="align-items:stretch;flex-wrap:nowrap;gap:12px;margin-top:4px"><div style="flex:0 0 96px;width:96px;min-width:96px">'+bossPicHtml(b[0],b[3],96,1)+'</div><div style="flex:1;min-width:0"><h3 style="text-align:left;margin:0 0 4px">'+esc(b[1])+' <button class="btn small" onclick="bossInfoModal()" style="margin-left:6px;vertical-align:middle" title="Как воевать с этим боссом">ℹ️</button> <span class="pill-r r-epic">'+(STATE.bstage>1?['','Горячая','Пекловая','Армагедонская','Пепельная'][STATE.bstage-1]+' · ':'')+'стадия '+STATE.bstage+'/5</span></h3>'+bossAbilityInfo()+(STATE.bstage>1?'<p class="small" style="text-align:left">Стадии: '+['','🔥 каждая 10-я подача сгорает','🌡 весь урон −20%','💥 каждый 5-й удар вдвое слабее','🌋 ещё −10% к урону'].slice(2,STATE.bstage+1).join(' · ')+'</p>':'')+'</div></div>'+
   '<div class="row"><div class="bar hpbar" style="flex:1"><div style="width:'+Math.round(100*hp/bossMaxHp())+'%"></div></div>'+
   '<span class="tag">'+hp+'/'+bossMaxHp()+' HP</span></div></div>'+'<div class="card">'
 +'<p class="small" style="text-align:center">🏆 Награда за победу: <b>'+Math.round(50*(STATE.bossIdx+1)*(1+(STATE.bstage-1)*0.5))+' 🪙 + '+(50*STATE.bstage)+' ОП</b> · шанс 10% выбить 💤 ящик</p>'+ovlBtnHtml()
@@ -4939,7 +4935,7 @@ function mogFeed(){
     if(dC>0)anyNew=true;
     if(cnt>pc)w[k]=cnt;else if(pc>0)w[k]=pc;
     var vv=mogXpOf(k,dC);
-    xp+=dC*vv;
+    xp+=vv;/*фикс: vv уже готовые ОП, dC умножать нельзя*/
     if(vv>0)rows+='<li>'+(EXICON[k]||"•")+' '+(EXNAME[k]||k)+': +'+dC+' новых → +'+vv+' ОП</li>';});
   if(!anyNew){toast("📭 Всё из этого кода уже съедено — с прошлого раза новых повторений не добавилось");return;}
   var rest=MOGCAP-prev.x,xp2=Math.min(xp,Math.max(0,rest));
