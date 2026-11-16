@@ -542,6 +542,30 @@ body.pulsar-ui .hlogo{text-shadow:0 0 16px rgba(255,77,166,.95);animation:psLogo
 @keyframes psLogo{0%,100%{filter:brightness(1)}12%{filter:brightness(1.5)}}
 
 
+
+/* === DIVINE RARITY + SUNDAY WALK (v16) === */
+.r-divine{background:linear-gradient(135deg,rgba(255,215,0,.38),rgba(255,105,180,.38));color:#ffe97f;border:1px solid rgba(255,225,140,.8);box-shadow:0 0 10px rgba(255,215,0,.55),0 0 22px rgba(255,105,180,.35);animation:divPulse 2.4s ease-in-out infinite}
+@keyframes divPulse{0%,100%{box-shadow:0 0 10px rgba(255,215,0,.45),0 0 20px rgba(255,105,180,.3)}50%{box-shadow:0 0 18px rgba(255,215,0,.85),0 0 36px rgba(255,105,180,.55)}}
+.wkban{border:1px solid rgba(255,215,0,.45)!important;box-shadow:0 0 16px rgba(255,215,0,.25);background-image:linear-gradient(180deg,rgba(255,200,80,.08),transparent 60%)}
+.wkbar{height:14px;border-radius:999px;background:rgba(255,255,255,.08);overflow:hidden;margin:8px 0}
+.wkbar>i{display:block;height:100%;border-radius:999px;background:linear-gradient(90deg,#ffd700,#ff69b4);box-shadow:0 0 10px rgba(255,215,0,.6);transition:width .5s}
+.dagcard{border:1px solid rgba(255,140,110,.35)!important}
+
+
+/* === V17 HAREM CARDS === */
+.hrow{display:flex;gap:12px;align-items:stretch;padding:12px 10px;margin:10px 0;border-bottom:1px solid rgba(255,255,255,.08)}
+.gav{position:relative;flex:0 0 88px;min-height:100px;border-radius:14px;overflow:hidden;display:flex;align-items:center;justify-content:center;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.14)}
+.gav .gavE{font-size:46px;line-height:1}
+.gav img.gavI{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;display:none}
+.gbody{flex:1;min-width:0;font-size:14px;line-height:1.5}
+.gname{font-size:18px;font-weight:700}
+.rbadge{display:inline-block;padding:2px 10px;border-radius:999px;font-size:11px}
+.gdesc{color:#9aa;font-size:13px;margin-top:2px}
+.gaura{color:#ffd76a;text-shadow:0 0 8px rgba(255,215,0,.7),0 0 16px rgba(255,105,180,.4);font-size:13px;margin-top:2px}
+.divine-name b{text-shadow:0 0 10px rgba(255,215,0,.95),0 0 22px rgba(255,105,180,.55)}
+.divine-row .gav{border:1px solid rgba(255,215,0,.65);animation:divAuraG 2.6s ease-in-out infinite}
+@keyframes divAuraG{0%,100%{box-shadow:0 0 10px rgba(255,200,80,.4),inset 0 0 10px rgba(255,105,180,.25)}50%{box-shadow:0 0 24px rgba(255,215,0,.8),inset 0 0 16px rgba(255,105,180,.5)}}
+.divine-row .r-divine{box-shadow:0 0 12px rgba(255,215,0,.8),0 0 24px rgba(255,105,180,.5)}
 </style>
 </head>
 <body>
@@ -572,7 +596,7 @@ b.style.display='block';b.textContent='Ошибка: '+e.message;});</script>
 <script>
 // ===== ДАННЫЕ ИЗ ОРИГИНАЛА =====
 var RAR = {common:{n:"Обычная",c:"#95a5a6",cls:"r-common"},rare:{n:"Редкая",c:"#3498db",cls:"r-rare"},
-  epic:{n:"Эпическая",c:"#9b59b6",cls:"r-epic"},legendary:{n:"Легендарная",c:"#f1c40f",cls:"r-legendary"},mythic:{n:"Мифическая",c:"#00e5ff",cls:"r-mythic"}};
+  epic:{n:"Эпическая",c:"#9b59b6",cls:"r-epic"},legendary:{n:"Легендарная",c:"#f1c40f",cls:"r-legendary"},mythic:{n:"Мифическая",c:"#00e5ff",cls:"r-mythic"},divine:{n:"Божественная",c:"#ffd700",cls:"r-divine"}};
 function rqr(x){return RAR[x]||RAR.common;}
 var RARORDER=["common","rare","epic","legendary"];
 var STYLES=[["wheel","Колесо фортуны",0],["line","Бегущая строка",7],["slot","Слот-машина",12],
@@ -1081,7 +1105,7 @@ function buyLaz(w){
 
 <script>
 var SAVEVER=6;
-var DEFS=function(){return{v:SAVEVER,lvl:1,xp:0,tok:0,day:"1970-01-01",shift:0,streak:0,counts:{},total:{},daycounts:{},dck:0,
+var DEFS=function(){return{v:SAVEVER,lvl:1,xp:0,tok:0,knf:0,day:"1970-01-01",shift:0,streak:0,counts:{},total:{},daycounts:{},dck:0,
 lastspin:"",spinsdone:0,style:"wheel",owned:["wheel"],ownedbg:[],bg:"none",
 pets:[{sp:"cat",lvl:1,st:1,xp:0,hp:60,id:"p0"}],activepet:0,artifacts:0,artcol:{},petart:{},petuid:0,petTab:"pets",snd:true,uiTint:true,newsRead:0,evrev:0,deb:null,lastcode:"",greedn:0,
 bossIdx:0,unlocked:0,killed:[],bhp:0,bstage:1,bhit:0,dcount:0,phaseKind:"",
@@ -1176,7 +1200,7 @@ function loadSave(){
     if(!Array.isArray(d.ownedbg))d.ownedbg=[];
     if(!d.counts||typeof d.counts!=="object")d.counts={};
     if(!d.total||typeof d.total!=="object")d.total={};
-    if(!d.daycounts||typeof d.daycounts!=="object")d.daycounts={};if(!d.dck){d.daycounts={};d.dck=1;}/*разовый сброс прилипших счётчиков*/
+    if(!d.daycounts||typeof d.daycounts!=="object")d.daycounts={};if(!d.dck){d.daycounts={};d.dck=1;}/*разовый сброс прилипших счётчиков*/if(d.knf==null)d.knf=0;
     if(d.prog&&d.prog.id){var _o=d.prog;d.prog={};d.prog[_o.id]=_o;}
     if(!d.prog||typeof d.prog!=="object"||Array.isArray(d.prog))d.prog={};
 if(d.spintask){if(!d.spintask.rar)d.spintask.rar="common";
@@ -1281,7 +1305,7 @@ function addXp(n){var _tx=trBonus().xp;if(_tx)n=Math.round(n*(1+_tx/100));if(deb
   var wd=(d.getDay()+6)%7;STATE.wstats[wd]=(STATE.wstats[wd]||0)+Math.max(0,n);}catch(e){}
   while(STATE.xp>=100){STATE.xp-=100;STATE.lvl++;S("lvlup");toast("🎉 Уровень "+STATE.lvl+"!");}
   checkAch();updHeader();save();}
-function addTok(n){if(n>0)S("coin");STATE.tok+=n;updHeader();save();}
+function addTok(n){if(n>0)S("coin");if(n>0&&STATE.girls&&STATE.girls.hurrem)n=Math.round(n*1.3);STATE.tok+=n;updHeader();save();}
 function addCount(key,n){
   if(!STATE.counts)STATE.counts={};if(!STATE.total)STATE.total={};if(!STATE.daycounts)STATE.daycounts={};
   STATE.counts[key]=(STATE.counts[key]||0)+n;
@@ -3678,7 +3702,7 @@ function openNews(){
   var p=STATE.pets[STATE.activepet];
   var b=BOSSES[STATE.bossIdx];
   var t=STATE.spintask;
-  var h='<div class="card"><h3>Привет, атлет! 💪</h3>'+
+  var h=wkBannerHtml()+daggerCardHtml()+'<div class="card"><h3>Привет, атлет! 💪</h3>'+
   '<div class="row">'+
   '<div class="stat"><b>'+STATE.lvl+'</b><span>уровень</span></div>'+
   '<div class="stat"><b>'+STATE.tok+'</b><span>жетоны</span></div>'+
@@ -4774,6 +4798,7 @@ function applyPromo(){
   if(v==="wormix100"){S("promo");STATE.promos.push(v);addTok(100);addXp(50);checkAch();save();
     toast("🎉 Промокод активирован: +100 🪙, +50 ОП");}
   else if(v==="NAZGUL10"){S("promo");STATE.promos.push(v);giveBox("legendary",10);save();render();toast("🎉 Промокод активирован: +10 легендарных ящиков");}
+  else if(vU==="HUREM5000"){S("promo");STATE.promos.push(v);STATE.girls.hurrem=1;save();render();toast("👑 Хюррем вступила в гарем! Божественная редкость.");}
   else if(vU==="KISHBABAY"){unlockPromoBg("ny");}
   else if(vU==="DIVAN"){S("promo");STATE.promos.push(v);STATE.lnv=(STATE.lnv||0)+30;save();render();toast("🦥 Диван начислил 30 ленивцев");}
   else if(vU==="TELOS"){S("promo");STATE.promos.push(v);addTok(150);mogEnsure();STATE.mog.xp=(STATE.mog.xp||0)+30;save();render();toast("✨ TELOS: +150 🪙, +30 ОП Могуществу");}
@@ -5272,14 +5297,14 @@ var GIRLS=[
 {id:"mihrimah",n:"Михримах",ic:"🌹",rar:"rare",price:1100,d:"питомцы игнорируют урон",b:{ign:[25,31,37,43,50]}},
 {id:"firuze",n:"Фирузе",ic:"✨",rar:"epic",price:2000,d:"опыт с тренировок",b:{xp:[30,40,50,62,75]}},
 {id:"nurbanu",n:"Нурбану",ic:"🌙",rar:"epic",price:2600,d:"опыт и лечение питомцев",b:{xp:[35,45,55,65,80],heal:[20,30,40,50,65]}},
-{id:"fahriye",n:"Фахрие-султан",ic:"👑",rar:"legendary",price:4500,d:"монеты и опыт",b:{tok:[40,50,60,72,90],xp:[40,50,60,72,90]}},
-{id:"hurrem",n:"Хюррем",ic:"💃",rar:"legendary",price:5000,d:"монеты с тренировок",b:{tok:[60,70,80,95,110]}},
+{id:"fahriye",n:"Фахрие-султан",ic:"👑",rar:"legendary",price:4500,d:"монеты и опыт",b:{tok:[40,50,60,72,90],xp:[40,50,60,72,90]}},,
 {id:"kosem",n:"Кёсем",ic:"🌟",rar:"mythic",price:12000,d:"всё: монеты, опыт, урон",b:{all:[30,36,42,50,60]}},
 {id:"peri",n:"Пайпер Перри",ic:"🧚",rar:"mythic",price:0,d:"урон по боссам и монеты",b:{bdmg:[40,50,60,70,80],tok:[25,30,38,44,50]}},
-{id:"prokr",n:"Прокрастина",ic:"🛌",rar:"mythic",price:0,d:"опыт и урон по боссам",b:{xp:[25,32,40,48,55],bdmg:[30,38,46,54,60]}}];
+{id:"prokr",n:"Прокрастина",ic:"🛌",rar:"mythic",price:0,d:"опыт и урон по боссам",b:{xp:[25,32,40,48,55],bdmg:[30,38,46,54,60]}},
+{id:"hurrem",n:"Хюррем",ic:"💃",rar:"divine",price:5000,d:"монеты с тренировок",b:{tok:[72,84,96,114,132]}}];
 var GIRLMAP={};GIRLS.forEach(function(g){GIRLMAP[g.id]=g;});
 var GIRLRAR={common:0.30,rare:0.25,epic:0.18,legendary:0.08};
-var GIRLDUPS={common:100,rare:250,epic:600,legendary:1200,mythic:2500};
+var GIRLDUPS={common:100,rare:250,epic:600,legendary:1200,mythic:2500,divine:3000};
 var KOSEMCH={wood:0.002,silver:0.004,gold:0.008,legendary:0.015};
 var HTITLES=["Наложница","Гёзде","Кадын","Хасеки","Валиде-султан"];
 var HTITLEC=["#95a5a6","#ecf0f1","#4aa8ff","#b48cff","#ffd54a"];
@@ -5388,6 +5413,7 @@ function girlBonusText(g,eff){
   if(b.ign)parts.push("игнор урона "+m(b.ign[ti])+"%");
   if(b.all)parts.push("всё +"+m(b.all[ti])+"%");
   if(b.bdmg)parts.push("урон по боссам +"+m(b.bdmg[ti])+"%");
+  if(g.rar==="divine")parts.push("✨ пассив: +30% 🪙 со всех источников");
   return parts.join(" · ");}
 function haremInfoModal(){
   var kinds=["wood","silver","gold","legendary"];
@@ -5492,8 +5518,8 @@ function tabHarem(m){
   h+='<div class="card"><h3>💃 Гарем</h3><p style="color:#9aa">Гюльбахар есть с самого начала, остальных выбивай из ящиков или наймай за жетоны.</p>';
   GIRLS.forEach(function(g){
     var own=STATE.girls[g.id];var ti=hTitleIdx(g.id);
-    h+='<div style="margin:10px 0;padding-bottom:8px;border-bottom:1px solid rgba(255,255,255,.08)">';
-    h+=g.ic+' <b>'+g.n+'</b> <span style="color:'+rqr(g.rar).c+'">'+rqr(g.rar).n+'</span>';
+    h+='<div class="hrow'+(g.rar==="divine"?" divine-row":"")+'">';
+    h+='<div class="gav" data-gav="'+g.id+'"><span class="gavE">'+g.ic+'</span><img class="gavI" alt=""></div><div class="gbody"><div class="gname'+(g.rar==="divine"?" divine-name":"")+'"><b>'+g.n+'</b></div><span class="rbadge r-'+g.rar+'" style="color:'+rqr(g.rar).c+'">'+rqr(g.rar).n+'</span>'+(g.rar==="divine"?'<div class="gaura">👑 Аура: уникальное золотое сияние</div>':'')+'<div class="gdesc">'+g.d+'</div>';
     if(own){
       h+='<br><span style="color:'+HTITLEC[ti]+'">'+HTITLES[ti]+'</span> · <span style="color:#9aa">'+girlBonusText(g,false)+'</span>';
       h+='<br><span style="color:#9aa;font-size:12px">Опыт: '+(STATE.girlxp[g.id]||0)+' · ❤️ '+loveOf(g.id)+'/20 (+'+(loveOf(g.id)*loveStep())+'%)'+
@@ -5502,10 +5528,10 @@ function tabHarem(m){
       h+='<br><span style="color:#9aa">Бонус: '+girlBonusText(g,false)+'</span>';
       h+='<br><span style="color:#9aa">'+(g.id==="peri"?'Освобождается при победе над Горбатым Тленом (Ночь Тыкв)':'Цена найма: '+g.price+' 🪙')+'</span>'+(g.id==="peri"?'':' <button class="btn prim" style="margin-top:4px" onclick="buyGirl(\''+g.id+'\')">Найм</button>');
     }
-    h+='</div>';
+    h+='</div></div>';
   });
   h+='</div>';
-  m.innerHTML=h;
+  m.innerHTML=h;if(!window.gavFix){window.gavFix=function(){var els=document.querySelectorAll("[data-gav]");var bust=Math.floor(Date.now()/3600000);for(var i=0;i<els.length;i++)(function(el){var id=el.getAttribute("data-gav"),img=el.querySelector("img");if(!img)return;var E=["png","jpg","jpeg","webp"],k=0;img.onload=function(){img.style.display="block";};img.onerror=function(){k++;if(k<E.length)img.src="avatars/"+id+"."+E[k]+"?v="+bust;else img.style.display="none";};img.src="avatars/"+id+"."+E[0]+"?v="+bust;})(els[i]);};}gavFix();
 }
 document.addEventListener('keydown',function(e){
   var t=e.target&&e.target.tagName;if(t==='INPUT'||t==='TEXTAREA'||t==='SELECT')return;
@@ -6000,4 +6026,80 @@ try{if(window.caches&&caches.keys)caches.keys().then(function(ks){ks.forEach(fun
 }catch(e){}})();
 </script>
 
+<script>
+/* ==== Воскресная прогулка · Кинжалы · (v16) ==== */
+(function(){
+function wkIsSunday(){try{return new Date().getDay()===0;}catch(e){return false;}}
+function wkDay(){try{var d=new Date();return d.getFullYear()+"-"+(d.getMonth()+1)+"-"+d.getDate();}catch(e){return "";}}
+function wkPool(){
+  var p=[];
+  [10,15,20,25,30,35,40,45,50,55,60,75,80,90,95,100,120,150,160,175,200,250,300,400,500].forEach(function(v){p.push({t:"knf",n:v});});
+  [25,50,75,100,110,125,150,200,250,275,300,350,400,450,480,500,550,600,700,750,850,1000,1250,1500,2000].forEach(function(v){p.push({t:"tok",n:v});});
+  [1,1,2,2,3,3,3,4,4,4,5,5,6,6,7,8,8,10,10,12,15,15,18,20,25].forEach(function(v){p.push({t:"box",n:v});});
+  p.push({t:"knf",n:1000},{t:"mix",box:25,knf:500},{t:"tok",n:3000},{t:"mix",knf:750,tok:1000},{t:"lot"});
+  return p;
+}
+function wkGrant(r){
+  if(r.t==="knf"){STATE.knf=(STATE.knf||0)+r.n;return "🗡 "+r.n+" кинжалов";}
+  if(r.t==="tok"){addTok(r.n);return "🪙 "+r.n+" жетонов";}
+  if(r.t==="box"){giveBox("legendary",r.n);return "💎 "+r.n+" легендарных ящик(ов)";}
+  if(r.t==="mix"){var p=[];if(r.knf){STATE.knf=(STATE.knf||0)+r.knf;p.push("🗡 "+r.knf+" кинжалов");}if(r.tok){addTok(r.tok);p.push("🪙 "+r.tok+" жетонов");}if(r.box){giveBox("legendary",r.box);p.push("💎 "+r.box+" легендарных ящиков");}return p.join(", ");}
+  return "?";
+}
+window.wkBannerHtml=function(){
+  try{
+    if(!wkIsSunday())return "";
+    if(STATE.knf==null)STATE.knf=0;
+    var st=(STATE.daycounts&&STATE.daycounts.steps)||0;
+    var done=STATE.wkev===wkDay();
+    var pct=Math.min(100,Math.round(st/5000*100));
+    var h='<div class="card wkban"><h3>🗓 Воскресная прогулка</h3>';
+    h+='<p class="small">Пройди 5000 шагов сегодня — получи случайную награду из пула 100. Только в воскресенье!</p>';
+    h+='<div class="wkbar"><i style="width:'+pct+'%"></i></div>';
+    h+='<p class="small">'+Math.min(st,5000)+' / 5000 шагов · '+(st>=5000?"цель взята!":"осталось "+(5000-st))+'</p>';
+    if(done){h+='<p><b>✅ Награда получена: '+STATE.wkevreward+'</b></p>';}
+    else if(st>=5000){h+='<button class="btn prim" onclick="wkClaim()">🎁 Получить награду</button>';}
+    return h+'</div>';
+  }catch(e){return "";}
+};
+window.daggerCardHtml=function(){
+  try{
+    if(STATE.knf==null)STATE.knf=0;
+    var k=STATE.knf;
+    var h='<div class="card dagcard"><h3>🗡 Кинжалы</h3>';
+    h+='<p class="small">Валюта воскресной прогулки. Обмен вручную — только когда захочешь: <b>50 кинжалов = 50 урона по текущему боссу</b>.</p>';
+    h+='<div class="row"><div class="stat"><b>'+k+'</b><span>кинжалов</span></div><div class="stat"><b>'+Math.floor(k/50)+'</b><span>обменов доступно</span></div></div>';
+    h+='<button class="btn prim" onclick="wkExchange()"'+(k<50?' disabled':'')+'>⚔️ Обменять 50 → 50 урона</button>';
+    return h+'</div>';
+  }catch(e){return "";}
+};
+window.wkClaim=function(){
+  try{
+    if(!wkIsSunday()){toast("Ивент только по воскресеньям");return;}
+    if(STATE.wkev===wkDay()){toast("Награда уже получена сегодня");render();return;}
+    var st=(STATE.daycounts&&STATE.daycounts.steps)||0;
+    if(st<5000){toast("Сначала 5000 шагов!");return;}
+    var pool=wkPool();var i=Math.floor(Math.random()*pool.length);
+    var r=pool[i];var label;
+    if(r.t==="lot"){
+      var parts=[];
+      for(var j=0;j<3;j++){parts.push(wkGrant(pool[Math.floor(Math.random()*79)]));}
+      label="🎰 Султанский жребий: "+parts.join(", ");
+    } else label=wkGrant(r);
+    STATE.wkev=wkDay();STATE.wkevreward=label;
+    save();render();
+    toast("🎁 "+label+"!");
+  }catch(e){try{toast("Ошибка ивента");}catch(e2){}}
+};
+window.wkExchange=function(){
+  try{
+    if((STATE.knf||0)<50){toast("Нужно 50 кинжалов");return;}
+    STATE.knf-=50;applyBossDamage(50);save();render();
+    toast("⚔️ −50 кинжалов · +50 урона по боссу!");
+  }catch(e){try{toast("Ошибка обмена");}catch(e2){}}
+};
+/* Если воскресенье кончилось — баннер убирается следующим рендером */
+setInterval(function(){try{if(!wkIsSunday()&&document.querySelector(".wkban"))render();}catch(e){}},30000);
+})();
+</script>
 </body></html>
