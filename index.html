@@ -1,4 +1,4 @@
-<!-- FATH build v18 2026-11-09 · ивент «Тень Лени» -->
+<!-- FATH build v19 2026-11-16 · цели сжигания по дням недели · Михримах — легендарная · Махидевран + ивент «Путь до дворца Султана Сулеймана Хан Хазрат Лери» -->
 <!DOCTYPE html>
 <html lang="ru">
 <head>
@@ -3702,7 +3702,7 @@ function openNews(){
   var p=STATE.pets[STATE.activepet];
   var b=BOSSES[STATE.bossIdx];
   var t=STATE.spintask;
-  var h=wkBannerHtml()+daggerCardHtml()+'<div class="card"><h3>Привет, атлет! 💪</h3>'+
+  var h=wkBannerHtml()+sulBannerHtml()+daggerCardHtml()+'<div class="card"><h3>Привет, атлет! 💪</h3>'+
   '<div class="row">'+
   '<div class="stat"><b>'+STATE.lvl+'</b><span>уровень</span></div>'+
   '<div class="stat"><b>'+STATE.tok+'</b><span>жетоны</span></div>'+
@@ -3949,9 +3949,10 @@ function drawPrev(){
 function tabEx(m){
   var h='<div class="card"><h3>💪 Упражнения</h3>'+
   '<p class="sub">Вводи повторения — они дают ОП и урон боссу. Ярусы: до 50 → ×1.0, до 100 → ×0.7, до 150 → ×0.5, дальше ×0.3. Планка: 10 сек = 1 удар, шаги: 50 шагов = 1 удар. Перетрен после 200 за день режет урон.</p>'+
-  '<p class="small">Сегодня: '+totalRepsToday()+' повт. · разнообразие: '+varietyCount()+'/4</p></div>';
+  '<p class="small">Сегодня: '+totalRepsToday()+' повт. · разнообразие: '+varietyCount()+'/4</p>'+(bwToday()?'<p class="small" style="color:var(--warn)">🗓 Сегодня по плану сжигания разрешено: '+EX.filter(function(e){return bwToday().plan[e[0]]!=null;}).map(function(e){return e[2]+' '+e[1];}).join(', ')+'</p>':'')+'</div>';
   EX.forEach(function(e){
     var k=e[0];
+    var _tp=bwToday();if(_tp&&_tp.plan[k]==null)return;
     h+='<div class="card"><div class="row"><span style="font-size:26px">'+e[2]+'</span>'+
     '<div style="flex:1"><b>'+e[1]+'</b><br><span class="small">сегодня: '+(STATE.daycounts[k]||0)+' · всего: '+(STATE.total[k]||0)+'</span></div></div>'+
     '<div class="row" style="margin-top:8px">'+
@@ -3973,9 +3974,9 @@ function tabEx(m){
 function quickEx(k,n){doEx(k,n,true);}
 function manualEx(k,v){var n=parseInt(v);if(!n)return;doEx(k,n,true);}
 function doEx(k,n,quick){
-  n=Math.max(0,Math.floor(n));
-  if(!n)return;
-  if(n<0&&((STATE.counts[k]||0)+n<0)){toast("Нельзя уйти в минус");return;}
+  if(n<0){n=Math.floor(n);var _dn=(STATE.daycounts[k]||0)+n,_dt=(STATE.total[k]||0)+n;if(_dn<0||_dt<0){toast("Нельзя уйти в минус");return;}}
+  else{n=Math.floor(n);if(!n)return;}
+  if(n>0){var _tp=bwToday();if(_tp&&_tp.plan[k]==null){toast("🚫 Сегодня ("+WDAYS[bwDayIdx()]+") этот вид не по плану сжигания");return;}}
   addCount(k,n);evRep(n,exToSubmit(k,n));lazRep(lazQty(k,n),exToSubmit(k,n));
   var dmg=bossDamage(k,n);
   if(dmg>0)petAddXp(dmg);
@@ -4482,7 +4483,45 @@ function waterCardHtml(){
   '<p class="small">За 7 дней: '+yw+' стаканов · в среднем '+(yw/7).toFixed(1)+'/день · норма ≈ '+Math.round(wt*30)+' мл — это '+goalS+' стаканов по 200 мл</p></div>';
   return h;
 }
-function burnGoal(){return (STATE.cal&&STATE.cal.burn)?STATE.cal.burn:null;}
+function bwDayIdx(){try{return (new Date().getDay()+6)%7;}catch(e){return 0;}}
+function bwToday(){try{var bw=STATE.cal&&STATE.cal.bw;if(!bw||!bw.d)return null;var p=bw.d[bwDayIdx()];if(p&&p.k>0&&p.plan&&Object.keys(p.plan).length)return p;}catch(e){}return null;}
+var WDAYS=["Понедельник","Вторник","Среда","Четверг","Пятница","Суббота","Воскресенье"];
+function bwEnsure(){if(!STATE.cal.bw||!STATE.cal.bw.d)STATE.cal.bw={d:[null,null,null,null,null,null,null]};return STATE.cal.bw;}
+var _bwDay=0;
+function bwEdit(){bwEnsure();_bwDay=bwDayIdx();openModal(bwModalHtml());}
+function bwModalHtml(){
+  var bw=bwEnsure();
+  var h='<h3>🗓 Цель сжигания по дням недели</h3>';
+  h+='<div class="row" style="flex-wrap:wrap;gap:4px">';
+  for(var i=0;i<7;i++){var sel=i===_bwDay;var has=bw.d[i]&&bw.d[i].k>0;
+    h+='<button class="btn small'+(sel?' prim':'')+'" onclick="bwDay('+i+')">'+WDAYS[i].slice(0,3)+(has?' 🔥':'')+'</button>';}
+  h+='</div><div id="bwBody">'+bwDayHtml()+'</div>';
+  h+='<div class="row" style="margin-top:10px"><button class="btn" onclick="bwSaveDay()">💾 Сохранить день</button><button class="btn" onclick="bwCopyAll()">📋 На все дни</button><button class="btn danger" onclick="bwClearDay()">✖ Очистить день</button></div>';
+  h+='<div style="margin-top:8px;text-align:center"><button class="btn small" onclick="closeModal()">Закрыть</button></div>';
+  return h;
+}
+function bwDayHtml(){
+  var bw=bwEnsure(),p=bw.d[_bwDay]||{k:0,plan:{}};
+  var h='<p class="small" style="margin-top:8px"><b>'+WDAYS[_bwDay]+'</b>'+(p.k>0?' — план: '+p.k+' ккал':' — без плана (работает общая цель)')+'</p>';
+  h+='<div class="row"><span class="small" style="min-width:150px">Цель дня, ккал:</span><input type="number" id="bwk" placeholder="0 = нет цели" value="'+(p.k||"")+'" style="width:110px"></div>';
+  h+='<p class="small" style="margin-top:6px">Разреши виды и распредели доли в % — в этот день можно записывать только выбранные виды.</p>';
+  EX.forEach(function(e){var on=p.plan&&p.plan[e[0]]!=null;
+    h+='<div class="list-item"><label style="flex:1;display:flex;align-items:center;gap:8px"><input type="checkbox" id="bwx_'+e[0]+'"'+(on?' checked':'')+'><span>'+e[2]+' '+e[1]+'</span></label>'+
+    '<input type="number" id="bwp_'+e[0]+'" placeholder="%" value="'+(on?p.plan[e[0]]:"")+'" style="width:70px"></div>';});
+  return h;
+}
+function bwDay(i){_bwDay=i;var m=document.getElementById("mcont");if(m)m.innerHTML=bwModalHtml();}
+function bwReadDay(){var k=parseFloat(document.getElementById("bwk").value)||0;var plan={},any=false;
+  EX.forEach(function(e){var cb=document.getElementById("bwx_"+e[0]);if(cb&&cb.checked){var pv=document.getElementById("bwp_"+e[0]);plan[e[0]]=parseFloat(pv.value)||1;any=true;}});return {k:k,plan:plan};}
+function bwSaveDay(){bwEnsure();var r=bwReadDay();
+  if(r.k>0&&Object.keys(r.plan).length===0){toast("Выбери хотя бы одно упражнение");return;}
+  if(r.k>0)STATE.cal.bw.d[_bwDay]=r;else STATE.cal.bw.d[_bwDay]=null;
+  save();render();var m=document.getElementById("mcont");if(m)m.innerHTML=bwModalHtml();
+  toast(r.k>0?"🗓 "+WDAYS[_bwDay]+": "+r.k+" ккал, видов: "+Object.keys(r.plan).length:"🗓 "+WDAYS[_bwDay]+": план убран");}
+function bwCopyAll(){bwEnsure();var r=bwReadDay();if(r.k>0&&Object.keys(r.plan).length===0){toast("Выбери хотя бы одно упражнение");return;}
+  for(var i=0;i<7;i++)STATE.cal.bw.d[i]={k:r.k,plan:Object.assign({},r.plan)};save();render();var m=document.getElementById("mcont");if(m)m.innerHTML=bwModalHtml();toast("📋 Скопировано на все 7 дней");}
+function bwClearDay(){bwEnsure();STATE.cal.bw.d[_bwDay]=null;save();render();var m=document.getElementById("mcont");if(m)m.innerHTML=bwModalHtml();toast("🗓 "+WDAYS[_bwDay]+": план очищен");}
+function burnGoal(){var tp=bwToday();if(tp)return tp;return (STATE.cal&&STATE.cal.burn)?STATE.cal.burn:null;}
 function burnGoalSave(){
   var k=parseFloat(document.getElementById("bg_k").value)||0;
   if(k<=0){toast("Введи, сколько ккал сжигать в день");return;}
@@ -4496,7 +4535,7 @@ function burnGoalSave(){
   STATE.cal.burn={k:k,plan:plan};save();render();
   toast("🎯 Цель сжигания: "+k+" ккал/день — упражнений: "+n);
 }
-function burnGoalClear(){STATE.cal.burn=null;save();render();toast("Цель сжигания сброшена");}
+function burnGoalClear(){STATE.cal.burn=null;if(STATE.cal&&STATE.cal.bw&&STATE.cal.bw.d)STATE.cal.bw.d=[null,null,null,null,null,null,null];save();render();toast("Цель сжигания сброшена");}
 function burnGoalEdit(){var el=document.getElementById("bgEdit");if(el)el.style.display="block";var tp=document.getElementById("bgTop");if(tp)tp.style.display="none";}
 function burnUnitsFor(kcal,ex){
   var f=KCAL[ex];if(!f)return 0;
@@ -4508,8 +4547,8 @@ function burnUnitsFor(kcal,ex){
 }
 function burnUnitName(ex){return ex==="plank"?" сек":ex==="run"?" мин":ex==="steps"?" шагов":ex==="rope"?" прыжков":" повт.";}
 function burnGoalCardHtml(){
-  var g=burnGoal();
-  var h='<div class="card"><h3>🔥 Цель сжигания</h3>';
+  var g=burnGoal();var _tpd=bwToday();
+  var h='<div class="card"><h3>🔥 Цель сжигания'+(_tpd?' — '+WDAYS[bwDayIdx()]:'')+'</h3>';
   if(g){
     var sum=0;for(var kk in g.plan)sum+=g.plan[kk];
     var burned=calToday();
@@ -4528,7 +4567,7 @@ function burnGoalCardHtml(){
       '<div class="row" style="margin-top:3px"><div class="bar" style="flex:1"><div style="width:'+upc+'%"></div></div><span class="tag">🔥 '+done+'/'+pk+'</span></div></div>';
     });
     if(Math.abs(sum-100)>0.5)h+='<p class="small" style="color:var(--warn)">Сумма процентов — '+Math.round(sum)+'%, доли пересчитаны пропорционально.</p>';
-    h+='<div class="row" id="bgTop" style="margin-top:8px"><button class="btn" onclick="burnGoalEdit()">✏️ Изменить</button><button class="btn danger" onclick="burnGoalClear()">✖ Сбросить</button></div>';
+    h+='<div class="row" id="bgTop" style="margin-top:8px"><button class="btn" onclick="burnGoalEdit()">✏️ Изменить</button><button class="btn prim" onclick="bwEdit()">🗓 По дням недели</button><button class="btn danger" onclick="burnGoalClear()">✖ Сбросить</button></div>';
   }
   h+='<div id="bgEdit"'+(g?' style="display:none"':'')+'>'+
   '<h3 style="margin-top:10px">Сколько ккал сжечь тренировками за день?</h3>'+
@@ -4619,7 +4658,7 @@ var h='<div class="card"><h3>📊 Статистика</h3>'+
   h+='<div class="card"><h3>Неделя</h3>'+
   '<div class="row" style="align-items:flex-end;height:120px;gap:6px">'+
   w.map(function(v,i){return '<div style="flex:1;text-align:center"><div style="height:'+Math.round(90*v/mx)+'px;background:var(--grad);border-radius:6px 6px 0 0;min-height:2px"></div><span class="small">'+days[i]+'</span></div>';}).join("")+
-  '</div><p class="small" style="margin-top:6px">За неделю: '+w.reduce(function(a,b){return a+b;},0)+' повторений · лучший день: '+mx+'</p></div>';
+  '</div><p class="small" style="margin-top:6px">За неделю: '+w.reduce(function(a,b){return a+b;},0)+' ОП · лучший день: '+mx+'</p></div>';
   h+='<div class="card"><h3>⚔️ Битва</h3><div class="row">'+
   '<div class="stat"><b>'+STATE.killed.length+'</b><span>боссов убито</span></div>'+
   '<div class="stat"><b>'+(STATE.unlocked+1)+'/'+BOSSES.length+'</b><span>открыто</span></div>'+
@@ -5294,13 +5333,14 @@ var GIRLS=[
 {id:"gul",n:"Гюльбахар",ic:"🔮",rar:"common",price:300,d:"шанс двойной награды",b:{dch:[10,15,20,25,30]}},
 {id:"gulfem",n:"Гюльфем",ic:"🍵",rar:"common",price:500,d:"монеты с тренировок",b:{tok:[10,15,20,27,35]}},
 {id:"daye",n:"Дая-хатун",ic:"👵",rar:"rare",price:900,d:"лечение питомцев в день",b:{heal:[30,45,60,80,100]}},
-{id:"mihrimah",n:"Михримах",ic:"🌹",rar:"rare",price:1100,d:"питомцы игнорируют урон",b:{ign:[25,31,37,43,50]}},
 {id:"firuze",n:"Фирузе",ic:"✨",rar:"epic",price:2000,d:"опыт с тренировок",b:{xp:[30,40,50,62,75]}},
 {id:"nurbanu",n:"Нурбану",ic:"🌙",rar:"epic",price:2600,d:"опыт и лечение питомцев",b:{xp:[35,45,55,65,80],heal:[20,30,40,50,65]}},
-{id:"fahriye",n:"Фахрие-султан",ic:"👑",rar:"legendary",price:4500,d:"монеты и опыт",b:{tok:[40,50,60,72,90],xp:[40,50,60,72,90]}},,
+{id:"mihrimah",n:"Михримах",ic:"🌹",rar:"legendary",price:4200,d:"питомцы игнорируют урон",b:{ign:[40,50,60,72,85]}},
+{id:"fahriye",n:"Фахрие-султан",ic:"👑",rar:"legendary",price:4500,d:"монеты и опыт",b:{tok:[40,50,60,72,90],xp:[40,50,60,72,90]}},
 {id:"kosem",n:"Кёсем",ic:"🌟",rar:"mythic",price:12000,d:"всё: монеты, опыт, урон",b:{all:[30,36,42,50,60]}},
 {id:"peri",n:"Пайпер Перри",ic:"🧚",rar:"mythic",price:0,d:"урон по боссам и монеты",b:{bdmg:[40,50,60,70,80],tok:[25,30,38,44,50]}},
 {id:"prokr",n:"Прокрастина",ic:"🛌",rar:"mythic",price:0,d:"опыт и урон по боссам",b:{xp:[25,32,40,48,55],bdmg:[30,38,46,54,60]}},
+{id:"mahidevran",n:"Махидевран",ic:"🕊",rar:"mythic",price:0,d:"гордость гарема: лечение питомцев и монеты",b:{heal:[45,55,65,78,90],tok:[30,38,46,55,65]}},
 {id:"hurrem",n:"Хюррем",ic:"💃",rar:"divine",price:5000,d:"монеты с тренировок",b:{tok:[72,84,96,114,132]}}];
 var GIRLMAP={};GIRLS.forEach(function(g){GIRLMAP[g.id]=g;});
 var GIRLRAR={common:0.30,rare:0.25,epic:0.18,legendary:0.08};
@@ -5384,6 +5424,7 @@ function buyGirl(gid){var g=GIRLMAP[gid];
   if(STATE.girls[gid])return;
   if(gid==="peri"){toast("🧚 Пайпер Перри освобождается при победе над Горбатым Тленом!");return;}
   if(gid==="prokr"){toast("🛌 Прокрастина приходит только после победы над Тенью Лени!");return;}
+  if(gid==="mahidevran"){toast("🕊 Махидевран приходит только через ивент «Путь до дворца Султана Сулеймана Хан Хазрат Лери»!");return;}
   if(STATE.tok<g.price){toast("🪙 Не хватает жетонов: нужно "+g.price);return;}
   addTok(-g.price);STATE.girls[gid]=1;S("newpet");
   if(STATE.htday!==todayStr())genHaremTasks();
@@ -5526,12 +5567,12 @@ function tabHarem(m){
       ((STATE.girlrest[g.id]||0)>0?' · 😴 отдых ещё '+STATE.girlrest[g.id]+' дн.':'')+'</span>';
     } else {
       h+='<br><span style="color:#9aa">Бонус: '+girlBonusText(g,false)+'</span>';
-      h+='<br><span style="color:#9aa">'+(g.id==="peri"?'Освобождается при победе над Горбатым Тленом (Ночь Тыкв)':'Цена найма: '+g.price+' 🪙')+'</span>'+(g.id==="peri"?'':' <button class="btn prim" style="margin-top:4px" onclick="buyGirl(\''+g.id+'\')">Найм</button>');
+      h+='<br><span style="color:#9aa">'+(g.id==="peri"?'Освобождается при победе над Горбатым Тленом (Ночь Тыкв)':(g.id==="mahidevran"?'🕊 Только через ивент «Путь до дворца»':'Цена найма: '+g.price+' 🪙'))+'</span>'+(g.id==="peri"||g.id==="mahidevran"?'':' <button class="btn prim" style="margin-top:4px" onclick="buyGirl(\''+g.id+'\')">Найм</button>');
     }
     h+='</div></div>';
   });
   h+='</div>';
-  m.innerHTML=h;if(!window.gavFix){window.gavFix=function(){var els=document.querySelectorAll("[data-gav]");var bust=Math.floor(Date.now()/3600000);for(var i=0;i<els.length;i++)(function(el){var id=el.getAttribute("data-gav"),img=el.querySelector("img");if(!img)return;var E=["png","jpg","jpeg","webp"],k=0;img.onload=function(){img.style.display="block";};img.onerror=function(){k++;if(k<E.length)img.src="avatars/"+id+"."+E[k]+"?v="+bust;else img.style.display="none";};img.src="avatars/"+id+"."+E[0]+"?v="+bust;})(els[i]);};}gavFix();
+  m.innerHTML=h;if(!window.gavFix){window.gavFix=function(){var els=document.querySelectorAll("[data-gav]");var bust=Math.floor(Date.now()/3600000);for(var i=0;i<els.length;i++)(function(el){var id=el.getAttribute("data-gav"),img=el.querySelector("img");if(!img)return;if(window._gavMiss&&window._gavMiss[id]){img.style.display="none";return;}var E=["png","jpg","jpeg","webp"],k=0;img.onload=function(){img.style.display="block";};window._gavMiss=window._gavMiss||{};img.onerror=function(){window._gavMiss[id+"#"+k]=1;k++;if(k<E.length&&window._gavMiss[id+"#"+k]){img.style.display="none";return;}if(k<E.length)img.src="avatars/"+id+"."+E[k]+"?v="+bust;else{window._gavMiss[id]=1;img.style.display="none";}};img.src="avatars/"+id+"."+E[0]+"?v="+bust;})(els[i]);};}gavFix();
 }
 document.addEventListener('keydown',function(e){
   var t=e.target&&e.target.tagName;if(t==='INPUT'||t==='TEXTAREA'||t==='SELECT')return;
@@ -6046,6 +6087,39 @@ function wkGrant(r){
   if(r.t==="mix"){var p=[];if(r.knf){STATE.knf=(STATE.knf||0)+r.knf;p.push("🗡 "+r.knf+" кинжалов");}if(r.tok){addTok(r.tok);p.push("🪙 "+r.tok+" жетонов");}if(r.box){giveBox("legendary",r.box);p.push("💎 "+r.box+" легендарных ящиков");}return p.join(", ");}
   return "?";
 }
+
+var SULEV={from:"2026-11-17",to:"2026-11-26",need:100000};
+function sulActive(){var t=todayStr();return t>=SULEV.from&&t<=SULEV.to;}
+window.sulBannerHtml=function(){
+  try{
+    if(!STATE.sul)STATE.sul={snap:null,done:false};
+    if(!sulActive())return "";
+    if(STATE.sul.snap==null){STATE.sul.snap=STATE.total.steps||0;save();}
+    var got=Math.max(0,(STATE.total.steps||0)-STATE.sul.snap);
+    var pct=Math.min(100,Math.round(got/SULEV.need*100));
+    var end=new Date(SULEV.to+"T23:59:59"),now=new Date();
+    var left=Math.max(0,Math.ceil((end-now)/86400000));
+    var h='<div class="card wkban"><h3>🕊 Путь до дворца Султана Сулеймана Хан Хазрат Лери</h3>';
+    if(STATE.sul.done){h+='<p>✅ <b>Махидевран вступила в гарем!</b> Ивент пройден.</p></div>';return h;}
+    h+='<p class="small">Ивент 17–26 ноября: набери 100 000 шагов суммарно (в среднем 10 000 в день) — и Махидевран, мифическая девушка, вступит в гарем. Шаги берутся из обычного учёта.</p>';
+    h+='<p class="small">Прогресс: <b>'+got+' / '+SULEV.need+'</b> шагов · дней до конца: '+left+'</p>';
+    h+='<div class="row"><div class="bar" style="flex:1"><div style="width:'+pct+'%"></div></div><span class="tag">'+pct+'%</span></div>';
+    if(got>=SULEV.need){h+='<button class="btn prim" style="margin-top:8px" onclick="sulClaim()">🕊 Принять Махидевран во дворец</button>';}
+    return h+'</div>';
+  }catch(e){return "";}
+};
+window.sulClaim=function(){
+  try{
+    if(!STATE.sul)STATE.sul={snap:null,done:false};
+    if(!sulActive()){toast("Ивент завершён");return;}
+    if(STATE.sul.done){toast("Награда уже получена");return;}
+    if(STATE.sul.snap==null)STATE.sul.snap=STATE.total.steps||0;
+    var got=Math.max(0,(STATE.total.steps||0)-STATE.sul.snap);
+    if(got<SULEV.need){toast("Нужно ещё "+(SULEV.need-got)+" шагов!");return;}
+    STATE.sul.done=true;STATE.girls.mahidevran=1;S("newpet");
+    save();render();toast("🕊 Махидевран вступила в гарем! Путь до дворца пройден!");
+  }catch(e){try{toast("Ошибка ивента");}catch(e2){}}
+};
 window.wkBannerHtml=function(){
   try{
     if(!wkIsSunday())return "";
