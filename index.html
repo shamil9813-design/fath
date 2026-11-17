@@ -1,4 +1,4 @@
-<!-- FATH build v20 2026-11-17 · камера-счётчик (отжимания/подтягивания/приседания) · цели сжигания по дням недели · Михримах — легендарная · Махидевран + ивент «Путь до дворца Султана Сулеймана Хан Хазрат Лери» -->
+<!-- FATH build v19 2026-11-16 · цели сжигания по дням недели · Михримах — легендарная · Махидевран + ивент «Путь до дворца Султана Сулеймана Хан Хазрат Лери» -->
 <!DOCTYPE html>
 <html lang="ru">
 <head>
@@ -3973,7 +3973,7 @@ function tabEx(m){
     '<button class="btn small" onclick="quickEx(\''+k+'\',-1)">−1</button>'+
     '<input type="number" min="0" id="ex_'+k+'" placeholder="сколько сделал" style="flex:1;min-width:90px" onchange="manualEx(\''+k+'\',this.value)">'+
     '<button class="btn small" onclick="quickEx(\''+k+'\',1)">+1</button>'+
-    '<button class="btn small" onclick="quickEx(\''+k+'\',5)">+5</button>'+camBtn(k))+'</div></div>';
+    '<button class="btn small" onclick="quickEx(\''+k+'\',5)">+5</button>')+camBtn(k)+'</div></div>';
   });
   m.innerHTML=h;
 }
@@ -4032,7 +4032,7 @@ function fightHtml(m){
   EX.forEach(function(e){
     h+='<div class="row" style="margin-bottom:6px"><span style="flex:1">'+e[2]+' '+e[1]+'</span>'+
     '<input type="number" id="atk_'+e[0]+'" placeholder="'+exUnit(e[0])+'" style="width:80px">'+
-    '<button class="btn small prim" onclick="atk(\''+e[0]+'\')">Бить</button>'+camBtn(e[0],'small')+'</div>';
+    ''+camBtn(e[0],'small')+'<button class="btn small prim" onclick="atk(\''+e[0]+'\')">Бить</button></div>';
   });
   h+='<p class="small">Урон: 1 повторение = 1 удар · планка: 10 сек = 1 удар · шаги: 50 шагов = 1 удар. Исключение — Назгул и Султан Сулейман: клинок режет каждый второй удар ×0.7.</p></div>';
   // список боссов
@@ -6182,15 +6182,14 @@ window.wkExchange=function(){
 setInterval(function(){try{if(!wkIsSunday()&&document.querySelector(".wkban"))render();}catch(e){}},30000);
 })();
 </script>
-
 <script>
-/* ===== КАМЕРА-СЧЁТЧИК v20 — авто-подсчёт повторений по скелету (MoveNet, TensorFlow.js) ===== */
+/* ===== КАМЕРА-СЧЁТЧИК v21 — полный скелет + счёт лицом к камере (MoveNet, TensorFlow.js) ===== */
 (function(){
-var C={on:false,k:"",n:0,ph:0,stream:null,det:null,raf:0,face:"user",lt:0,flash:0};
+var C={on:false,k:"",n:0,ph:0,stream:null,det:null,raf:0,face:"user",lt:0,flashT:0,sm:null,live:0};
 function q(id){return document.getElementById(id);}
 function load(u,ok,no){var s=document.createElement("script");s.src=u;s.onload=ok;s.onerror=no;document.head.appendChild(s);}
 function setStatus(t){var e=q("camstat");if(e){e.textContent=t;e.style.color="#ffd166";}}
-function flash(t){C.flash=Date.now()+700;var e=q("camstat");if(e){e.textContent=t;e.style.color="#3dff6e";}}
+function flash(t){C.flashT=Date.now()+700;var e=q("camstat");if(e){e.textContent=t;e.style.color="#3dff6e";}}
 function setCnt(){var e=q("camcnt");if(e)e.textContent=String(C.n|0);}
 function die(t){setStatus(t);C.on=false;stopCam();}
 function stopCam(){try{if(C.stream)C.stream.getTracks().forEach(function(x){x.stop();});}catch(e){}C.stream=null;}
@@ -6204,9 +6203,10 @@ function ensureModel(ok,no){
   function build(){
     if(!window.poseDetection||!window.tf){no("Библиотеки не загрузились — нужен интернет при первом запуске");return;}
     var MD=poseDetection.SupportedModels.MoveNet;
-    poseDetection.createDetector(MD,{modelType:poseDetection.movenet.modelType.SINGLEPOSE_LIGHTNING,modelUrl:"https://storage.googleapis.com/tfjs-models/savedmodel/movenet/singlepose/lightning/4/model.json"})
-      .then(function(d){C.det=d;ok();})
-      .catch(function(){poseDetection.createDetector(MD,{modelType:poseDetection.movenet.modelType.SINGLEPOSE_LIGHTNING}).then(function(d){C.det=d;ok();}).catch(function(e){no("⚠ Модель не загрузилась (нужен интернет при первом запуске). Повторяющиеся зачёты вручную — кнопками");});});
+    var OPT={modelType:poseDetection.movenet.modelType.SINGLEPOSE_LIGHTNING};
+    poseDetection.createDetector(MD,OPT).then(function(d){C.det=d;ok();})
+      .catch(function(){OPT.modelUrl="https://storage.googleapis.com/tfjs-models/savedmodel/movenet/singlepose/lightning/4/model.json";
+        poseDetection.createDetector(MD,OPT).then(function(d){C.det=d;ok();}).catch(function(){no("⚠ Модель не загрузилась (нужен интернет при первом запуске). Пока можно записывать руками — кнопками");});});
   }
   function p1(){load("https://cdn.jsdelivr.net/npm/@tensorflow/tfjs@4.20.0/dist/tf.min.js",p2,function(){load("https://unpkg.com/@tensorflow/tfjs@4.20.0/dist/tf.min.js",p2,no);});}
   function p2(){load("https://cdn.jsdelivr.net/npm/@tensorflow-models/pose-detection@2.1.3/dist/pose-detection.min.js",build,function(){load("https://unpkg.com/@tensorflow-models/pose-detection@2.1.3/dist/pose-detection.min.js",build,no);});}
@@ -6221,7 +6221,7 @@ function openOv(t){
    +'<div><button id="camflip" class="btn small">🔄</button> <button id="camx" class="btn small">✕</button></div></div>'
    +'<div style="flex:1;position:relative;overflow:hidden;background:#000">'
    +'<video id="camvid" playsinline autoplay muted style="width:100%;height:100%;object-fit:contain"></video>'
-   +'<canvas id="camskel" style="position:absolute;left:0;top:0;width:100%;height:100%;pointer-events:none"></canvas></div>'
+   +'<canvas id="camskel" style="position:absolute;left:0;top:0;width:100%;height:100%;object-fit:contain;pointer-events:none"></canvas></div>'
    +'<div style="text-align:center;padding:8px;background:#0d0d14">'
    +'<div id="camcnt" style="font-size:46px;color:#fff;font-weight:700">0</div>'
    +'<div id="camstat" style="color:#ffd166;min-height:36px;font-size:13px;padding:0 10px"></div>'
@@ -6253,7 +6253,7 @@ function getUser(){
     C.stream=st;var v=q("camvid");if(!v){return;}v.srcObject=st;v.play().catch(function(){});
     mirror();
     setStatus("⏳ Загружаю нейросеть (~5 МБ, один раз) — начинать можно сразу");
-    ensureModel(function(){setStatus("Встань боком к камере — начинай упражнение");},die);
+    ensureModel(function(){setStatus("Встань целиком в кадр — начинай упражнение");},die);
     if(!C.on){C.on=true;loop();}
   }).catch(function(e){
     var nm=e&&e.name||"";
@@ -6261,74 +6261,88 @@ function getUser(){
   });
 }
 window.camOpen=function(k){
-  C.k=k;C.n=0;C.ph=0;C.on=false;
+  C.k=k;C.n=0;C.ph=0;C.sm=null;C.on=false;
   openOv("📷 "+(window.EXNAME&&EXNAME[k]?EXNAME[k]:k));
   getUser();
 };
-function kp(p,nm){var a=p.keypoints;for(var i=0;i<a.length;i++)if(a[i].name===nm)return a[i];return null;}
-function ang(a,b,c){
-  if(!a||!b||!c)return -1;
-  var x1=a.x-b.x,y1=a.y-b.y,x2=c.x-b.x,y2=c.y-b.y;
-  var d=x1*x2+y1*y2,m1=Math.sqrt(x1*x1+y1*y1),m2=Math.sqrt(x2*x2+y2*y2);
-  if(m1*m2===0)return -1;
-  var cs=Math.max(-1,Math.min(1,d/(m1*m2)));
-  return Math.acos(cs)*180/Math.PI;
-}
+/* --- КМ = имя ключевой точки, sc = порог видимости --- */
+function K(p,nm){var a=p.keypoints;for(var i=0;i<a.length;i++)if(a[i].name===nm)return a[i];return null;}
+function okp(p,nm,minS){var a=K(p,nm);return a&&a.score>=minS?a:null;}
+function dist(a,b){var dx=a.x-b.x,dy=a.y-b.y;return Math.sqrt(dx*dx+dy*dy);}
+/* --- реп: засчитано с вибрацией --- */
 function rep(){
-  var t=Date.now();if(t-C.lt<350)return;C.lt=t;
+  var t=Date.now();if(t-C.lt<400)return;C.lt=t;
   C.n++;setCnt();flash("✔ Засчитано");
   try{if(navigator.vibrate)navigator.vibrate(50);}catch(e){}
 }
-function miss(){setStatus("Не вижу тебя — встань боком, чтобы было видно руки и ноги целиком");}
+function ema(m){C.sm=(C.sm==null)?m:(C.sm*0.55+m*0.45);return C.sm;}
+/* --- счёт: работает лицом к камере И боком (вертикальные метрики, не углы) --- */
 function score(p){
-  var k=C.k;
+  var k=C.k,sh=okp(p,"left_shoulder",.3)||okp(p,"right_shoulder",.3),
+      hp=okp(p,"left_hip",.25)||okp(p,"right_hip",.25);
+  if(!sh||!hp){missBody();return;}
   if(k==="pushups"){
-    var l=kp(p,"left_elbow"),r=kp(p,"right_elbow");
-    if((!l||l.score<.3)&&(!r||r.score<.3)){miss();return;}
-    var a1=l?ang(kp(p,"left_shoulder"),l,kp(p,"left_wrist")):-1;
-    var a2=r?ang(kp(p,"right_shoulder"),r,kp(p,"right_wrist")):-1;
-    var a=Math.max(a1,a2);
-    if(a<0){miss();return;}
-    if(a<105)C.ph=1;else if(a>155&&C.ph===1){C.ph=0;rep();}
-    setStatus("Отжимания: локоть "+Math.round(a)+"° — "+(a<105?"внизу, поднимайся":"опускайся"));
+    var an=okp(p,"left_ankle",.2)||okp(p,"right_ankle",.2),kn=okp(p,"left_knee",.2)||okp(p,"right_knee",.2);
+    if(!an||!kn){missBody();return;}
+    var leg=(dist(hp,kn)+dist(kn,an))||1;
+    var m=ema((sh.y-hp.y)/leg);
+    C.live=m;
+    if(m>0.28){C.ph=1;setStatus("💪 внизу ("+Math.round(m*100)+"%) — поднимайся");}
+    else if(m<0.10){if(C.ph===1){C.ph=0;rep();}setStatus("💪 опускайся ("+Math.round(m*100)+"%)");}
+    else setStatus("💪 "+Math.round(m*100)+"%"+(C.ph===1?" — поднимайся":" — опускайся"));
   }else if(k==="squats"){
-    var lk=kp(p,"left_knee"),rk=kp(p,"right_knee");
-    if((!lk||lk.score<.3)&&(!rk||rk.score<.3)){miss();return;}
-    var b1=lk?ang(kp(p,"left_hip"),lk,kp(p,"left_ankle")):-1;
-    var b2=rk?ang(kp(p,"right_hip"),rk,kp(p,"right_ankle")):-1;
-    var b=Math.max(b1,b2);
-    if(b<0){miss();return;}
-    if(b<115)C.ph=1;else if(b>165&&C.ph===1){C.ph=0;rep();}
-    setStatus("Приседания: колено "+Math.round(b)+"° — "+(b<115?"внизу, вставай":"приседай ниже"));
-  }else{
-    var ls=kp(p,"left_shoulder"),rs=kp(p,"right_shoulder"),lw=kp(p,"left_wrist"),rw=kp(p,"right_wrist");
-    if((!ls||ls.score<.3)&&(!rs||rs.score<.3)){miss();return;}
-    if((!lw||lw.score<.3)&&(!rw||rw.score<.3)){setStatus("Не вижу рук — сними себя спереди, чтобы кисти были над головой");return;}
-    var shY=Math.min(ls?ls.y:1e9,rs?rs.y:1e9),wr=Math.min(lw?lw.y:1e9,rw?rw.y:1e9);
-    var torso=60;
-    var lh=kp(p,"left_hip"),rh=kp(p,"right_hip");
-    if(lh&&lh.score>.3&&ls)torso=Math.abs(lh.y-ls.y);
-    if(rh&&rh.score>.3&&rs)torso=Math.max(torso,Math.abs(rh.y-rs.y));
-    torso=Math.max(40,torso);
-    var d=(wr-shY)/torso;
-    if(d>0.9)C.ph=1;else if(d<0.35&&C.ph===1){C.ph=0;rep();}
-    setStatus("Подтягивания: "+(d<0.35?"наверху — опускайся":"вис — тяни"));
+    var an2=okp(p,"left_ankle",.2)||okp(p,"right_ankle",.2);
+    if(!an2){missBody();return;}
+    var span=Math.max(1,Math.abs(sh.y-an2.y));
+    var f=ema((sh.y-hp.y)/span);
+    C.live=f;
+    if(f<0.33){C.ph=1;setStatus("🦵 внизу ("+Math.round(f*100)+"%) — вставай");}
+    else if(f>0.44){if(C.ph===1){C.ph=0;rep();}setStatus("🦵 приседай ("+Math.round(f*100)+"%)");}
+    else setStatus("🦵 "+Math.round(f*100)+"%"+(C.ph===1?" — вставай":" — приседай"));
+  }else if(k==="pullups"){
+    var wr=okp(p,"left_wrist",.3)||okp(p,"right_wrist",.3);
+    if(!wr){setStatus("🤸 не вижу руки — держи их выше плеч");return;}
+    var span2=Math.max(60,Math.abs(sh.y-hp.y)*3);
+    var g=ema((wr.y-sh.y)/span2);
+    C.live=g;
+    if(g<-0.14){C.ph=1;setStatus("🤸 вис — подтягивайся");}
+    else if(g>-0.04){if(C.ph===1){C.ph=0;rep();}setStatus("🤸 тяни вверх ("+Math.round(g*100)+"%)");}
+    else setStatus("🤸 "+Math.round(g*100)+"%"+(C.ph===1?" — тянись вверх":" — опускайся"));
   }
 }
-var BONES=[["left_shoulder","right_shoulder"],["left_shoulder","left_elbow"],["left_elbow","left_wrist"],["right_shoulder","right_elbow"],["right_elbow","right_wrist"],["left_shoulder","left_hip"],["right_shoulder","right_hip"],["left_hip","right_hip"],["left_hip","left_knee"],["left_knee","left_ankle"],["right_hip","right_knee"],["right_knee","right_ankle"]];
+function missBody(){setStatus("Не вижу тебя целиком — отойди подальше, чтобы в кадр влезло всё тело, и добавь света");}
+/* --- СКЕЛЕТ: кости-линии от кистей рук до пяток + точки --- */
+var EDGES=[["nose","left_eye"],["nose","right_eye"],["left_eye","left_ear"],["right_eye","right_ear"],
+["left_ear","left_shoulder"],["right_ear","right_shoulder"],["left_shoulder","right_shoulder"],
+["left_shoulder","left_elbow"],["left_elbow","left_wrist"],["right_shoulder","right_elbow"],
+["right_elbow","right_wrist"],["left_shoulder","left_hip"],["right_shoulder","right_hip"],
+["left_hip","right_hip"],["left_hip","left_knee"],["left_knee","left_ankle"],
+["right_hip","right_knee"],["right_knee","right_ankle"]];
 function draw(p){
   var cv=q("camskel"),v=q("camvid");
   if(!cv||!v)return;
-  if(v.videoWidth&&(cv.width!==v.videoWidth)){cv.width=v.videoWidth;cv.height=v.videoHeight;}
-  var ctx=cv.getContext("2d");ctx.clearRect(0,0,cv.width,cv.height);
+  if(v.videoWidth&&cv.width!==v.videoWidth){cv.width=v.videoWidth;cv.height=v.videoHeight;}
+  var ctx=cv.getContext("2d");
+  ctx.clearRect(0,0,cv.width,cv.height);
   if(!p)return;
-  ctx.strokeStyle="#00ffcc";ctx.lineWidth=3;
-  BONES.forEach(function(pr){
-    var a=kp(p,pr[0]),b=kp(p,pr[1]);
-    if(a&&b&&a.score>.3&&b.score>.3){ctx.beginPath();ctx.moveTo(a.x,a.y);ctx.lineTo(b.x,b.y);ctx.stroke();}
-  });
+  var kp={};p.keypoints.forEach(function(a){kp[a.name]=a;});
+  ctx.lineWidth=Math.max(2.5,cv.width/200);
+  ctx.lineCap="round";
+  ctx.strokeStyle="rgba(0,255,204,.9)";
+  ctx.shadowColor="rgba(0,255,204,.6)";ctx.shadowBlur=6;
+  for(var i=0;i<EDGES.length;i++){
+    var a=kp[EDGES[i][0]],b=kp[EDGES[i][1]];
+    if(!a||!b||a.score<.3||b.score<.3)continue;
+    ctx.beginPath();ctx.moveTo(a.x,a.y);ctx.lineTo(b.x,b.y);ctx.stroke();
+  }
+  ctx.shadowBlur=0;
   ctx.fillStyle="#ffd600";
-  p.keypoints.forEach(function(pt){if(pt.score>.3){ctx.beginPath();ctx.arc(pt.x,pt.y,4,0,7);ctx.fill();}});
+  var r=Math.max(3,cv.width/150);
+  for(var j=0;j<p.keypoints.length;j++){
+    var k2=p.keypoints[j];
+    if(k2.score<.3)continue;
+    ctx.beginPath();ctx.arc(k2.x,k2.y,r,0,7);ctx.fill();
+  }
 }
 async function loop(){
   if(!C.on)return;
@@ -6336,7 +6350,7 @@ async function loop(){
   if(C.det&&v&&v.readyState>=2){
     try{
       var ps=await C.det.estimatePoses(v,{maxPoses:1,flipHorizontal:false});
-      if(ps&&ps[0])score(ps[0]);else miss();
+      if(ps&&ps[0])score(ps[0]);else missBody();
       draw(ps&&ps[0]);
     }catch(e){}
   }
@@ -6344,5 +6358,4 @@ async function loop(){
 }
 })();
 </script>
-
 </body></html>
