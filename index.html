@@ -1,4 +1,4 @@
-<!-- FATH build v22 2026-11-17 · камера MediaPipe (33 точки, скелет до пяток) · цели сжигания по дням недели · Михримах — легендарная · Махидевран + ивент «Путь до дворца» -->
+<!-- FATH build v23 2026-11-18 · камера-счётчик MediaPipe · свободный счёт в Битве · цели сжигания по дням недели · Михримах — легендарная · Махидевран + ивент «Путь до дворца Султана Сулеймана Хан Хазрат Лери» -->
 <!DOCTYPE html>
 <html lang="ru">
 <head>
@@ -573,7 +573,7 @@ body.pulsar-ui .hlogo{text-shadow:0 0 16px rgba(255,77,166,.95);animation:psLogo
 <div id="errbox"></div>
 <div id="app">
 <header>
-  <span class="hlogo">FATH</span>
+  <span class="hlogo">FATH</span><span style="font-size:9px;opacity:.5;margin-left:8px">fath v23</span>
   <span class="pill" id="hlvl">👤 1 ур</span>
   <span class="pill" id="htok">🪙 0</span>
   <span class="pill" id="hpv" style="display:none">🎃 0</span>
@@ -3945,10 +3945,6 @@ function drawPrev(){
     requestAnimationFrame(loop);}
   loop();
 }
-// ===== КАМЕРА: кнопка (только 3 вида) =====
-function camBtn(k,small){var ok=["pushups","pullups","squats"];if(ok.indexOf(k)<0)return "";
- if(small)return '<button class="btn small" style="margin-left:4px" onclick="camOpen(\''+k+'\')" title="камера — авто-счёт">📷</button>';
- return '<button class="btn" style="width:100%;margin-top:6px" onclick="camOpen(\''+k+'\')">📷 Камера — авто-счёт</button>';}
 // ===== УПРАЖНЕНИЯ =====
 function tabEx(m){
   var h='<div class="card"><h3>💪 Упражнения</h3>'+
@@ -3977,10 +3973,10 @@ function tabEx(m){
 }
 function quickEx(k,n){doEx(k,n,true);}
 function manualEx(k,v){var n=parseInt(v);if(!n)return;doEx(k,n,true);}
-function doEx(k,n,quick){
+function doEx(k,n,quick,force){
   if(n<0){n=Math.floor(n);var _dn=(STATE.daycounts[k]||0)+n,_dt=(STATE.total[k]||0)+n;if(_dn<0||_dt<0){toast("Нельзя уйти в минус");return;}}
   else{n=Math.floor(n);if(!n)return;}
-  if(n>0){var _tp=bwToday();if(_tp&&_tp.plan[k]==null){toast("🚫 Сегодня ("+WDAYS[bwDayIdx()]+") этот вид не по плану сжигания");return;}}
+  if(n>0&&!force){var _tp=bwToday();if(_tp&&_tp.plan[k]==null){toast("🚫 Сегодня ("+WDAYS[bwDayIdx()]+") этот вид не по плану сжигания");return;}}
   addCount(k,n);evRep(n,exToSubmit(k,n));lazRep(lazQty(k,n),exToSubmit(k,n));
   var dmg=bossDamage(k,n);
   if(dmg>0)petAddXp(dmg);
@@ -4030,7 +4026,7 @@ function fightHtml(m){
   EX.forEach(function(e){
     h+='<div class="row" style="margin-bottom:6px"><span style="flex:1">'+e[2]+' '+e[1]+'</span>'+
     '<input type="number" id="atk_'+e[0]+'" placeholder="'+exUnit(e[0])+'" style="width:80px">'+
-    '<button class="btn small prim" onclick="atk(\''+e[0]+'\')">Бить</button>'+camBtn(e[0],'small')+'</div>';
+    '<button class="btn small prim" onclick="atk(\''+e[0]+'\'">Бить</button>'+camBtn(e[0],1)+'</div>';
   });
   h+='<p class="small">Урон: 1 повторение = 1 удар · планка: 10 сек = 1 удар · шаги: 50 шагов = 1 удар. Исключение — Назгул и Султан Сулейман: клинок режет каждый второй удар ×0.7.</p></div>';
   // список боссов
@@ -6180,95 +6176,145 @@ window.wkExchange=function(){
 setInterval(function(){try{if(!wkIsSunday()&&document.querySelector(".wkban"))render();}catch(e){}},30000);
 })();
 </script>
+
 <script>
-// ===== КАМЕРА v22 · MediaPipe Pose Landmarker (33 точки: скелет от кистей до пяток) =====
-var CAM={n:0,on:false,cam:0,ra:null,mp:null,exe:null,ph:"",sm:null,last:0,ver:"v22"};
-window.camOpen=function(k){CAM.exe=k;CAM.n=0;CAM.on=true;CAM.cam=0;CAM.ph="";CAM.sm=null;CAM.last=0;
- var ov=document.createElement("div");ov.id="camov";ov.style.cssText="position:fixed;inset:0;z-index:10000;background:#000;display:flex;flex-direction:column";
- ov.innerHTML='<div style="flex:0 0 44px;display:flex;align-items:center;justify-content:space-between;padding:0 10px;background:#0d0d14;flex-direction:row">'
- +'<span style="color:#ffd166;font-size:13px">📷 '+(EXNAME[k]||k)+'</span>'
- +'<span onclick="camClose()" style="color:#fff;font-size:20px;cursor:pointer;padding:0 4px">✕</span></div>'
- +'<div style="flex:1;position:relative;overflow:hidden;min-height:0">'
- +'<video id="camv" playsinline autoplay muted style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover"></video>'
- +'<canvas id="camc" style="position:absolute;inset:0;width:100%;height:100%"></canvas>'
- +'<div id="camn" style="position:absolute;top:6px;left:0;right:0;text-align:center;color:#00ffcc;font-size:46px;font-weight:bold;text-shadow:0 0 14px rgba(0,255,204,.85)">0</div>'
- +'<div id="camdep" style="position:absolute;bottom:74px;left:0;right:0;text-align:center;color:#8ff;font-size:12px;text-shadow:0 1px 4px #000"></div>'
- +'<div id="camst" style="position:absolute;bottom:48px;left:8px;right:8px;text-align:center;color:#fff;font-size:13px;text-shadow:0 1px 5px #000">Запускаю камеру…</div></div>'
- +'<div style="flex:0 0 54px;display:flex;gap:6px;padding:0 10px;align-items:center;background:#0d0d14;flex-direction:row">'
- +'<button class="btn small" onclick="camAdj(-1)">−1</button>'
- +'<button class="btn prim" style="flex:1" onclick="camSave()">✔ Записать</button>'
- +'<button class="btn small" onclick="camAdj(1)">+1</button>'
- +'<button class="btn small" onclick="camFlip()">🔄</button></div>';
- document.body.appendChild(ov);camStart();};
-function camStat(){var e=document.getElementById("camst");if(e)e.textContent=CAM.st;}
-function camFail(t){CAM.on=false;CAM.st=t;var e=document.getElementById("camst");if(e){e.style.color="#ff8080";e.textContent=t;}}
-function camClose(){CAM.on=false;if(CAM.ra)cancelAnimationFrame(CAM.ra);CAM.ra=null;try{var v=document.getElementById("camv");if(v&&v.srcObject)v.srcObject.getTracks().forEach(function(t){t.stop();});}catch(e){}var ov=document.getElementById("camov");if(ov)ov.remove();}
-function camAdj(d){CAM.n=Math.max(0,CAM.n+d);var e=document.getElementById("camn");if(e)e.textContent=CAM.n;}
-function camSave(){var n=CAM.n,k=CAM.exe;camClose();if(n>0)doEx(k,n,true);}
-function camFlip(){CAM.cam=1-CAM.cam;try{var v=document.getElementById("camv");if(v&&v.srcObject)v.srcObject.getTracks().forEach(function(t){t.stop();});}catch(e){}CAM.on=true;camStart();}
-async function camStart(){var v=document.getElementById("camv");if(!v)return;v.style.transform=CAM.cam?"":"scaleX(-1)";
- CAM.st="Получаю доступ к камере…";camStat();
- try{var stream=await navigator.mediaDevices.getUserMedia({video:{facingMode:CAM.cam?"environment":"user",width:{ideal:640},height:{ideal:480}},audio:false});v.srcObject=stream;await v.play();}
- catch(e){camFail("Камера недоступна: "+((e&&e.name==="NotAllowedError")?"доступ запрещён — значок замка слева от адреса → Камера → Разрешить":(e&&e.message)||"нет камеры"));return;}
- if(!CAM.mp){CAM.st="⏳ Загружаю нейросеть (первый раз ~10 МБ)…";camStat();try{CAM.mp=await camLoadMP();}catch(e){camFail("Модель не загрузилась: нужен интернет при первом запуске");return;}}
- CAM.st="Встань целиком в кадр и делай упражнение";camStat();camLoop();}
-async function camLoadMP(){var errs=[];var srcs=["https://cdn.jsdelivr.net/npm/@mediapipe/tasks-vision@0.10.14/+esm","https://unpkg.com/@mediapipe/tasks-vision@0.10.14/+esm"];
- var wsr="https://cdn.jsdelivr.net/npm/@mediapipe/tasks-vision@0.10.14/wasm";
- for(var i=0;i<srcs.length;i++){try{var m=await import(srcs[i]);
-  var vision=await m.FilesetResolver.forVisionTasks(wsr);
-  var models=["https://storage.googleapis.com/mediapipe-models/pose_landmarker/pose_landmarker_lite/float16/latest/pose_landmarker_lite.task","https://storage.googleapis.com/mediapipe-models/pose_landmarker/pose_landmarker_lite/float16/1/pose_landmarker_lite.task"];
-  for(var j=0;j<models.length;j++){
-   try{return await m.PoseLandmarker.createFromOptions(vision,{baseOptions:{modelAssetPath:models[j],delegate:"GPU"},runningMode:"VIDEO",numPoses:1});}
-   catch(e1){return await m.PoseLandmarker.createFromOptions(vision,{baseOptions:{modelAssetPath:models[j],delegate:"CPU"},runningMode:"VIDEO",numPoses:1});}}
- }catch(e){errs.push(String((e&&e.message)||e));}}
- throw new Error(errs.join(" | ")||"источники недоступны");}
-function camLoop(){if(!CAM.on)return;var v=document.getElementById("camv"),c=document.getElementById("camc");if(!v||!c)return;
- if(!v.videoWidth){CAM.ra=requestAnimationFrame(camLoop);return;}
- if(c.width!==v.videoWidth){c.width=v.videoWidth;c.height=v.videoHeight;}
- try{var r=CAM.mp.detectForVideo(v,performance.now());var lm=(r&&r.landmarks&&r.landmarks[0])||null;camDraw(c,lm);if(lm)camScore(lm);}catch(e){}
- CAM.ra=requestAnimationFrame(camLoop);}
-function camMid(a,b){return{x:(a.x+b.x)/2,y:(a.y+b.y)/2};}
-function camDst(a,b){var dx=a.x-b.x,dy=a.y-b.y;return Math.sqrt(dx*dx+dy*dy);}
-var CAMB=[[11,12],[11,23],[12,24],[23,24],[11,13],[13,15],[12,14],[14,16],[23,25],[25,27],[27,29],[29,31],[24,26],[26,28],[28,30],[30,32],[7,11],[8,12]];
-function camDraw(c,lm){var ctx=c.getContext("2d");ctx.clearRect(0,0,c.width,c.height);if(!lm)return;
- var mir=(CAM.cam===0);ctx.save();if(mir){ctx.translate(c.width,0);ctx.scale(-1,1);}
- var vis=lm.map(function(p){return(p.visibility===undefined?1:p.visibility);});
- ctx.lineWidth=Math.max(3,c.width*0.007);ctx.strokeStyle="#2de2e6";ctx.lineCap="round";
- CAMB.forEach(function(b){var a=lm[b[0]],q=lm[b[1]];if(vis[b[0]]<0.4||vis[b[1]]<0.4)return;
-  ctx.beginPath();ctx.moveTo(a.x*c.width,a.y*c.height);ctx.lineTo(q.x*c.width,q.y*c.height);ctx.stroke();});
- lm.forEach(function(p,i){if(vis[i]<0.4)return;ctx.fillStyle="#ffd600";ctx.globalAlpha=i<11?0.55:1;
-  ctx.beginPath();ctx.arc(p.x*c.width,p.y*c.height,i<11?Math.max(2,c.width*0.004):Math.max(4,c.width*0.009),0,7);ctx.fill();});
- ctx.globalAlpha=1;ctx.restore();}
-function camRep(){if(Date.now()-CAM.last<350)return;CAM.last=Date.now();CAM.n++;
- var e=document.getElementById("camn");if(e)e.textContent=CAM.n;CAM.st="✔ Засчитано";camStat();
- try{if(navigator.vibrate)navigator.vibrate(60);}catch(e){}}
-function camPct(x){return Math.max(0,Math.min(100,Math.round(x*100)));}
-function camScore(lm){var sh=camMid(lm[11],lm[12]),hp=camMid(lm[23],lm[24]),wr=camMid(lm[15],lm[16]),kn=camMid(lm[25],lm[26]),an=camMid(lm[27],lm[28]);
- var leg=camDst(hp,an)||0.3,torso=camDst(sh,hp)||0.3;
- var vs=Math.min(lm[11].visibility===undefined?1:lm[11].visibility,lm[12].visibility===undefined?1:lm[12].visibility);
- var vh=Math.min(lm[23].visibility===undefined?1:lm[23].visibility,lm[24].visibility===undefined?1:lm[24].visibility);
- var dep=document.getElementById("camdep");var m=0,ok=true,k=CAM.exe;
- if(k==="pushups"){ok=vs>0.5&&vh>0.5;var raw=(hp.y-sh.y)/leg;CAM.sm=CAM.sm===null?raw:CAM.sm*0.45+raw*0.55;m=CAM.sm;
-  var vw=Math.min(lm[15].visibility===undefined?1:lm[15].visibility,lm[16].visibility===undefined?1:lm[16].visibility);
-  var plank=(wr.y>kn.y-0.12*leg)&&vw>0.5;
-  if(plank&&m<-0.1)CAM.ph="d";
-  if(CAM.ph==="d"&&plank&&m>-0.02){CAM.ph="u";camRep();}
-  if(dep){dep.textContent=m>0.2?"прими упор лёжа":"глубина "+camPct((-m-0.02)/0.16)+"%";}
-  if(CAM.ph==="d")CAM.st="внизу — поднимайся!";else if(ok)CAM.st="считаю отжимания…";
- }else if(k==="squats"){ok=vs>0.5&&vh>0.5;var raw2=(an.y-hp.y)/leg;CAM.sm=CAM.sm===null?raw2:CAM.sm*0.45+raw2*0.55;m=CAM.sm;
-  if(m<0.62)CAM.ph="d";
-  if(CAM.ph==="d"&&m>0.86){CAM.ph="u";camRep();}
-  if(dep){dep.textContent="глубина "+camPct((1-m)/0.58)+"%";}
-  if(CAM.ph==="d")CAM.st="внизу — вставай!";else if(ok)CAM.st="считаю приседания…";
- }else{ok=vs>0.5;var vw2=Math.min(lm[15].visibility===undefined?1:lm[15].visibility,lm[16].visibility===undefined?1:lm[16].visibility);
-  var raw3=(wr.y-sh.y)/torso;CAM.sm=CAM.sm===null?raw3:CAM.sm*0.45+raw3*0.55;m=CAM.sm;
-  ok=ok&&vw2>0.5;
-  if(ok&&m<-0.4)CAM.ph="d";
-  if(CAM.ph==="d"&&ok&&m>-0.06){CAM.ph="u";camRep();}
-  if(dep){dep.textContent="глубина "+camPct((-0.06-m)/0.36)+"%";}
-  if(CAM.ph==="d")CAM.st="внизу — тяни вверх!";else if(ok)CAM.st="считаю подтягивания…";}
- camStat();
- if(!ok&&CAM.st.indexOf("не видно")<0&&CAM.st.indexOf("Засчитано")<0){CAM.st="Тело не видно целиком — отойди дальше, добавь света";camStat();}}
-try{var vb=document.createElement("div");vb.textContent="fath "+CAM.ver;vb.style.cssText="position:fixed;top:2px;right:6px;z-index:9999;font-size:9px;font-family:monospace;color:#9aa;opacity:.5;pointer-events:none";document.body.appendChild(vb);}catch(e){}
+// ===== КАМЕРА-СЧЁТЧИК v2 (MediaPipe Pose, самокалибровка по амплитуде) =====
+var CAM={k:'',src:'e',n:0,pose:null,stream:null,vid:null,raf:0,busy:false,closed:true,sm:{},state:0,lt:0,buf:[],face:'front'};
+function camBtn(k,small){
+  if(k!=='pushups'&&k!=='squats'&&k!=='pullups')return'';
+  return '<button class="btn small'+(small?' prim':' ghost')+'" style="'+(small?'':'width:100%;margin-top:8px')+'" onclick="camOpen(\''+k+'\',\''+(small?'b':'e')+'\')">📷 Камера'+(small?'':' — авто-счёт')+'</button>';
+}
+function camOpen(k,src){
+  var old=document.getElementById('camWrap');if(old)old.remove();
+  CAM.k=k;CAM.src=src||'e';CAM.n=0;CAM.state=0;CAM.sm={};CAM.buf=[];CAM.closed=false;CAM.lt=0;
+  var hint=k==='pushups'?'Телефон на полу перед собой или сбоку — руки, корпус и ноги в кадре':(k==='squats'?'Отойди на 2–3 метра — всё тело в кадре':'Снимай сбоку: руки над головой, всё тело в кадре');
+  var m=document.createElement('div');m.id='camWrap';
+  m.style.cssText='position:fixed;inset:0;z-index:10001;background:#05050c;display:flex;flex-direction:column';
+  m.innerHTML='<div style="display:flex;align-items:center;gap:10px;padding:10px"><b>'+EXNAME[k]+'</b><span style="flex:1"></span><button class="btn small" onclick="camClose()">✕</button></div>'
+  +'<div style="position:relative;flex:1;overflow:hidden;background:#000">'
+  +'<video id="camVid" playsinline autoplay muted style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover"></video>'
+  +'<canvas id="camCvs" style="position:absolute;inset:0;width:100%;height:100%"></canvas>'
+  +'<div id="camCnt" style="position:absolute;top:14px;left:50%;transform:translateX(-50%);font-size:46px;font-weight:800;color:#fff;text-shadow:0 2px 14px #000">0</div>'
+  +'<div id="camMsg" style="position:absolute;bottom:16px;left:50%;transform:translateX(-50%);font-size:13px;color:#ffd166;text-shadow:0 1px 8px #000;text-align:center;max-width:92%">'+hint+'</div></div>'
+  +'<div style="display:flex;gap:8px;padding:10px"><button class="btn small" onclick="camAdj(-1)">−1</button><button class="btn small" onclick="camAdj(1)">+1</button><button class="btn prim" style="flex:1" onclick="camSave()">✔ Записать</button><button class="btn small" onclick="camFlip()">🔄</button></div>';
+  document.body.appendChild(m);
+  camStart();
+}
+function camMsg(t){var e=document.getElementById('camMsg');if(e)e.textContent=t;}
+function camFlip(){CAM.face=CAM.face==='back'?'front':'back';if(CAM.stream){try{CAM.stream.getTracks().forEach(function(t){t.stop();});}catch(e){}CAM.stream=null;}camStart();}
+function camStart(){
+  var v=document.getElementById('camVid');if(!v)return;
+  if(!navigator.mediaDevices||!navigator.mediaDevices.getUserMedia){camMsg('Камера недоступна в этом браузере');return;}
+  camMsg('⏳ Открываю камеру…');
+  navigator.mediaDevices.getUserMedia({video:{facingMode:CAM.face==='back'?'environment':'user',width:{ideal:640},height:{ideal:480}}}).then(function(st){
+    CAM.stream=st;v.srcObject=st;v.play();
+    camInitModel();
+  }).catch(function(e){camMsg(e&&e.name==='NotAllowedError'?'Доступ запрещён: значок замка слева от адреса → Камера → Разрешить':'Камера не найдена');});
+}
+function camLoadLib(cb){
+  if(window.Pose){cb();return;}
+  camMsg('⏳ Загружаю нейросеть… (около 10 МБ, один раз)');
+  var s=document.createElement('script');
+  s.src='https://cdn.jsdelivr.net/npm/@mediapipe/pose@0.5.1675469404/pose.js';
+  s.onload=cb;
+  s.onerror=function(){camMsg('Не загрузилась библиотека — проверь интернет и попробуй снова');};
+  document.head.appendChild(s);
+}
+function camInitModel(){
+  camLoadLib(function(){
+    if(CAM.pose){camMsg('Готово — начинай!');camLoop();return;}
+    try{
+      CAM.pose=new window.Pose({locateFile:function(f){return 'https://cdn.jsdelivr.net/npm/@mediapipe/pose@0.5.1675469404/'+f;}});
+      CAM.pose.setOptions({modelComplexity:0,smoothLandmarks:true,enableSegmentation:false,minDetectionConfidence:0.4,minTrackingConfidence:0.4});
+      CAM.pose.onResults(camFrame);
+      camMsg('Готово — начинай!');
+      camLoop();
+    }catch(err){camMsg('Ошибка: '+(err.message||err));}
+  });
+}
+function camLoop(){
+  if(CAM.closed)return;
+  var v=document.getElementById('camVid');
+  if(!v||v.readyState<2){CAM.raf=requestAnimationFrame(camLoop);return;}
+  CAM.vid=v;
+  if(!CAM.busy&&CAM.pose){CAM.busy=true;CAM.pose.send({image:v}).then(function(){CAM.busy=false;}).catch(function(){CAM.busy=false;});}
+  CAM.raf=requestAnimationFrame(camLoop);
+}
+function camSmo(key,val){CAM.sm[key]=CAM.sm[key]===undefined?val:CAM.sm[key]*0.5+val*0.5;return CAM.sm[key];}
+function camAng(a,b,c){
+  var v1x=a.x-b.x,v1y=a.y-b.y,v2x=c.x-b.x,v2y=c.y-b.y;
+  var d1=Math.sqrt(v1x*v1x+v1y*v1y),d2=Math.sqrt(v2x*v2x+v2y*v2y);
+  if(d1<1e-6||d2<1e-6)return NaN;
+  var cos=(v1x*v2x+v1y*v2y)/(d1*d2);cos=Math.max(-1,Math.min(1,cos));
+  return Math.acos(cos)*180/Math.PI;
+}
+function camFrame(r){
+  if(CAM.closed)return;
+  var v=CAM.vid;if(!v)return;
+  var c=document.getElementById('camCvs');if(!c)return;
+  if(c.width!==v.videoWidth&&v.videoWidth){c.width=v.videoWidth;c.height=v.videoHeight;}
+  var x=c.getContext('2d');x.clearRect(0,0,c.width,c.height);
+  var lm=r&&r.poseLandmarks,i;
+  if(!lm){camMsg('Не вижу тебя — отойди дальше, добавь света');return;}
+  var need=[11,12,23,24],vis=0;
+  for(i=0;i<need.length;i++)if(lm[need[i]].visibility>0.5)vis++;
+  if(vis<3){camMsg('Корпус не виден целиком — отойди дальше');return;}
+  var B=[[11,12],[11,23],[12,24],[23,24],[11,13],[13,15],[12,14],[14,16],[23,25],[25,27],[27,29],[27,31],[24,26],[26,28],[28,30],[28,32]];
+  x.strokeStyle='rgba(0,255,204,.85)';x.lineWidth=Math.max(3,c.width/180);x.lineCap='round';
+  for(i=0;i<B.length;i++){
+    var A=lm[B[i][0]],D=lm[B[i][1]];
+    if(A.visibility<0.35||D.visibility<0.35)continue;
+    x.beginPath();x.moveTo(A.x*c.width,A.y*c.height);x.lineTo(D.x*c.width,D.y*c.height);x.stroke();
+  }
+  x.fillStyle='#ffd166';
+  for(i=0;i<lm.length;i++){var P=lm[i];if(P.visibility<0.35)continue;x.beginPath();x.arc(P.x*c.width,P.y*c.height,Math.max(3,c.width/160),0,6.3);x.fill();}
+  // сигнал упражнения
+  var s;
+  if(CAM.k==='pushups'||CAM.k==='pullups'){
+    var aL=camAng(lm[11],lm[13],lm[15]),aR=camAng(lm[12],lm[14],lm[16]);
+    var ang=Math.max(aL,aR);
+    if(!isFinite(ang)){camMsg('Руки не видны полностью — повернись чуть боком');return;}
+    s=-camSmo('a',ang);
+  }else{
+    s=camSmo('h',(lm[23].y+lm[24].y)/2);
+  }
+  var t=performance.now();
+  CAM.buf.push([t,s]);
+  while(CAM.buf.length&&t-CAM.buf[0][0]>8000)CAM.buf.shift();
+  var mn=Infinity,mx=-Infinity,j;
+  for(j=0;j<CAM.buf.length;j++){if(CAM.buf[j][1]<mn)mn=CAM.buf[j][1];if(CAM.buf[j][1]>mx)mx=CAM.buf[j][1];}
+  var rng=mx-mn;
+  if(rng<=0.001)return;
+  var minRng=CAM.k==='pullups'?6:0.04;
+  if(rng<minRng){camMsg(CAM.k==='pullups'?'Делай полные подтягивания — калибруюсь по амплитуде':'Двигайся с полной амплитудой — калибруюсь по твоему диапазону');return;}
+  var lo=mn+0.32*rng,hi=mn+0.70*rng;
+  var pct=Math.round(100*(s-mn)/rng);
+  var msg=(CAM.k==='pullups'?'тяга ':'глубина ')+pct+'%';
+  if(CAM.state===0&&s>=hi){CAM.state=1;msg='внизу — поднимайся';}
+  else if(CAM.state===1&&s<=lo){
+    CAM.state=0;
+    if(t-CAM.lt>350){
+      CAM.n++;CAM.lt=t;msg='Засчитано!';
+      if(navigator.vibrate)navigator.vibrate(60);
+      var ce=document.getElementById('camCnt');if(ce)ce.textContent=CAM.n;
+    }
+  }
+  camMsg(msg);
+}
+function camAdj(d){
+  CAM.n=Math.max(0,CAM.n+d);
+  var e=document.getElementById('camCnt');if(e)e.textContent=CAM.n;
+}
+function camSave(){
+  var n=CAM.n|0,k=CAM.k,src=CAM.src;
+  camClose();
+  if(n>0)doEx(k,n,true,src==='b');
+}
+function camClose(){
+  CAM.closed=true;
+  if(CAM.raf)cancelAnimationFrame(CAM.raf);
+  if(CAM.stream){try{CAM.stream.getTracks().forEach(function(t){t.stop();});}catch(e){}CAM.stream=null;}
+  var m=document.getElementById('camWrap');if(m)m.remove();
+}
 </script>
 </body></html>
