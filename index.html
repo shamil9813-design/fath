@@ -1,4 +1,4 @@
-<!-- FATH build v23 2026-11-18 · камера-счётчик MediaPipe · свободный счёт в Битве · цели сжигания по дням недели · Михримах — легендарная · Махидевран + ивент «Путь до дворца Султана Сулеймана Хан Хазрат Лери» -->
+<!-- FATH build v28 2026-11-18 · камера-счётчик MediaPipe · свободный счёт в Битве · цели сжигания по дням недели · Михримах — легендарная · Махидевран + ивент «Путь до дворца Султана Сулеймана Хан Хазрат Лери» -->
 <!DOCTYPE html>
 <html lang="ru">
 <head>
@@ -1306,11 +1306,12 @@ function addXp(n){var _tx=trBonus().xp;if(_tx)n=Math.round(n*(1+_tx/100));if(deb
   while(STATE.xp>=100){STATE.xp-=100;STATE.lvl++;S("lvlup");toast("🎉 Уровень "+STATE.lvl+"!");}
   checkAch();updHeader();save();}
 function addTok(n){if(n>0)S("coin");if(n>0&&STATE.girls&&STATE.girls.hurrem)n=Math.round(n*1.3);STATE.tok+=n;updHeader();save();}
-function addCount(key,n){
+function addCount(key,n,cam){
   if(!STATE.counts)STATE.counts={};if(!STATE.total)STATE.total={};if(!STATE.daycounts)STATE.daycounts={};
   STATE.counts[key]=(STATE.counts[key]||0)+n;
   STATE.total[key]=(STATE.total[key]||0)+n;
   STATE.daycounts[key]=(STATE.daycounts[key]||0)+n;
+  STATE.replog=STATE.replog||{};var _ad=todayStr();STATE.replog[_ad]=STATE.replog[_ad]||{};var _r=STATE.replog[_ad][key]||{n:0,c:0};_r.n+=n;if(cam)_r.c+=n;if(_r.n<0)_r.n=0;if(_r.c<0)_r.c=0;STATE.replog[_ad][key]=_r;
   if(n>0)checkMiles();
   if(n>0)calBurn(key,n);
   if(n>0&&STATE.week&&typeof STATE.week==="object"&&!Array.isArray(STATE.week)){STATE.week.reps=(STATE.week.reps||0)+n;STATE.week.days=STATE.week.days||{};STATE.week.days[todayStr()]=1;}
@@ -1321,7 +1322,7 @@ function userWeight(){return (STATE.cal&&STATE.cal.w>0)?STATE.cal.w:70;}
 function calBurn(key,n){var k=key;if(k.indexOf("spin_")===0)k=k.slice(5);var f=KCAL[k];if(!f)return;
 if(!STATE.calburn)STATE.calburn={};var d=STATE.calburn[todayStr()]||(STATE.calburn[todayStr()]={});
 var _v=f*userWeight()*n;d[k]=(d[k]||0)+_v;d._t=(d._t||0)+_v;STATE.calBurnAll=(STATE.calBurnAll||0)+_v;
-var ks=Object.keys(STATE.calburn);if(ks.length>90){ks.sort();var cut={};for(var q=ks.length-60;q<ks.length;q++)cut[ks[q]]=STATE.calburn[ks[q]];STATE.calburn=cut;}
+var ks=Object.keys(STATE.calburn);if(ks.length>600){ks.sort();var cut={};for(var q=ks.length-560;q<ks.length;q++)cut[ks[q]]=STATE.calburn[ks[q]];STATE.calburn=cut;}
 if(STATE.daycounts&&Object.keys(STATE.daycounts).length>40){var dk=Object.keys(STATE.daycounts).sort();var dc={};for(var q=dk.length-30;q<dk.length;q++)dc[dk[q]]=STATE.daycounts[dk[q]];STATE.daycounts=dc;}
 save();}
 function calToday(){var d=STATE.calburn&&STATE.calburn[todayStr()];return d?Math.round(d._t||0):0;}
@@ -3973,11 +3974,11 @@ function tabEx(m){
 }
 function quickEx(k,n){doEx(k,n,true);}
 function manualEx(k,v){var n=parseInt(v);if(!n)return;doEx(k,n,true);}
-function doEx(k,n,quick,force){
+function doEx(k,n,quick,force,cam){
   if(n<0){n=Math.floor(n);var _dn=(STATE.daycounts[k]||0)+n,_dt=(STATE.total[k]||0)+n;if(_dn<0||_dt<0){toast("Нельзя уйти в минус");return;}}
   else{n=Math.floor(n);if(!n)return;}
   if(n>0&&!force){var _tp=bwToday();if(_tp&&_tp.plan[k]==null){toast("🚫 Сегодня ("+WDAYS[bwDayIdx()]+") этот вид не по плану сжигания");return;}}
-  addCount(k,n);evRep(n,exToSubmit(k,n));lazRep(lazQty(k,n),exToSubmit(k,n));
+  addCount(k,n,cam);evRep(n,exToSubmit(k,n));lazRep(lazQty(k,n),exToSubmit(k,n));
   var dmg=bossDamage(k,n);
   if(dmg>0)petAddXp(dmg);
   petAddXp(Math.ceil(exToSubmit(k,n)/5));
@@ -4026,7 +4027,7 @@ function fightHtml(m){
   EX.forEach(function(e){
     h+='<div class="row" style="margin-bottom:6px"><span style="flex:1">'+e[2]+' '+e[1]+'</span>'+
     '<input type="number" id="atk_'+e[0]+'" placeholder="'+exUnit(e[0])+'" style="width:80px">'+
-    '<button class="btn small prim" onclick="atk(\''+e[0]+'\'">Бить</button>'+camBtn(e[0],1)+'</div>';
+    '<button class="btn small prim" onclick="atk(\''+e[0]+'\')">Бить</button>'+camBtn(e[0],1)+'</div>';
   });
   h+='<p class="small">Урон: 1 повторение = 1 удар · планка: 10 сек = 1 удар · шаги: 50 шагов = 1 удар. Исключение — Назгул и Султан Сулейман: клинок режет каждый второй удар ×0.7.</p></div>';
   // список боссов
@@ -4636,7 +4637,7 @@ function tabStats(m){
     var _rk="Новичок",_nx=_r[0],_qi=0;for(var q=0;q<_r.length;q++){if(tv>=_r[q]){_rk=_sg[q][0];_nx=(q<_r.length-1)?_r[q+1]:0;_qi=q;}}
     var _pc=_nx?Math.min(100,Math.round(100*tv/_nx)):100;
     var _nm=k==="steps"?" шагов":k==="plank"?" сек":k==="run"?" мин":"";
-    _rows+='<div class="list-item"><div style="flex:1"><span>'+e[2]+' <b>'+tv+'</b>'+_nm+' · сегодня '+tdd+'</span><br><span class="small">'+_rk+(_nx?' · до следующего звания: '+(_nx-tv):' · максимум!')+'</span>'+
+    _rows+='<div class="list-item"><div style="flex:1"><span>'+e[2]+' '+e[1]+': <b>'+tv+'</b>'+_nm+' · сегодня '+tdd+'</span><br><span class="small">'+_rk+(_nx?' · до следующего звания: '+(_nx-tv):' · максимум!')+'</span>'+
     '<div class="bar hpbar" style="height:8px;margin-top:4px"><div style="width:'+_pc+'%"></div></div></div></div>';});
   var _stTotal=(STATE.total.steps||0),_stToday=dc.steps||0;
   var _stKm=(Math.round(_stTotal*0.00075*10)/10);
@@ -5170,6 +5171,7 @@ function tabStatsNew(m){
   var h='<div class="card"><h3>📊 Статистика</h3><div class="row">'+
   [['stats','📊 Статистика'],['ach','🏅 Достижения'],['trophy','🏆 Трофеи']].map(function(x){
   return '<button class="btn small'+(t===x[0]?" prim":"")+'" onclick="setStatTab(\''+x[0]+'\')">'+x[1]+'</button>';}).join("")+'</div></div>';
+  h=analCardHtml()+h;
   m.innerHTML=h;
   var wrap=document.createElement('div');m.appendChild(wrap);
   if(t==='stats')tabStats(wrap);
@@ -5317,7 +5319,7 @@ function retroBossPets(){
   }catch(e){}
 }
 function init(){
-  loadSave();mogEnsure();retroBossPets();
+  loadSave();analFill();setInterval(function(){try{analFill();}catch(e){}},3600000);mogEnsure();retroBossPets();
   
   newDayCheck();
   try{if(localStorage.getItem("fath_theme")==="1")document.body.classList.add("light");}catch(e){}
@@ -6308,7 +6310,7 @@ function camAdj(d){
 function camSave(){
   var n=CAM.n|0,k=CAM.k,src=CAM.src;
   camClose();
-  if(n>0)doEx(k,n,true,src==='b');
+  if(n>0)doEx(k,n,true,src==='b',true);
 }
 function camClose(){
   CAM.closed=true;
@@ -6316,5 +6318,151 @@ function camClose(){
   if(CAM.stream){try{CAM.stream.getTracks().forEach(function(t){t.stop();});}catch(e){}CAM.stream=null;}
   var m=document.getElementById('camWrap');if(m)m.remove();
 }
+</script>
+<script>
+// ===== АНАЛИТИКА-АРХИВ v28 =====
+function aDayShift(d,n){var p=d.split("-");var dt=new Date(+p[0],+p[1]-1,+p[2]);dt.setDate(dt.getDate()+n);return dt.getFullYear()+"-"+String(dt.getMonth()+1).padStart(2,"0")+"-"+String(dt.getDate()).padStart(2,"0");}
+function aDiffDays(d1,d2){var p1=d1.split("-"),p2=d2.split("-");return Math.round((new Date(+p2[0],+p2[1]-1,+p2[2])-new Date(+p1[0],+p1[1]-1,+p1[2]))/86400000);}
+var AN_MN=["Янв","Фев","Мар","Апр","Май","Июн","Июл","Авг","Сен","Окт","Ноя","Дек"];
+var AN_MNF=["Январь","Февраль","Март","Апрель","Май","Июнь","Июль","Август","Сентябрь","Октябрь","Ноябрь","Декабрь"];
+function analFill(){
+  if(!STATE.replog)STATE.replog={};
+  if(!STATE.anal)STATE.anal={};
+  var t=todayStr(),minD=null;
+  Object.keys(STATE.calburn||{}).forEach(function(d){if(d&&d.length===10&&(!minD||d<minD))minD=d;});
+  ((STATE.cal&&STATE.cal.eaten)||[]).forEach(function(x){if(x&&x.d&&x.d.length===10&&(!minD||x.d<minD))minD=x.d;});
+  Object.keys(STATE.replog).forEach(function(d){if(!minD||d<minD)minD=d;});
+  if(!minD)return;
+  var d=minD,g=0;
+  while(d<t&&g<650){g++;
+    if(!STATE.anal[d]){
+      var eK=0;((STATE.cal&&STATE.cal.eaten)||[]).forEach(function(x){if(x&&x.d===d)eK+=(x.k||0);});
+      var bK=(STATE.calburn&&STATE.calburn[d])?(STATE.calburn[d]._t||0):0;
+      var r={},rl=STATE.replog[d]||{};
+      Object.keys(rl).forEach(function(k){r[k]=[rl[k].n||0,rl[k].c||0];});
+      STATE.anal[d]={e:Math.round(eK),b:Math.round(bK),r:r};
+    }
+    d=aDayShift(d,1);
+  }
+  var cutD=aDayShift(t,-560);
+  Object.keys(STATE.anal).forEach(function(dd){if(dd<cutD)delete STATE.anal[dd];});
+  Object.keys(STATE.replog).forEach(function(dd){if(dd<cutD)delete STATE.replog[dd];});
+  save();
+}
+function analDaySnap(d){
+  var t=todayStr();
+  if(d!==t){return STATE.anal[d]||null;}
+  var eK=0;((STATE.cal&&STATE.cal.eaten)||[]).forEach(function(x){if(x&&x.d===t)eK+=(x.k||0);});
+  var bK=(STATE.calburn&&STATE.calburn[t])?(STATE.calburn[t]._t||0):0;
+  var r={},rl=(STATE.replog||{})[t]||{};
+  Object.keys(rl).forEach(function(k){r[k]=[rl[k].n||0,rl[k].c||0];});
+  return {e:Math.round(eK),b:Math.round(bK),r:r};
+}
+function analAgg(d1,d2){
+  var t=todayStr();
+  var end=(d2>t)?t:d2;
+  var days=aDiffDays(d1,end)+1;
+  var e=0,b=0,r={},cnt=0;
+  var cur=d1,g=0;
+  while(cur<=end&&g<650){g++;
+    var s=analDaySnap(cur);
+    if(s){e+=s.e||0;b+=s.b||0;cnt++;
+      Object.keys(s.r||{}).forEach(function(k){r[k]=r[k]||[0,0];r[k][0]+=s.r[k][0];r[k][1]+=s.r[k][1];});}
+    cur=aDayShift(cur,1);
+  }
+  var norm=Math.round((STATE.cal&&STATE.cal.norm||0)*days);
+  return {e:Math.round(e),b:Math.round(b),n:norm,r:r,def:Math.round(norm+b-e),cnt:cnt,days:days};
+}
+function analWeekRange(){
+  var t=todayStr(),dt=new Date(+t.slice(0,4),+t.slice(5,7)-1,+t.slice(8,10));
+  var off=((dt.getDay()+6)%7)+7;
+  var ws=aDayShift(t,-off);
+  return {d1:ws,d2:aDayShift(ws,6),label:"Прошедшая неделя (Пн–Вс)"};
+}
+function analMonthRange(off){
+  var t=todayStr(),y=+t.slice(0,4),m=+t.slice(5,7);
+  m+=off;while(m<1){m+=12;y--;}while(m>12){m-=12;y++;}
+  var d1=y+"-"+String(m).padStart(2,"0")+"-01";
+  var d2=aDayShift(y+"-"+String(m+1).padStart(2,"0")+"-01",-1);
+  return {d1:d1,d2:d2,label:AN_MNF[m-1]+" "+y};
+}
+function analPrevMonthRange(){return analMonthRange(-1);}
+function analMonthMin(){
+  var ks=Object.keys(STATE.anal||{});if(!ks.length)return 0;
+  ks.sort();var d=ks[0];
+  var y=+d.slice(0,4),m=+d.slice(5,7);
+  var t=todayStr(),cy=+t.slice(0,4),cm=+t.slice(5,7);
+  return -((cy-y)*12+(cm-m));
+}
+function analGraphSVG(vals,labels){
+  var W=Math.max(vals.length*22,80),H=132,pad=6,bh=H-26;
+  var mx=1;vals.forEach(function(v){mx=Math.max(mx,v[0],v[1]);});
+  var s='<div style="overflow-x:auto;background:rgba(255,255,255,.03);border-radius:8px;padding:6px 4px 2px"><svg viewBox="0 0 '+W+' '+H+'" width="'+W+'" height="'+H+'" style="display:block">';
+  [0.25,0.5,0.75,1].forEach(function(f){var y=(pad+bh*(1-f)).toFixed(1);s+='<line x1="0" y1="'+y+'" x2="'+W+'" y2="'+y+'" stroke="rgba(255,255,255,.07)" stroke-width="1"/>';});
+  var step=Math.max(1,Math.ceil(vals.length/14));
+  vals.forEach(function(v,i){
+    var x=i*22+2;
+    var he=Math.round(bh*v[0]/mx),hb=Math.round(bh*v[1]/mx);
+    if(v[0]>0)s+='<rect x="'+x+'" y="'+(pad+bh-he)+'" width="8" height="'+Math.max(he,1)+'" rx="2" fill="#b388ff"/>';
+    if(v[1]>0)s+='<rect x="'+(x+9)+'" y="'+(pad+bh-hb)+'" width="8" height="'+Math.max(hb,1)+'" rx="2" fill="#00ffcc"/>';
+    if(i%step===0)s+='<text x="'+(x+8)+'" y="'+(H-4)+'" fill="rgba(255,255,255,.5)" font-size="9" text-anchor="middle">'+labels[i]+'</text>';
+  });
+  s+='</svg></div><p class="small" style="margin:2px 0 0"><span style="color:#b388ff">■</span> съедено &nbsp;<span style="color:#00ffcc">■</span> сожжено</p>';
+  return s;
+}
+function analTable(a){
+  var rows=[];
+  Object.keys(a.r).forEach(function(k){var v=a.r[k];rows.push([k,v[0],v[1],v[0]-v[1]]);});
+  rows.sort(function(x,y){return y[1]-x[1];});
+  if(!rows.length)return '<p class="sub">За период записей нет — наполнится, когда запишешь повторения.</p>';
+  var h='<div class="list-item" style="color:var(--dim);font-size:11px"><div style="flex:2">Упражнение</div><div style="flex:1;text-align:right">Всего</div><div style="flex:1;text-align:right">📷</div><div style="flex:1;text-align:right">Руками</div></div>';
+  rows.forEach(function(r){
+    var ic=EXICON[r[0]]||"",nm=EXNAME[r[0]]||r[0];
+    h+='<div class="list-item"><div style="flex:2">'+ic+' '+nm+'</div><div style="flex:1;text-align:right"><b>'+r[1]+'</b></div><div style="flex:1;text-align:right;color:#00ffcc">'+(r[2]?r[2]:"–")+'</div><div style="flex:1;text-align:right;color:var(--dim)">'+(r[3]?r[3]:"–")+'</div></div>';
+  });
+  return h;
+}
+function setAnalTab(t){STATE.analTab=t;save();render();}
+function analMGo(v){
+  var off=(STATE.analM||0)+v;
+  var lo=analMonthMin();
+  if(off<lo)off=lo;if(off>0)off=0;
+  STATE.analM=off;save();render();
+}
+function analCardHtml(){
+  var t=STATE.analTab||"y";
+  var h='<div class="card" id="anCard"><h3>📈 Аналитика — архив</h3><div class="row">';
+  [["y","Вчера"],["w","Неделя"],["m","Месяц"],["mm","По месяцам"]].forEach(function(x){
+    h+='<button class="btn small'+(t===x[0]?" prim":"")+'" onclick="setAnalTab(\''+x[0]+'\')">'+x[1]+'</button>';
+  });
+  h+='</div>';
+  var pr;
+  if(t==="y"){pr={d1:dayStrBack(1),d2:dayStrBack(1),label:"Вчера"};}
+  else if(t==="w"){pr=analWeekRange();}
+  else if(t==="m"){pr=analPrevMonthRange();}
+  else{
+    var off=STATE.analM||0;
+    pr=analMonthRange(off);
+    h+='<div class="row" style="margin-top:6px;align-items:center"><button class="btn small" onclick="analMGo(-1)">←</button><div style="flex:1;text-align:center"><b>'+pr.label+'</b></div><button class="btn small"'+(off>=0?' disabled style="opacity:.4"':'')+' onclick="analMGo(1)">→</button></div>';
+    if(off===0)h+='<p class="sub">Текущий месяц показывается живьём — финализируется 1-го числа.</p>';
+  }
+  var a=analAgg(pr.d1,pr.d2);
+  if(a.cnt===0)h+='<p class="sub">Нет данных за этот период — архив ведётся с установки v28.</p>';
+  h+='<p class="sub" style="margin-top:4px">📅 '+pr.label+' · данных за '+a.cnt+' из '+a.days+' дн.</p>';
+  h+='<div class="row"><div class="stat"><b>'+a.e+'</b><span>🍽 съедено</span></div><div class="stat"><b>'+a.b+'</b><span>🔥 сожжено</span></div><div class="stat"><b>'+a.n+'</b><span>🎯 норма</span></div></div>';
+  var isDef=a.def>=0;
+  h+='<p style="margin:8px 0 2px">'+(isDef?"⚖️ <b>Дефицит: <span style=\"color:var(--good)\">−"+a.def+" ккал</span></b>":"⚖️ <b>Профицит: <span style=\"color:orange\">+"+(-a.def)+" ккал</span></b>")+' <span class="small">🧈 ≈ '+Math.abs(kcalToG(-a.def))+' г жира</span></p>';
+  h+='<p class="small" style="margin:0 0 6px">7700 ккал ≈ 1 кг жира</p>';
+  var gv=[],gl=[];
+  if(t==="y"){for(var i=7;i>=1;i--){var d=dayStrBack(i);var s=analDaySnap(d)||{e:0,b:0};gv.push([s.e||0,s.b||0]);gl.push(d.slice(8,10));}}
+  else if(t==="mm"){for(var o=-17;o<=0;o++){var mr=analMonthRange(o);var aa=analAgg(mr.d1,mr.d2);if(aa.cnt===0&&o<analMonthMin())continue;gv.push([aa.e,aa.b]);gl.push(AN_MN[+mr.d1.slice(5,7)-1]);}}
+  else{var dd=pr.d1,g2=0;while(dd<=pr.d2&&g2<40){g2++;var s2=analDaySnap(dd)||{e:0,b:0};gv.push([s2.e||0,s2.b||0]);gl.push(dd.slice(8,10));dd=aDayShift(dd,1);}}
+  h+=analGraphSVG(gv,gl);
+  h+='<h4 style="margin:10px 0 4px">🏋 Повторения за период</h4>';
+  h+=analTable(a);
+  h+='</div>';
+  return h;
+}
+(function(){var lb=document.createElement("div");lb.textContent="fath v28";lb.style.cssText="position:fixed;top:5px;right:8px;font-size:9px;opacity:.45;z-index:60;pointer-events:none";document.body.appendChild(lb);})();
 </script>
 </body></html>
